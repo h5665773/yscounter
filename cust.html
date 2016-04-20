@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/colorbox.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+    <style>
+      h2{
+        font-size: 24px;
+      }
+    </style>
+    <script type="text/javascript">
+      
+    </script>
+  </head>
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    </nav>
+
+    <!-- Begin page content -->
+    <div class="container">
+      
+      <ol class="breadcrumb">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Library</a></li>
+        <li class="active">Data</li>
+      </ol>
+      <div class="row">
+          <div class="col-md-12">
+            
+            <p><a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a></p>
+          </div>
+          <div class="col-md-6" >
+            <h2>駐點清單</h2>
+            <div class="list-group pointList">
+            </div>
+          </div>
+          <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px" >
+          </div>
+          <div class="col-md-12" align="center">
+            <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
+            <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold" aria-haspopup="true" aria-expanded="false">下班打卡</button>
+          </div>
+          
+  </button>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+      </div>
+    </footer>
+    <div style='display:none'>
+      <div id='inline_content' style='padding:10px; background:#fff;'>
+      <p><strong>This content comes from a hidden element on this page.</strong></p>
+      <p>The inline option preserves bound JavaScript events and changes, and it puts the content back where it came from when it is closed.</p>
+      <p><a id="click" href="#" style='padding:5px; background:#ccc;'>Click me, it will be preserved!</a></p>
+      
+      <p><strong>If you try to open a new Colorbox while it is already open, it will update itself with the new content.</strong></p>
+      <p>Updating Content Example:<br />
+      <a class="ajax" href="../content/ajax.html">Click here to load new content</a></p>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var exec = require('child_process').exec,
+          child;
+      var http = require('http');
+      var jade = require('jade');
+      var fs = require('fs');
+      var navJade = jade.compileFile("views/nav.jade");
+      var navHtml = navJade({current: "checkin"});
+      var custFile = "public/custid.txt";
+      var currentCust = fs.readFileSync(custFile , {encoding:'utf-8'});
+      $(document).ready(function(){
+        var loading = $("#loading");
+        var loadingMask = $(".loadingMask");
+        var pointList = $(".pointList");
+        //$(".viewDetail").colorbox({inline:true, width:"50%"});
+        var scanEmpId = "";
+        var chooseCust = "";
+        var choosePoint = "";
+        var options = {
+          hostname: '61.220.182.219',
+          port: 80,
+          path: ''
+        };
+        $("#scanEmp").click(function(){
+          if($(this).attr("disabled")=="true"){
+            return false;
+          }
+          loadingMask.css("display","block");
+          loading.removeClass("rotateOut");
+          loading.css("display","block");
+          loading.addClass("rotateIn");
+          exec("python scan.py" , function(err ,data ,c){
+            if(err == null && data.length > 0){
+              data = data.trim();
+              var parse = data.match(/(EMP|CUS|POI)(T[0-9]+)([A-Z]?)/);
+              scanEmpId = parse[2];
+              
+              http.get('http://61.220.182.219/api/pointByCust/'+currentCust+'/000/'+parse[2], (res) => {
+                //console.log(res);
+                // consume response body
+                res.resume();
+                res.on('data',(d) =>{
+                  loadingMask.css("display","none");
+                  loading.css("display","none");
+                  loading.removeClass("rotateIn");
+                  loading.addClass("rotateOut");
+                  pointList.empty();
+                  var pointData = JSON.parse(d);
+                  console.log(pointData);
+                  for(var i in pointData){
+                    pointList.append('<a href="#" pointid="'+pointData[i].F_POINT_ID+'" class="list-group-item">'+pointData[i].F_POINT_NAME+'</a>');
+                  }
+                })
+              }).on('error', (e) => {
+                console.log(`Got error: ${e.message}`);
+              });
+            }else{
+              loadingMask.css("display","none");
+              loading.css("display","none");
+              loading.removeClass("rotateIn");
+              loading.addClass("rotateOut");
+            }
+          });
+          $(this).attr("disabled","true");
+        });
+        pointList.delegate(".list-group-item","click",function(){
+          var pointid=$(this).attr("pointid");
+          choosePoint = pointid;
+          $("a.current").removeClass("current");
+          $(this).addClass("current");
+        });
+        $("#goWork").click(function(){
+          checkin("goWork");
+        });
+        $("#offWork").click(function(){
+          checkin("offWork");
+        });
+        var checkin = function(workType){
+          var url = "http://"+options.hostname;
+          if(scanEmpId != "" && choosePoint!=""&&currentCust!=""){
+            url += '/barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId;
+            http.get('http://61.220.182.219/barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId , (res) => {
+              res.resume();
+              res.on('data',(d) =>{
+                if(d == "ok"){
+                  alert("打卡完成");
+                  location.href="index.html"
+                }
+              })
+            }).on('error', (e) => {
+              console.log(`Got error: ${e.message}`);
+            });
+          }else{
+            alert("資料有錯誤");
+          }
+        }
+        $("nav").html(navHtml);
+      });
+    </script>
+    <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
+    <script type="text/javascript" src="/js/main.js"></script>
+  </body>
+</html>

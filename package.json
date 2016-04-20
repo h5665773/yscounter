@@ -1,0 +1,24 @@
+{
+  "name": "yscounter",
+  "version": "1.0.0",
+  "main": "index.html",
+  "window": {
+    "title": "node-webkit demo",
+    "toolbar": true,
+    "width": 1000,
+    "height": 700
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bootstrap": "*",
+    "dustjs-linkedin": "^2.7.2",
+    "jade": "1.11.0",
+    "lodash": "*",
+    "nw": "0.13.4"
+  }
+}
