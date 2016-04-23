@@ -19,6 +19,7 @@
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css" >
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
@@ -29,9 +30,7 @@
         font-size: 24px;
       }
     </style>
-    <script type="text/javascript">
-      
-    </script>
+    <script type="text/javascript" src="/js/Common.js"></script>
   </head>
   <body>
 
@@ -41,13 +40,7 @@
     </nav>
 
     <!-- Begin page content -->
-    <div class="container">
-      
-      <ol class="breadcrumb">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Library</a></li>
-        <li class="active">Data</li>
-      </ol>
+    <div class="container main" >
       <div class="row">
           <div class="col-md-12">
             
@@ -89,12 +82,7 @@
       var exec = require('child_process').exec,
           child;
       var http = require('http');
-      var jade = require('jade');
-      var fs = require('fs');
-      var navJade = jade.compileFile("views/nav.jade");
-      var navHtml = navJade({current: "checkin"});
-      var custFile = "public/custid.txt";
-      var currentCust = fs.readFileSync(custFile , {encoding:'utf-8'});
+      
       $(document).ready(function(){
         var loading = $("#loading");
         var loadingMask = $(".loadingMask");
@@ -181,7 +169,7 @@
             alert("資料有錯誤");
           }
         }
-        $("nav").html(navHtml);
+        
       });
     </script>
     <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>

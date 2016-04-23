@@ -12,7 +12,6 @@
     <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
     <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/colorbox.css" />
-    <link rel="stylesheet" href="/css/main.css" />
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -29,9 +28,8 @@
         font-size: 24px;
       }
     </style>
-    <script type="text/javascript">
-      
-    </script>
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/Common.js"></script>
   </head>
   <body>
 
@@ -40,7 +38,7 @@
     <nav class="navbar navbar-default navbar-fixed-top"></nav>
 
     <!-- Begin page content -->
-    <div class="container">
+    <div class="container main">
     	<div class="page-header">
 		  	<h1>設定廠商</small></h1>
 		</div>
@@ -59,27 +57,21 @@
       var exec = require('child_process').exec,
           child;
       var http = require('http');
-      var fs = require('fs');
-      var jade = require('jade');
-      var navJade = jade.compileFile("views/nav.jade");
       var listJade = jade.compileFile("views/custList.jade");
-      var navHtml = navJade({current: "setting"});
       var listHtml;      
-      var custFile = "public/custid.txt" ;
+      
       $(document).ready(function(){
         var custList = $(".custList");
         //$(".viewDetail").colorbox({inline:true, width:"50%"});
         var scanEmpId = "";
         var chooseCust = "";
         var choosePoint = "";
-        var currentCust = fs.readFileSync(custFile , {encoding:'utf-8'});
+        
         var options = {
           hostname: '61.220.182.219',
           port: 80,
           path: '/api/cust/0/0/0'
         };
-        $("nav").html(navHtml);
-        console.log("http get");
         http.get('http://61.220.182.219/api/cust/0/0/0', (res) => {
         	console.log("http 123");
 	        res.resume();
@@ -90,9 +82,9 @@
 	          custList.html(listHtml);
 	          $("a[custid='"+currentCust+"']").addClass("current");
 	        })
-	    }).on('error', (e) => {
-	        console.log(`Got error: ${e.message}`);
-	    });
+  	    }).on('error', (e) => {
+  	        console.log(`Got error: ${e.message}`);
+  	    });
         custList.delegate(".list-group-item","click",function(){
           var custid=$(this).attr("custid");
           var f = fs.openSync(custFile , 'w+');
