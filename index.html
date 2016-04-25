@@ -34,55 +34,64 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-        <ol class="breadcrumb">
-          <li><a>最新消息</a></li>
-        </ol>
-        <h3 id="subject" style="font-weight:bold;"></h3>
-        <p id="message"></p>
-        <p><a class="btn btn-primary btn-lg" href="cust.html" role="button">打卡 &raquo;</a></p>
+        <div class="panel panel-info"> 
+          <div class="panel-heading"> <h3 class="panel-title">最新消息</h3> </div> 
+          <div class="panel-body"> 
+            <h3 id="subject" style="font-weight:bold;"></h3>
+            <p id="message"></p>
+            <p><a class="btn btn-primary btn-lg" href="cust.html" role="button">打卡 &raquo;</a></p>
+          </div> 
+        </div>
+        <div class="panel panel-warning"> 
+          <div class="panel-heading"> <h3 class="panel-title">駐點須知</h3> </div> 
+          <div class="panel-body"> 
+            <div class="row pointSop">
+            </div>
+          </div> 
+        </div>
       </div>
     </div>
 
     <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-      </div>
-
       <hr>
 
       <footer>
-        <p>&copy; 2015 Company, Inc.</p>
+        <p>&copy; 2016 悅盛保全, Inc.</p>
       </footer>
     </div> <!-- /container -->
     <script type="text/javascript">
       var http = require('http');
       //var navJade = jade.compileFile("views/nav.jade");
+      var pointSop = $(".pointSop");
+      var sopJade = jade.compileFile("views/sopList.jade");
+      var sopHtml;
       $(document).ready(function(){
         http.get('http://61.220.182.219/api/news/0/0/0', (res) => {
-          res.resume();
+          
           res.on('data',(d) =>{
             var news = JSON.parse(d);
             console.log(news);
             $("#subject").html(news[0].F_SUBJECT);
             $("#message").html(news[0].F_MESSAGE);
-          })
+          });
+          res.resume();
         }).on('error', (e) => {
-            console.log(`Got error: ${e.message}`);
+              console.log(`Got error: ${e.message}`);
+        });
+        
+        console.log('http://61.220.182.219/api/pointSop/'+currentCust+'/0/0');
+        http.get('http://61.220.182.219/api/pointSop/'+currentCust+'/0/0', (res) => {
+          res.on('data',(d) =>{
+            var pointSops = JSON.parse(d);
+            console.log(pointSops);
+            sopHtml = sopJade({data: pointSops});
+            pointSop.html(sopHtml);
+            //$("#message").html(news[0].F_MESSAGE);
+          });
+          res.resume();
+          res.on('error', (e) => {
+              console.log(`Got error: ${e.message}`);
+          });
         });
       });
     </script>

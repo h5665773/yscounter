@@ -1,0 +1,12 @@
+each sops, k in data
+	div(class="col-md-4")
+		div(id="sop"+k class="sopList")
+			h3(class="sopTitle")
+				|#{sops.typeName}
+			each sop in sops.list
+				ul
+					li
+						div
+							|時間:#{sop.F_OT_TIME}
+						div
+							|駐點需知內容:#{sop.F_OT_ATTINFO}

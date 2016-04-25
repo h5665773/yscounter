@@ -157,10 +157,21 @@
             http.get('http://61.220.182.219/barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId , (res) => {
               res.resume();
               res.on('data',(d) =>{
-                if(d == "ok"){
-                  alert("打卡完成");
-                  location.href="index.html"
+                switch(String(d)){
+                  case("3"):
+                    alert("打卡完成");
+                  break;
+                  case("1"):
+                    alert("當日未排班");
+                  break;
+                  case("2"):
+                    alert("員工不存在或已離職");
+                  break;
+                  case("49"):
+                    alert("當日未排班");
+                  break;
                 }
+                //location.href="index.html"
               })
             }).on('error', (e) => {
               console.log(`Got error: ${e.message}`);
