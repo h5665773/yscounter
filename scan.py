@@ -5,8 +5,10 @@ import re
 import os
 import pycurl
 import time
+comf = open('public/comport.txt', 'r');
 host = "http://61.220.182.219/";
-ser = serial.Serial('COM7',timeout=21)  # open serial port
+ser = serial.Serial('COM'+comf.read(),timeout=21)  # open serial port
+comf.close()
 now = time.time();
 loop = True;
 while loop:
