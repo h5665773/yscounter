@@ -36,8 +36,11 @@
 
     <!-- Fixed navbar -->
     <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
-    <nav class="navbar navbar-default navbar-fixed-top">
-    </nav>
+    <header>
+      <nav class="navbar">
+      </nav>  
+    </header>
+    
 
     <!-- Begin page content -->
     <div class="container main" >
@@ -107,10 +110,10 @@
           exec("python scan.py" , function(err ,data ,c){
             if(err == null && data.length > 0){
               data = data.trim();
-              var parse = data.match(/(EMP|CUS|POI)(T[0-9]+)([A-Z]?)/);
-              scanEmpId = parse[2];
+              var parse = data.match(/(T[0-9]+)([A-Z]?)/);
+              scanEmpId = parse[1];
               
-              http.get('http://61.220.182.219/api/pointByCust/'+currentCust+'/000/'+parse[2], (res) => {
+              http.get('http://61.220.182.219/api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
                 //console.log(res);
                 // consume response body
                 res.resume();

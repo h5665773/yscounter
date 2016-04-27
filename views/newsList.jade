@@ -1,0 +1,9 @@
+each news in data
+	div(class="news")
+		div(class="newsSubject")
+			| #{news.F_SUBJECT}
+		div(class="postDate")
+			| #{news.F_POST_DT}
+		div(class="newsMessage")
+			| #{news.F_MESSAGE}
+	<hr>

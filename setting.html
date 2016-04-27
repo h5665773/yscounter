@@ -7,7 +7,6 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
 
     <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
     <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
@@ -35,7 +34,7 @@
 
     <!-- Fixed navbar -->
     <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
-    <nav class="navbar navbar-default navbar-fixed-top"></nav>
+    <nav class="navbar navbar-default"></nav>
 
     <!-- Begin page content -->
     <div class="container main">
@@ -72,16 +71,22 @@
           port: 80,
           path: '/api/cust/0/0/0'
         };
-        http.get('http://61.220.182.219/api/cust/0/0/0', (res) => {
-        	console.log("http 123");
-	        res.resume();
+        http.get('http://61.220.182.219/api/cust/0/0/0', function(res) {
 	        custList.empty();
-	        res.on('data',(d) =>{
-	          var custData = JSON.parse(d);
-	          listHtml = listJade({custData: custData,currentCust: currentCust});
-	          custList.html(listHtml);
-	          $("a[custid='"+currentCust+"']").addClass("current");
+          var returnContent="";
+	        res.on('data',function(d){
+            returnContent+= d;
+	          
 	        })
+          res.on('end', () => {
+            var custData = JSON.parse(returnContent);
+            listHtml = listJade({custData: custData,currentCust: currentCust});
+            custList.html(listHtml);
+            $("a[custid='"+currentCust+"']").addClass("current");
+            console.log('No more data in response.')
+          })
+          res.resume();
+
   	    }).on('error', (e) => {
   	        console.log(`Got error: ${e.message}`);
   	    });

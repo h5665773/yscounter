@@ -15,7 +15,7 @@ while loop:
 		ser.close();
 		loop = False;
 	if(buffer != ""):
-		result = re.search('(EMP|CUS|POI)(T[0-9]+)([A-Z]?)',buffer)
+		result = re.search('^(T[0-9]+)',buffer)
 		if(result != None):
 			print(result.group(0));
 			break;

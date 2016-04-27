@@ -24,13 +24,23 @@
 .current{
     background-color: #aaccff !important;
 }
-nav{
-    height:100px;
+header{
     background: url(/images/bg.gif) !important;
     background-repeat: repeat-x;
 }
+
+.navbar {
+    margin-bottom: 7px;
+}
+nav{
+    height:100px;
+    margin:auto;
+    max-width: 1170px;
+}
 .jumbotron{
-    padding-top:110px;
+    padding-top:10px;
+    padding-bottom:10px;
+    margin-bottom: 10px;
 }
 nav .logoName{
     position: absolute;
@@ -39,6 +49,7 @@ nav .logoName{
 nav .logo{
     position: absolute;
     left: 10px;
+    top: -1px;
 }
 #menu ul {
     margin-top: 70px;
@@ -62,5 +73,15 @@ nav .logo{
     margin-left: 80px;
 }
 .main{
-    margin-top: 90px;
+    margin-top: 0px;
+}
+.newsSubject{
+    color:#1155CC;
+    font-weight:bold;
+    font-size:18px;
+    line-height:21px;
+}
+.postDate{
+    font-size:11px;
+    color:#999999;
 }
