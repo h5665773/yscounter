@@ -175,7 +175,7 @@
                     alert("當日未排班");
                   break;
                 }
-                //location.href="index.html"
+                location.href="index.html"
               })
             }).on('error', (e) => {
               console.log(`Got error: ${e.message}`);
@@ -184,7 +184,6 @@
             alert("資料有錯誤");
           }
         }
-        
       });
     </script>
     <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
