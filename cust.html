@@ -49,19 +49,17 @@
             
             <p><a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a></p>
           </div>
-          <div class="col-md-6" >
-            <h2>駐點清單</h2>
+          <div class="col-md-6" style="display:none" id="pointDetail">
+            <h2>請選擇駐點清單</h2>
             <div class="list-group pointList">
             </div>
           </div>
           <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px" >
           </div>
           <div class="col-md-12" align="center">
-            <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
-            <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold" aria-haspopup="true" aria-expanded="false">下班打卡</button>
+            <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
+            <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
           </div>
-          
-  </button>
       </div>
     </div>
 
@@ -94,13 +92,16 @@
         var scanEmpId = "";
         var chooseCust = "";
         var choosePoint = "";
+        var gowork = $("#goWork")
+        var offwork = $("#offWork")
         var options = {
           hostname: '61.220.182.219',
           port: 80,
           path: ''
         };
         $("#scanEmp").click(function(){
-          if($(this).attr("disabled")=="true"){
+          console.log($(this).attr("disabled"));
+          if($(this).attr("disabled")==true){
             return false;
           }
           loadingMask.css("display","block");
@@ -114,8 +115,6 @@
               scanEmpId = parse[1];
               
               http.get('http://61.220.182.219/api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
-                //console.log(res);
-                // consume response body
                 res.resume();
                 res.on('data',(d) =>{
                   loadingMask.css("display","none");
@@ -124,10 +123,12 @@
                   loading.addClass("rotateOut");
                   pointList.empty();
                   var pointData = JSON.parse(d);
-                  console.log(pointData);
                   for(var i in pointData){
                     pointList.append('<a href="#" pointid="'+pointData[i].F_POINT_ID+'" class="list-group-item">'+pointData[i].F_POINT_NAME+'</a>');
                   }
+                  $("#pointDetail").show();
+                  gowork.css("display","none");
+                  offwork.css("display","none");
                 })
               }).on('error', (e) => {
                 console.log(`Got error: ${e.message}`);
@@ -140,19 +141,25 @@
               console.log(err);
             }
           });
-          $(this).attr("disabled","true");
+          //$(this).attr("disabled",true);
         });
         pointList.delegate(".list-group-item","click",function(){
           var pointid=$(this).attr("pointid");
           choosePoint = pointid;
           $("a.current").removeClass("current");
           $(this).addClass("current");
+          gowork.show();
+          offwork.show();
         });
-        $("#goWork").click(function(){
-          checkin("goWork");
+        gowork.click(function(){
+          if($(this).attr("disabled") != true){
+            checkin("goWork");
+          }
         });
-        $("#offWork").click(function(){
-          checkin("offWork");
+        offwork.click(function(){
+          if($(this).attr("disabled") != true){
+            checkin("offWork");
+          }
         });
         var checkin = function(workType){
           var url = "http://"+options.hostname;

@@ -74,9 +74,8 @@
           });
           res.on('end',function(){
             var news = JSON.parse(newsContent);
-            console.log(news);
             newsHtml=newsJade({data: news});
-            $(".news-body").html(newsHtml);
+            $(".news-body").html(newsHtml.replace("\n","<br>"));
           });
           res.resume();
         }).on('error', (e) => {
