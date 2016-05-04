@@ -79,10 +79,13 @@
         var loadingMask = $(".loadingMask");
 
         $("#updateRepo").click(function(){
+        	if(confirm("確定要更新?這將需要重新啟動!")==false){
+        		return;
+        	}
           if($(this).attr("disabled")==true){
             return false;
           }else{
-          	$(this).attr("disabled")=true;
+          	$(this).attr("disabled",true);
           }
           loadingMask.css("display","block");
           loading.removeClass("rotateOut");
@@ -99,18 +102,19 @@
 			          var type = entry.type; // 'Directory' or 'File' 
 			          var size = entry.size;
 			          console.log(fileName.replace("yscounter-master",""));
-			          if (fileName.match(/\.js$/)) {
-			            i++;
-			            entry.pipe(fs.createWriteStream('../test/unzip/test'+i+".js"));
-			          } else {
+			          if (fileName.match(/comport\.txt|custid\.txt|update\.html/) || fileName.match(/\/$/) ) {
 			            entry.autodrain();
+			          }else{
+			            entry.pipe(fs.createWriteStream('.'+fileName.replace("yscounter-master","")));
 			          }
 			        });
 			      loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");
             loading.addClass("rotateOut");
+            alert("請重新開啟程式");
 				   });
+				  alert(123);
         });
       });
     </script>
