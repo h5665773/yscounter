@@ -1,24 +1,23 @@
-var GitHubApi = require("github");
- 
-var github = new GitHubApi({
-    // required 
-    version: "3.0.0",
-    // optional https://github.com/Hash543/yscounter.git
-    debug: true,
-    protocol: "https",
-    host: "github.com", // should be api.github.com for GitHub 
-    pathPrefix: "/api/v3", // for some GHEs; none for GitHub 
-    timeout: 5000,
-    headers: {
-        "user-agent": "My-Cool-GitHub-App" // GitHub is happy with a unique user agent 
-    }
-});
-github.user.getFollowingFromUser({
-    // optional: 
-    // headers: { 
-    //     "cookie": "blahblah" 
-    // }, 
-    user: "mikedeboer"
-}, function(err, res) {
-    console.log(JSON.stringify(res));
-});
+var download = require("url-download");
+var unzip = require("unzip");
+var fs = require("fs");
+var i = 0;
+download('https://github.com/Hash543/yscounter/archive/master.zip', './')
+    .on('close', function () {
+      console.log('One file has been downloaded.');
+      //fs.createReadStream('master.zip').pipe(unzip.Extract({ path: '../test/download' }));
+      fs.createReadStream('master.zip')
+        .pipe(unzip.Parse())
+        .on('entry', function (entry) {
+          var fileName = entry.path;
+          var type = entry.type; // 'Directory' or 'File' 
+          var size = entry.size;
+          //console.log(fileName.replace("yscounter-master",""));
+          if (fileName.match(/\.js$/)) {
+            i++;
+            entry.pipe(fs.createWriteStream('.'+fileName.replace("yscounter-master","")));
+          } else {
+            entry.autodrain();
+          }
+        });
+    });

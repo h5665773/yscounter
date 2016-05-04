@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/colorbox.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css" >
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+    <style>
+      h2{
+        font-size: 24px;
+      }
+    </style>
+    <script type="text/javascript" src="/js/Common.js"></script>
+  </head>
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+    <header>
+      <nav class="navbar">
+      </nav>  
+    </header>
+    
+
+    <!-- Begin page content -->
+    <div class="container main" >
+      <div class="row">
+          <div class="col-md-12">
+            
+            <p><a class="btn btn-default" id="updateRepo" href="#" role="button">開始更新程式&raquo;</a></p>
+          </div>
+          <div class="col-md-6" style="display:none" id="pointDetail">
+            <h2>請選擇駐點清單</h2>
+            <div class="list-group pointList">
+            </div>
+          </div>
+          <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px" >
+          </div>
+          <div class="col-md-12" align="center">
+            <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
+            <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
+          </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+      </div>
+    </footer>
+    <script type="text/javascript">
+      var exec = require('child_process').exec,
+          child;
+      var http = require('http');
+      var download = require("url-download");
+	  	var unzip = require("unzip");
+      $(document).ready(function(){
+        var loading = $("#loading");
+        var loadingMask = $(".loadingMask");
+
+        $("#updateRepo").click(function(){
+          if($(this).attr("disabled")==true){
+            return false;
+          }else{
+          	$(this).attr("disabled")=true;
+          }
+          loadingMask.css("display","block");
+          loading.removeClass("rotateOut");
+          loading.css("display","block");
+          loading.addClass("rotateIn");
+          download('https://github.com/Hash543/yscounter/archive/master.zip', './')
+				    .on('close', function () {
+			      console.log('One file has been downloaded.');
+			      //fs.createReadStream('master.zip').pipe(unzip.Extract({ path: '../test/download' }));
+			      fs.createReadStream('master.zip')
+			        .pipe(unzip.Parse())
+			        .on('entry', function (entry) {
+			          var fileName = entry.path;
+			          var type = entry.type; // 'Directory' or 'File' 
+			          var size = entry.size;
+			          console.log(fileName.replace("yscounter-master",""));
+			          if (fileName.match(/\.js$/)) {
+			            i++;
+			            entry.pipe(fs.createWriteStream('../test/unzip/test'+i+".js"));
+			          } else {
+			            entry.autodrain();
+			          }
+			        });
+			      loadingMask.css("display","none");
+            loading.css("display","none");
+            loading.removeClass("rotateIn");
+            loading.addClass("rotateOut");
+				   });
+        });
+      });
+    </script>
+    <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>處理中</button>
+    <script type="text/javascript" src="/js/main.js"></script>
+  </body>
+</html>
