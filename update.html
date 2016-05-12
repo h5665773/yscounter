@@ -101,7 +101,6 @@
 			          var fileName = entry.path;
 			          var type = entry.type; // 'Directory' or 'File' 
 			          var size = entry.size;
-			          console.log(fileName.replace("yscounter-master",""));
 			          if (fileName.match(/comport\.txt|custid\.txt|update\.html/) || fileName.match(/\/$/) ) {
 			            entry.autodrain();
 			          }else{
@@ -115,7 +114,6 @@
             alert("請重新開啟程式");
             location.href="index.html";
 				   });
-				  alert(123);
         });
       });
     </script>
