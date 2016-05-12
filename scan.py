@@ -12,7 +12,7 @@ comf.close()
 now = time.time();
 loop = True;
 while loop:
-	buffer = ser.read(11)
+	buffer = ser.read(7)
 	if(time.time()-now >=20 ):
 		ser.close();
 		loop = False;
