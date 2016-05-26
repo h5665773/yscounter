@@ -5,6 +5,7 @@ public
 master.zip
 # Folder config file
 Desktop.ini
+node_modules
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/

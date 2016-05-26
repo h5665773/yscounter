@@ -48,18 +48,11 @@
           <div class="col-md-12">
             
             <p><a class="btn btn-default" id="updateRepo" href="#" role="button">開始更新程式&raquo;</a></p>
-          </div>
-          <div class="col-md-6" style="display:none" id="pointDetail">
-            <h2>請選擇駐點清單</h2>
-            <div class="list-group pointList">
+            <div class="updateSuccess" style="font-size:12px;color:#ff0000;border:1px solid #00ff00;text-align:center;display:none;">
+              更新完成請重新啟動程式!!
             </div>
           </div>
-          <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px" >
-          </div>
-          <div class="col-md-12" align="center">
-            <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
-            <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
-          </div>
+          
       </div>
     </div>
 
@@ -101,7 +94,7 @@
 			          var fileName = entry.path;
 			          var type = entry.type; // 'Directory' or 'File' 
 			          var size = entry.size;
-			          if (fileName.match(/comport\.txt|custid\.txt|update\.html/) || fileName.match(/\/$/) ) {
+			          if (fileName.match(/comport\.txt|custid\.txt/) || fileName.match(/\/$/) ) {
 			            entry.autodrain();
 			          }else{
 			            entry.pipe(fs.createWriteStream('.'+fileName.replace("yscounter-master","")));
@@ -111,8 +104,7 @@
             loading.css("display","none");
             loading.removeClass("rotateIn");
             loading.addClass("rotateOut");
-            alert("請重新開啟程式");
-            location.href="index.html";
+            $(".updateSuccess").show();
 				   });
         });
       });
