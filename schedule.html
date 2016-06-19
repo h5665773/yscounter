@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tw">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>悅盛保全 - 櫃台服務系統</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    	
+    </script>
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/Common.js"></script>
+  </head>
+  <body> 
+    <header>
+      <nav class="navbar">
+      
+      </nav>
+    </header>
+    
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+    	<div class="container" >
+    		選擇年月 : 
+    		<select id="selectYm">
+
+    		</select>
+    	</div>
+      <div class="container classList">
+      </div>
+    </div>
+
+    <div class="container">
+      <footer>
+        <p>&copy; 2016 悅盛保全, Inc.</p>
+      </footer>
+    </div> <!-- /container -->
+    <script type="text/javascript">
+      var http = require('http');
+      var config = require("./config/config.js");
+      //var navJade = jade.compileFile("views/nav.jade");
+      var classList = $(".classList");
+      var classJade = jade.compileFile("views/classList.jade");
+      var classHtml;
+      $(document).ready(function(){
+      	var selectYm = $("#selectYm");
+      	var loadSchedule = function(ym){
+      		http.get(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0/0/'+ym, (res) => {
+
+	          var classContent="";
+	          res.on('data',(d) =>{
+	            classContent+=d;
+	            //$("#message").html(news[0].F_MESSAGE);
+	          });
+	          res.on('end',function(){
+	            var classListData = JSON.parse(classContent);
+	            classHtml = classJade({data: classListData});
+	            classList.html(classHtml);
+	          });
+	          res.resume();
+	          res.on('error', (e) => {
+	              console.log(`Got error: ${e.message}`);
+	          });
+	        });
+      	};
+      	loadSchedule("0");
+      	var d1 = new Date();
+      	var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth() + 1)).slice(-2);
+      	var d2 = new Date(d1.getFullYear()+"-"+d1.getMonth()+"-01");
+      	var d2Ym = d2.getFullYear() + "-" + ("0" + (d2.getMonth() + 1)).slice(-2);
+      	var d3 = new Date(d1.getFullYear()+"-"+(d1.getMonth()+2)+"-01");
+      	var d3Ym = d3.getFullYear() + "-" + ("0" + (d3.getMonth() + 1)).slice(-2);
+      	selectYm.append("<option value='"+d2Ym+"'>"+d2Ym+"</option>");
+      	selectYm.append("<option selected='selected' value='"+d1Ym+"'>"+d1Ym+"</option>");
+      	selectYm.append("<option value='"+d3Ym+"'>"+d3Ym+"</option>");
+      	selectYm.change(function(){
+      		ym = $(this).val();
+      		loadSchedule(ym);
+      	});
+      });
+    </script>
+  </body>
+</html>

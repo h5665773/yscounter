@@ -1,0 +1,25 @@
+each c in data
+	div(class="panel panel-warning")
+		div(class="panel-heading") 
+			h3(class="panel-title")
+				| #{c.pointName}
+		div(class="panel-body")
+			div(class="row pointSop")
+				table(class="table table-bordered table-hover table-striped")
+					each detail in c.emp
+						tr
+							td(rowspan="3")
+								| #{detail.name}
+							each sch in detail.schedule	
+								td(width="3%")
+									| #{sch.day}
+									br 
+									| (#{sch.weekDay})
+						tr
+							each sch in detail.schedule	
+								td
+									| #{sch.classType}
+						tr
+							each sch in detail.schedule	
+								td
+									| #{sch.hours}
