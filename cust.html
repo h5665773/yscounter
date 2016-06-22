@@ -50,7 +50,7 @@
             <p><a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a></p>
           </div>
           <div class="col-md-6" style="display:none" id="pointDetail">
-            <div class="alert alert-success" role="alert">
+            <div class="alert alert-success" style="width:200px" role="alert">
               您好 
               <strong id="empName">
                 
@@ -80,6 +80,7 @@
       var http = require('http');
       
       $(document).ready(function(){
+        var empName= $("#empName");
         var loading = $("#loading");
         var loadingMask = $(".loadingMask");
         var pointList = $(".pointList");
@@ -109,22 +110,29 @@
               data = data.trim();
               var parse = data.match(/(T[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
+              console.log(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId);
               http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
+                var resContent="";
                 res.resume();
                 res.on('data',(d) =>{
+                  resContent+=d;
+                });
+                res.on('end',(d) =>{
                   loadingMask.css("display","none");
                   loading.css("display","none");
                   loading.removeClass("rotateIn");
                   loading.addClass("rotateOut");
                   pointList.empty();
-                  var pointData = JSON.parse(d);
+                  var pointData = JSON.parse(resContent);
+                  console.log(pointData);
+                  empName.html(pointData[0].F_EMP_NAME);
                   for(var i in pointData){
                     pointList.append('<a href="#" pointid="'+pointData[i].F_POINT_ID+'" class="list-group-item">'+pointData[i].F_POINT_NAME+'</a>');
                   }
                   $("#pointDetail").show();
                   gowork.css("display","none");
                   offwork.css("display","none");
-                })
+                });
               }).on('error', (e) => {
                 console.log(`Got error: ${e.message}`);
               });
