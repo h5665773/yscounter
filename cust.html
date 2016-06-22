@@ -50,7 +50,13 @@
             <p><a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a></p>
           </div>
           <div class="col-md-6" style="display:none" id="pointDetail">
-            <h2>請選擇駐點清單</h2>
+            <div class="alert alert-success" role="alert">
+              您好 
+              <strong id="empName">
+                
+              </strong>
+            </div>
+            <strong >請選擇駐點清單</strong>
             <div class="list-group pointList">
             </div>
           </div>
@@ -68,17 +74,6 @@
         <p class="text-muted">Place sticky footer content here.</p>
       </div>
     </footer>
-    <div style='display:none'>
-      <div id='inline_content' style='padding:10px; background:#fff;'>
-      <p><strong>This content comes from a hidden element on this page.</strong></p>
-      <p>The inline option preserves bound JavaScript events and changes, and it puts the content back where it came from when it is closed.</p>
-      <p><a id="click" href="#" style='padding:5px; background:#ccc;'>Click me, it will be preserved!</a></p>
-      
-      <p><strong>If you try to open a new Colorbox while it is already open, it will update itself with the new content.</strong></p>
-      <p>Updating Content Example:<br />
-      <a class="ajax" href="../content/ajax.html">Click here to load new content</a></p>
-      </div>
-    </div>
     <script type="text/javascript">
       var exec = require('child_process').exec,
           child;
@@ -92,8 +87,9 @@
         var scanEmpId = "";
         var chooseCust = "";
         var choosePoint = "";
-        var gowork = $("#goWork")
-        var offwork = $("#offWork")
+        var gowork = $("#goWork");
+        var offwork = $("#offWork");
+        var config = require("./config.js");
         var options = {
           hostname: '61.220.182.219',
           port: 80,
@@ -113,8 +109,7 @@
               data = data.trim();
               var parse = data.match(/(T[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              
-              http.get('http://61.220.182.219/api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
+              http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
                 res.resume();
                 res.on('data',(d) =>{
                   loadingMask.css("display","none");
