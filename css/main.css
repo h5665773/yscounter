@@ -4,6 +4,23 @@
     top: 44%;
     left: 39%;
 }
+.nav>li>a:focus, .nav>li>a:hover{
+        background-color: none;
+}
+.nav>li>a{
+    color:#333333;
+    font-size: 16px;
+    font-weight: bold;
+    right: 10px;
+    border: dashed 1px #000000;
+    border-radius: 5px;
+}
+.nav>li>a #companyName{
+    color:#7C3423;
+    font-size: 16px;
+    font-weight: bold;
+    right: 20px;
+}
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;
     -webkit-animation: spin2 .7s infinite linear;

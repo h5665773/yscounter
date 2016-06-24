@@ -59,7 +59,7 @@
       </footer>
     </div> <!-- /container -->
     <script type="text/javascript">
-      var http = require('http');
+      
       //var navJade = jade.compileFile("views/nav.jade");
       var pointSop = $(".pointSop");
       var newsJade = jade.compileFile("views/newsList.jade");
@@ -67,7 +67,7 @@
       var newsHtml;
       var sopHtml;
       $(document).ready(function(){
-        http.get('http://61.220.182.219/api/news/0/0/0', (res) => {
+        http.get(config.apiHost + 'api/news/0/0/0', (res) => {
           var newsContent="";
           res.on('data',(d) =>{
             newsContent+=d;
@@ -81,7 +81,7 @@
         }).on('error', (e) => {
               console.log(`Got error: ${e.message}`);
         });
-        http.get('http://61.220.182.219/api/pointSop/'+currentCust+'/0/0', (res) => {
+        http.get(config.apiHost + 'api/pointSop/'+currentCust+'/0/0', (res) => {
           var sopContent="";
           res.on('data',(d) =>{
             sopContent+=d;

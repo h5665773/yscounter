@@ -77,7 +77,6 @@
     <script type="text/javascript">
       var exec = require('child_process').exec,
           child;
-      var http = require('http');
       
       $(document).ready(function(){
         var empName= $("#empName");
@@ -90,7 +89,6 @@
         var choosePoint = "";
         var gowork = $("#goWork");
         var offwork = $("#offWork");
-        var config = require("./config.js");
         var options = {
           hostname: '61.220.182.219',
           port: 80,
@@ -110,7 +108,6 @@
               data = data.trim();
               var parse = data.match(/(T[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              console.log(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId);
               http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
                 var resContent="";
                 res.resume();
@@ -165,10 +162,9 @@
           }
         });
         var checkin = function(workType){
-          var url = "http://"+options.hostname;
+          var url ;
           if(scanEmpId != "" && choosePoint!=""&&currentCust!=""){
-            url += '/barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId;
-            http.get('http://61.220.182.219/barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId , (res) => {
+            http.get(config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId , (res) => {
               res.resume();
               res.on('data',(d) =>{
                 switch(String(d)){

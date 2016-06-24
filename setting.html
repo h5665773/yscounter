@@ -55,7 +55,6 @@
     <script type="text/javascript">
       var exec = require('child_process').exec,
           child;
-      var http = require('http');
       var listJade = jade.compileFile("views/custList.jade");
       var listHtml;      
       
@@ -65,13 +64,7 @@
         var scanEmpId = "";
         var chooseCust = "";
         var choosePoint = "";
-        
-        var options = {
-          hostname: '61.220.182.219',
-          port: 80,
-          path: '/api/cust/0/0/0'
-        };
-        http.get('http://61.220.182.219/api/cust/0/0/0', function(res) {
+        http.get(config.apiHost + 'api/cust/0/0/0', function(res) {
 	        custList.empty();
           var returnContent="";
 	        res.on('data',function(d){
