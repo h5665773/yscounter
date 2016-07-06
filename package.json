@@ -17,11 +17,10 @@
   "description": "",
   "dependencies": {
     "bootstrap": "*",
-    "dustjs-linkedin": "^2.7.2",
     "jade": "1.11.0",
     "lodash": "*",
-    "github": "0.2.4",
     "unzip": "0.1.11",
-    "url-download": "0.0.4"
+    "url-download": "0.0.4",
+    "async": "v2.0.0-rc.6"
   }
 }
