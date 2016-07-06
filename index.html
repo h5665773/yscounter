@@ -43,13 +43,6 @@
             
           </div> 
         </div>
-        <div class="panel panel-warning"> 
-          <div class="panel-heading"> <h3 class="panel-title">駐點須知</h3> </div> 
-          <div class="panel-body"> 
-            <div class="row pointSop">
-            </div>
-          </div> 
-        </div>
       </div>
     </div>
 
@@ -59,13 +52,9 @@
       </footer>
     </div> <!-- /container -->
     <script type="text/javascript">
-      
-      //var navJade = jade.compileFile("views/nav.jade");
       var pointSop = $(".pointSop");
       var newsJade = jade.compileFile("views/newsList.jade");
-      var sopJade = jade.compileFile("views/sopList.jade");
       var newsHtml;
-      var sopHtml;
       $(document).ready(function(){
         http.get(config.apiHost + 'api/news/0/0/0', (res) => {
           var newsContent="";
@@ -80,22 +69,6 @@
           res.resume();
         }).on('error', (e) => {
               console.log(`Got error: ${e.message}`);
-        });
-        http.get(config.apiHost + 'api/pointSop/'+currentCust+'/0/0', (res) => {
-          var sopContent="";
-          res.on('data',(d) =>{
-            sopContent+=d;
-            //$("#message").html(news[0].F_MESSAGE);
-          });
-          res.on('end',function(){
-            var pointSops = JSON.parse(sopContent);
-            sopHtml = sopJade({data: pointSops});
-            pointSop.html(sopHtml);
-          });
-          res.resume();
-          res.on('error', (e) => {
-              console.log(`Got error: ${e.message}`);
-          });
         });
       });
     </script>

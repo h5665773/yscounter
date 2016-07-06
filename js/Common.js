@@ -4,6 +4,7 @@ var fs = require('fs');
 var jade = require("jade");
 var custFile = "public/custid.txt" ;
 var currentCust = fs.readFileSync(custFile , {encoding:'utf-8'});
+var d = new Date();
 $(document).ready(function(){
 	http.get(config.apiHost + 'api/custName/'+currentCust+'/0/0', (res) => {
       var resContent="";
@@ -20,4 +21,7 @@ $(document).ready(function(){
 	var navJade = jade.compileFile("views/header.jade");
 	var navHtml = navJade({current: "checkin"});
 	$("nav").html(navHtml);
+  var footerJade = jade.compileFile("views/footer.jade");
+  var footerHtml = footerJade({year: d.getFullYear()});
+  $("footer").html(footerHtml);
 });

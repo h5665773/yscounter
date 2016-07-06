@@ -99,11 +99,17 @@
 			            entry.pipe(fs.createWriteStream('.'+fileName.replace("yscounter-master","")));
 			          }
 			        });
-			      loadingMask.css("display","none");
-            loading.css("display","none");
-            loading.removeClass("rotateIn");
-            loading.addClass("rotateOut");
-            $(".updateSuccess").show();
+            exec("npm i" , function(err ,data ,c){
+              loadingMask.css("display","none");
+              loading.css("display","none");
+              loading.removeClass("rotateIn");
+              loading.addClass("rotateOut");
+              $(".updateSuccess").show();
+              console.log(err);
+              console.log(data);
+              console.log(c);
+            });
+			      
 				   });
         });
       });

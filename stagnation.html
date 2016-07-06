@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="tw">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>悅盛保全 - 櫃台服務系統</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    	
+    </script>
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/Common.js"></script>
+  </head>
+  <body> 
+    <header>
+      <nav class="navbar">
+      </nav>
+    </header>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <div class="panel panel-warning"> 
+          <div class="panel-heading"> <h3 class="panel-title">駐點須知</h3> </div> 
+          <div class="panel-body"> 
+            <div class="row pointSop">
+              <div class="col-md-4" id="addSop">
+                <button class="btn btn-default">
+                  新增駐點須知
+                </button>
+              </div>
+            </div>
+          </div> 
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <footer>
+        
+      </footer>
+    </div> <!-- /container -->
+    <script type="text/javascript">
+      //var navJade = jade.compileFile("views/nav.jade");
+      var exec = require('child_process').exec,
+          child;
+      var async = require("async");
+      var pointSop = $(".pointSop");
+      var sopJade = jade.compileFile("views/sopList.jade");
+      var sopHtml;
+      var otTypeList;
+      var addSop = $("#addSop");
+      $(document).ready(function(){
+        async.parallel({
+          otType: function(callback){
+            http.get(config.apiHost + 'api/getCode/1', (res) => {
+              var httpContent="";
+              res.on('data',(d) =>{
+                httpContent+=d;
+                //$("#message").html(news[0].F_MESSAGE);
+              });
+              res.on('end',function(){
+                var apiObj = JSON.parse(httpContent);
+                callback(null,apiObj);
+              });
+              res.resume();
+            }); 
+          }
+        }, function(err, results) {
+          otTypeList = results.otType;
+          http.get(config.apiHost + 'api/pointSop/'+currentCust+'/0/0', (res) => {
+            var sopContent="";
+            res.on('data',(d) =>{
+              sopContent+=d;
+              //$("#message").html(news[0].F_MESSAGE);
+            });
+            res.on('end',function(){
+              var pointSops = JSON.parse(sopContent);
+              sopHtml = sopJade({data: pointSops,otTypeList: otTypeList});
+              addSop.before(sopHtml);
+            });
+            res.resume();
+            res.on('error', (e) => {
+                console.log(`Got error: ${e.message}`);
+            });
+          });
+        });
+        /*
+      ,[F_CU_ID]
+      ,[F_D2_SEQ]
+      ,[F_OT_TYPE]
+      ,[F_OT_TIME]
+      ,[F_OT_ATTINFO]
+      工作類別
+      時間
+      駐點須知內容
+        */
+        $("#addSop button").click(function(){
+          //get node
+          var sopBlocks = $(".pointSop > div").length;
+          sopHtml = sopJade({data: {
+            0: {
+              list: []
+            }
+          },otTypeList: otTypeList});
+          addSop.before(sopHtml);
+        });
+        $(".pointSop").delegate(".sopTitle","change",function(){
+          changeOtType($(this));
+        });
+        $(".pointSop").delegate(".infoContent","blur",function(){
+          setNewInfo($(this),"add");
+        });
+        $(".pointSop").delegate(".sopTime > span","dblclick",function(){
+          inputSpanSwitch($(this));
+        });
+        $(".pointSop").delegate(".sopInfo > span","dblclick",function(){
+          inputSpanSwitch($(this));
+        });
+        $(".pointSop").delegate(".sopInfo > input","blur",function(){
+          inputSpanSwitch($(this));
+        });
+        var inputSpanSwitch = function(node){
+          var theirMom = node.parent().parent();
+          var timeSpan = theirMom.find(".sopTime > span");
+          var infoSpan = theirMom.find(".sopInfo > span");
+          var timeInput = theirMom.find(".sopTime > input");
+          var infoInput = theirMom.find(".sopInfo > input");
+
+          if(timeSpan.length > 0){
+            //轉換到input 模式
+            var timeText = timeSpan.text();
+            var infoText = infoSpan.text();
+            timeSpan.replaceWith("<input type='text' value='"+ timeText +"'>");
+            infoSpan.replaceWith("<input type='text' value='"+ infoText +"'>");
+            theirMom.find(".sopTime > input").focus();
+          }else{
+            var timeValue = timeInput.val();
+            var infoValue = infoInput.val();
+            if(timeValue == "" && infoValue == ""){
+              // do delete
+              setNewInfo(node , "delete");
+            }else{
+              // do update
+              setNewInfo(node , "update");
+            }
+            timeInput.replaceWith("<span >"+ timeValue +"</span>");
+            infoInput.replaceWith("<span >"+ infoValue +"</span>");
+          }
+        };
+        
+        var setNewInfo = function(node , action){
+          //2016-07-01 做到哪裡了阿幹
+          //2016-07-06 判斷新增、刪除、修改
+          /*
+            先做 新增就對了問那麼多幹嘛
+            要做update了 
+            我知道事情總是要有發洩處，所以打字把心情抒發很不錯
+          */
+          var ot_type;
+          var time;
+          var content;
+          var seq;
+          switch(action){
+            case("add"):
+              ot_type = node.parent().parent().parent().find("select").val();
+              time = node.parent().find(".infoTime");
+              content = node.parent().find(".infoContent");
+              seq = node.parent().siblings().length + 1;
+              if(time.val()!= "" && content.val()!="" && action == "add"){
+                alert("請填寫完整資料!");
+                return false;
+              }
+            break;
+            case("delete"):
+            case("update"):
+              ot_type = node.parent().parent().parent().parent().find("select").val();
+              time = node.parent().parent().find(".sopTime input");
+              content = node.parent().parent().find(".sopInfo input");
+              seq = node.parent().parent().attr("d2_seq");
+              if(ot_type == "" || seq == ""){
+                alert("資料有問題無法更新或刪除!");
+                return false;
+              }
+            break;
+          }
+/*          console.log({
+                action: action,
+                cuid : currentCust,
+                ot_type : ot_type,
+                time : time.val(),
+                content : content.val(),
+                seq : seq
+              });*/
+          $.ajax(config.apiHost + 'postdata/pointInfo' , {
+            type: "POST",
+            data: {
+              action: action,
+              cuid : currentCust,
+              ot_type : ot_type,
+              time : time.val(),
+              content : content.val(),
+              seq : seq
+            },
+            complete: function(data,status){
+              if(status == "success"){
+                switch(action){
+                  case("add"):
+                    //add html to 
+                    var sopHtml = '<li d2_seq="'+data.responseJSON.newSeq+'" class="sopItem"><div class="sopTime">時間:<span>'+time.val()+'</span></div><div class="sopInfo">駐點需知內容:<span>'+content.val()+'</span></div></li>';
+                    time.parent().before(sopHtml);
+                    time.val("");
+                    content.val("");
+                  break;
+                  case("delete"):
+                    node.parent().parent().remove();
+                  break;
+                }
+              }else{
+                alert("請確認網路!若網路正常請通知主管");
+              }
+              
+            },
+            dataType: "json"
+          });
+        };
+        var changeOtType = function(node){
+          var original_otype = node.attr("ot_type");
+          var new_otype = node.val();
+          var sopTitle = $(".sopTitle");
+          sopTitle.each(function(i){
+            if($(this).attr("ot_type") == new_otype){
+              alert("已經有相同的分類了!");
+              node.val(original_otype);
+              return;
+            }
+            if(i == (sopTitle.length-1) ){
+              $.ajax(config.apiHost + 'postdata/pointInfo' , {
+                type: "POST",
+                data: {
+                  action: "change_otype",
+                  cuid : currentCust,
+                  original_otype: original_otype,
+                  new_otype: new_otype
+                },
+                complete: function(data,status){
+                  console.log("complete");
+                  console.log(status);
+                  console.log(data);
+                },
+                dataType: "json"
+              });
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

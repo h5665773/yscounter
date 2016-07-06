@@ -105,3 +105,17 @@ nav .logo{
 .table>tbody>tr>td{
     padding:5px !important;
 }
+.infoTime{
+    width:60px;
+}
+
+.infoContent{
+    width:200px;
+}
+.infoTime,.infoContent{
+    display:inline-block;
+}
+.sopItem input{
+    border: 1px solid #999999;
+    padding: 0 5px;
+}

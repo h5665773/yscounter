@@ -1,12 +1,26 @@
 each sops, k in data
 	div(class="col-md-4")
 		div(id="sop"+k class="sopList")
-			h3(class="sopTitle")
-				|#{sops.typeName}
-			each sop in sops.list
-				ul
-					li
-						div
-							|時間:#{sop.F_OT_TIME}
-						div
-							|駐點需知內容:#{sop.F_OT_ATTINFO}
+			h3
+				select(class="sopTitle form-control" ot_type=k)
+					each type in otTypeList
+						if k == type.F_CID
+							option(value=type.F_CID selected="selected")
+								| #{type.F_DESC}
+						else
+							option(value=type.F_CID)
+								| #{type.F_DESC}
+			ul
+				each sop in sops.list
+					li(class="sopItem" d2_seq=sop.F_D2_SEQ )
+						div(class="sopTime")
+							|時間:
+							span
+								| #{sop.F_OT_TIME}
+						div(class="sopInfo")
+							|駐點需知內容:
+							span
+								| #{sop.F_OT_ATTINFO}
+				li(class="addInfo")
+					input(type="text" class="form-control" size="4" class="infoTime" placeholder="時間")
+					input(type="text" class="form-control" class="infoContent" placeholder="說明")
