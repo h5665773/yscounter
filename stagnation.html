@@ -174,18 +174,33 @@
           var time;
           var content;
           var seq;
+          var sopLi;
           switch(action){
             case("add"):
               ot_type = node.parent().parent().parent().find("select").val();
               time = node.parent().find(".infoTime");
               content = node.parent().find(".infoContent");
               seq = node.parent().siblings().length + 1;
-              if(time.val()!= "" && content.val()!="" && action == "add"){
+              if(time.val().trim()== "" && content.val().trim()=="" && action == "add"){
                 alert("請填寫完整資料!");
                 return false;
               }
             break;
             case("delete"):
+              ot_type = node.parent().parent().parent().parent().find("select").val();
+              time = node.parent().parent().find(".sopTime input");
+              content = node.parent().parent().find(".sopInfo input");
+              seq = node.parent().parent().attr("d2_seq");
+              sopLi = node.parent().parent();
+              if(ot_type == "" || seq == ""){
+                alert("資料有問題無法更新或刪除!");
+                return false;
+              }
+              if(!confirm("確定要刪除資料嗎?")){
+                location.reload();
+                return false;
+              }
+            break;
             case("update"):
               ot_type = node.parent().parent().parent().parent().find("select").val();
               time = node.parent().parent().find(".sopTime input");
@@ -211,8 +226,8 @@
               action: action,
               cuid : currentCust,
               ot_type : ot_type,
-              time : time.val(),
-              content : content.val(),
+              time : time.val().trim(),
+              content : content.val().trim(),
               seq : seq
             },
             complete: function(data,status){
@@ -226,7 +241,7 @@
                     content.val("");
                   break;
                   case("delete"):
-                    node.parent().parent().remove();
+                    sopLi.remove();
                   break;
                 }
               }else{
