@@ -106,7 +106,7 @@
           exec("python scan.py" , function(err ,data ,c){
             if(err == null && data.length > 0){
               data = data.trim();
-              var parse = data.match(/(T[0-9]+)([A-Z]?)/);
+              var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
               http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
                 var resContent="";
