@@ -4,6 +4,7 @@ var fs = require('fs');
 var jade = require("jade");
 var custFile = "public/custid.txt" ;
 var currentCust = fs.readFileSync(custFile , {encoding:'utf-8'});
+var displayLogo = true;
 var d = new Date();
 $(document).ready(function(){
 	http.get(config.apiHost + 'api/custName/'+currentCust+'/0/0', (res) => {
@@ -18,8 +19,11 @@ $(document).ready(function(){
       });
       res.resume();
     });
+  if(currentCust.substr(0,1) == "W"){
+    displayLogo = false;
+  }
 	var navJade = jade.compileFile("views/header.jade");
-	var navHtml = navJade({current: "checkin"});
+	var navHtml = navJade({current: "checkin",displayLogo: displayLogo});
 	$("nav").html(navHtml);
   var footerJade = jade.compileFile("views/footer.jade");
   var footerHtml = footerJade({year: d.getFullYear()});

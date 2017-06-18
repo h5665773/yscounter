@@ -4,7 +4,8 @@ ul(class="nav navbar-right top-nav")
 			| 客戶名稱 : 
 			span(id="companyName")
 div(class="logo")
-	img(src="/images/logo.jpg")
+	if displayLogo == true
+		img(src="/images/logo.jpg")
 div(class="logoName")
 	img(src="/images/logo_font.jpg")
 div(id="menu")
