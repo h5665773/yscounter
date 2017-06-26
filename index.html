@@ -37,12 +37,25 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-        <div class="panel panel-info"> 
-          <div class="panel-heading"> <h3 class="panel-title">最新消息</h3> </div> 
-          <div class="panel-body news-body"> 
-            
-          </div> 
+        <div class="row">
+          <div class="col-xs-6">
+            <div class="panel panel-info"> 
+              <div class="panel-heading"> <h3 class="panel-title">最新消息</h3> </div> 
+              <div class="panel-body news-body"> 
+                
+              </div> 
+            </div>
+          </div>
+          <div class="col-xs-6">
+            <div class="panel panel-info"> 
+              <div class="panel-heading"> <h3 class="panel-title">社區最新消息</h3> </div> 
+              <div class="panel-body cust-news-body"> 
+                
+              </div> 
+            </div>
+          </div>
         </div>
+        
       </div>
     </div>
 
@@ -65,6 +78,20 @@
             var news = JSON.parse(newsContent);
             newsHtml=newsJade({data: news});
             $(".news-body").html(newsHtml.replace("\n","<br>"));
+          });
+          res.resume();
+        }).on('error', (e) => {
+              console.log(`Got error: ${e.message}`);
+        });
+        http.get(config.apiHost + 'api/news/'+currentCust+'/0/0', (res) => {
+          var newsContent="";
+          res.on('data',(d) =>{
+            newsContent+=d;
+          });
+          res.on('end',function(){
+            var news = JSON.parse(newsContent);
+            newsHtml=newsJade({data: news});
+            $(".cust-news-body").html(newsHtml.replace("\n","<br>"));
           });
           res.resume();
         }).on('error', (e) => {
