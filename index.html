@@ -67,6 +67,7 @@
     <script type="text/javascript">
       var pointSop = $(".pointSop");
       var newsJade = jade.compileFile("views/newsList.jade");
+      var offlinePointFile = "offlinePoint.json";
       var newsHtml;
       $(document).ready(function(){
         http.get(config.apiHost + 'api/news/0/0/0', (res) => {
@@ -92,6 +93,22 @@
             var news = JSON.parse(newsContent);
             newsHtml=newsJade({data: news});
             $(".cust-news-body").html(newsHtml.replace("\n","<br>"));
+          });
+          res.resume();
+        }).on('error', (e) => {
+              console.log(`Got error: ${e.message}`);
+        });
+        http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/000', (res) => {
+          var pointContent="";
+          res.on('data',(d) =>{
+            pointContent+=d;
+          });
+          res.on('end',function(){
+            fs.unlink(offlinePointFile,(err)=>{
+              fs.appendFile(offlinePointFile, pointContent, (err) => {
+                  if (err) console.log(err);
+              });
+            });
           });
           res.resume();
         }).on('error', (e) => {
