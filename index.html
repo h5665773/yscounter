@@ -68,6 +68,7 @@
       var pointSop = $(".pointSop");
       var newsJade = jade.compileFile("views/newsList.jade");
       var offlinePointFile = "offlinePoint.json";
+      var offlineCheckinFile ="offlineCheckin.json";
       var newsHtml;
       $(document).ready(function(){
         http.get(config.apiHost + 'api/news/0/0/0', (res) => {
@@ -109,11 +110,32 @@
                   if (err) console.log(err);
               });
             });
+            fs.stat(offlineCheckinFile,(err)=>{
+              var offlineCheckinList;
+              if(err == null){
+                offlineCheckinList = JSON.parse(fs.readFileSync(offlineCheckinFile));
+                offlineCheckinList.map(function(v,k){
+                  console.log(v);
+                  http.get(v, (offRes) => {
+                    offRes.resume();
+                  }).on('error', (e) => {
+                        console.log(`Got error: ${e.message}`);
+                  });
+                });
+              }else{
+                console.log(err);
+              }
+              console.log(123);
+              fs.appendFile(offlineCheckinFile, "",{flag: "w"}, (err) => {
+                if (err) console.log(err);
+              });
+            });
           });
           res.resume();
         }).on('error', (e) => {
               console.log(`Got error: ${e.message}`);
         });
+        
       });
     </script>
   </body>

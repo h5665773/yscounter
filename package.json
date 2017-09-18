@@ -16,11 +16,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "async": "v2.0.0-rc.6",
     "bootstrap": "*",
+    "date-now": "^1.0.1",
     "jade": "1.11.0",
     "lodash": "*",
     "unzip": "0.1.11",
-    "url-download": "0.0.4",
-    "async": "v2.0.0-rc.6"
+    "url-download": "0.0.4"
   }
 }

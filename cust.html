@@ -50,12 +50,6 @@
             <p>
               <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
             </p>
-            <div class="form-check">
-              <label class="form-check-label">
-                <input type="checkbox" id="offlineCheckin" class="form-check-input">
-                離線打卡(資料將另行審核)
-              </label>
-            </div>
           </div>
           <div class="col-md-6" style="display:none" id="pointDetail">
             <div class="alert alert-success" style="width:200px" role="alert">
@@ -98,7 +92,7 @@
         var gowork = $("#goWork");
         var offwork = $("#offWork");
         var offlinePointFile = "offlinePoint.json";
-        var offlineCheckin = $("#offlineCheckin");
+        var offlineCheckinFile = "offlineCheckin.json";
         var pointData = {};
         var options = {
           hostname: '61.220.182.219',
@@ -121,17 +115,18 @@
             res.on('end',(d) =>{
               var resObj = JSON.parse(resContent);
               resEmpName = resObj[0].F_EMP_NAME;
-              for(var i in pointData){
-                pointList.append('<a href="#" pointid="'+pointData[i].F_POINT_ID+'" class="list-group-item">'+pointData[i].F_POINT_NAME+'</a>');
-              }
+              
               empName.html(resEmpName);
-              $("#pointDetail").show();
-              gowork.css("display","none");
-              offwork.css("display","none");
             });
           }).on('error', (e) => {
             console.log(`Got error: ${e.message}`);
           });  
+          for(var i in pointData){
+            pointList.append('<a href="#" pointid="'+pointData[i].F_POINT_ID+'" class="list-group-item">'+pointData[i].F_POINT_NAME+'</a>');
+          }
+          $("#pointDetail").show();
+          gowork.css("display","none");
+          offwork.css("display","none");
         }
         $("#scanEmp").click(function(){
           var pointData={};
@@ -147,25 +142,21 @@
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              if(offlineCheckin.prop("checked") == true){
+              http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
+                var resContent="";
+                res.resume();
+                res.on('data',(d) =>{
+                  resContent+=d;
+                });
+                res.on('end',(d) =>{
+                  pointData = JSON.parse(resContent);
+                  showPoint(pointData,scanEmpId);
+                });
+              }).on('error', (e) => {
+                console.log(`Got error: ${e.message}`);
                 pointData = JSON.parse(fs.readFileSync(offlinePointFile));
                 showPoint(pointData,scanEmpId);
-              }else{
-                http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
-                  var resContent="";
-                  res.resume();
-                  res.on('data',(d) =>{
-                    resContent+=d;
-                  });
-                  res.on('end',(d) =>{
-                    pointData = JSON.parse(resContent);
-                    showPoint(pointData,scanEmpId);
-                  });
-                }).on('error', (e) => {
-                  console.log(`Got error: ${e.message}`);
-                });  
-              }
-              
+              });  
             }else{
               loadingMask.css("display","none");
               loading.css("display","none");
@@ -197,7 +188,8 @@
         var checkin = function(workType){
           var url ;
           if(scanEmpId != "" && choosePoint!=""&&currentCust!=""){
-            http.get(config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId , (res) => {
+            url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId;
+            http.get(url , (res) => {
               res.resume();
               res.on('data',(d) =>{
                 switch(String(d)){
@@ -220,7 +212,24 @@
                 location.href="index.html"
               })
             }).on('error', (e) => {
-              console.log(`Got error: ${e.message}`);
+              fs.stat(offlineCheckinFile,(err)=>{
+                var d = new Date();
+                var n = d.toLocaleString();
+                url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId+"/"+n.replace(/\//g,"-");
+                var offlineCheckinList;
+                if(err == null){
+                  offlineCheckinList = JSON.parse(fs.readFileSync(offlineCheckinFile));
+                  offlineCheckinList.push(url);
+                }else{
+                  console.log(err);
+                  offlineCheckinList = [url];
+                }
+                fs.appendFile(offlineCheckinFile, JSON.stringify(offlineCheckinList),{flag: "w"}, (err) => {
+                  alert("打卡完成!");
+                  location.href="index.html";
+                  if (err) console.log(err);
+                });
+              });
             });
           }else{
             alert("資料有錯誤");
