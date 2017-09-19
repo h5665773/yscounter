@@ -118,7 +118,7 @@
                 if(offlineCheckinContent ==""){
                   return false;
                 } 
-                offlineCheckinList = JSON.parse();
+                offlineCheckinList = JSON.parse(offlineCheckinContent);
                 offlineCheckinList.map(function(v,k){
                   http.get(v, (offRes) => {
                     offRes.resume();
