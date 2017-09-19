@@ -101,6 +101,7 @@
         });
         http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/000', (res) => {
           var pointContent="";
+          var offlineCheckinContent="";
           res.on('data',(d) =>{
             pointContent+=d;
           });
@@ -113,9 +114,12 @@
             fs.stat(offlineCheckinFile,(err)=>{
               var offlineCheckinList;
               if(err == null){
-                offlineCheckinList = JSON.parse(fs.readFileSync(offlineCheckinFile));
+                offlineCheckinContent = fs.readFileSync(offlineCheckinFile);
+                if(offlineCheckinContent ==""){
+                  return false;
+                } 
+                offlineCheckinList = JSON.parse();
                 offlineCheckinList.map(function(v,k){
-                  console.log(v);
                   http.get(v, (offRes) => {
                     offRes.resume();
                   }).on('error', (e) => {
@@ -125,7 +129,6 @@
               }else{
                 console.log(err);
               }
-              console.log(123);
               fs.appendFile(offlineCheckinFile, "",{flag: "w"}, (err) => {
                 if (err) console.log(err);
               });
