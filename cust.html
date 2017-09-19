@@ -217,8 +217,10 @@
                 var n = d.toLocaleString();
                 url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId+"/"+n.replace(/\//g,"-");
                 var offlineCheckinList;
-                if(err == null){
-                  offlineCheckinList = JSON.parse(fs.readFileSync(offlineCheckinFile));
+                var offlineCheckinContent ="";
+                offlineCheckinContent = fs.readFileSync(offlineCheckinFile);
+                if(err == null && offlineCheckinContent !=""){
+                  offlineCheckinList = JSON.parse(offlineCheckinContent);
                   offlineCheckinList.push(url);
                 }else{
                   console.log(err);
