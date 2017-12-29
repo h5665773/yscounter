@@ -83,7 +83,7 @@
       	var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth() + 1)).slice(-2);
       	var d2 = new Date(d1.getFullYear()+"-"+d1.getMonth()+"-01");
       	var d2Ym = d2.getFullYear() + "-" + ("0" + (d2.getMonth() + 1)).slice(-2);
-      	var d3 = new Date(d1.getFullYear()+"-"+(d1.getMonth()+2)+"-01");
+      	var d3 = new Date(d1.getFullYear(),d1.getMonth()+1,01);
       	var d3Ym = d3.getFullYear() + "-" + ("0" + (d3.getMonth() + 1)).slice(-2);
       	selectYm.append("<option value='"+d2Ym+"'>"+d2Ym+"</option>");
       	selectYm.append("<option selected='selected' value='"+d1Ym+"'>"+d1Ym+"</option>");
