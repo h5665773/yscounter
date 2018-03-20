@@ -21,6 +21,8 @@
     "date-now": "^1.0.1",
     "jade": "1.11.0",
     "lodash": "*",
+    "qrcode-reader": "^1.0.4",
+    "request": "^2.85.0",
     "unzip": "0.1.11",
     "url-download": "0.0.4"
   }
