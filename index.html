@@ -71,6 +71,7 @@
       var offlineCheckinFile ="offlineCheckin.json";
       var newsHtml;
       $(document).ready(function(){
+        /* 全區新聞 */
         http.get(config.apiHost + 'api/news/0/0/0', (res) => {
           var newsContent="";
           res.on('data',(d) =>{
@@ -85,6 +86,7 @@
         }).on('error', (e) => {
               console.log(`Got error: ${e.message}`);
         });
+        /* 社區新聞 */
         http.get(config.apiHost + 'api/news/'+currentCust+'/0/0', (res) => {
           var newsContent="";
           res.on('data',(d) =>{

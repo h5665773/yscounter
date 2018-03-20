@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="tw">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>悅盛保全 - 櫃台服務系統</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    	
+    </script>
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/Common.js"></script>
+  </head>
+  <body> 
+    <header>
+      <nav class="navbar">
+      </nav>
+    </header>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <form name="sopForm" method="POST" action="">
+          <input type="hidden" name="action" value="addWorkRecord">
+          <input type="hidden" name="F_EMP_ID" value="sopSave">
+          <div class="panel panel-warning"> 
+            <div class="panel-heading"> <h3 class="panel-title"><input name="date" style="margin-right:10px;" readonly="readonly" value="" size="8">現場工作紀錄</h3> </div> 
+            <div class="panel-body pointSop"> 
+              
+            </div>
+            <div class="panel-footer">
+              <a id="sopSaveButton" role="button" class="btn btn-default">掃瞄並儲存» </a>
+              <canvas id="canvas2" width="100" height="100"></canvas>
+            </div> 
+          </div>
+        </form>
+        <!-- <video id="cameraPreview"></video> -->
+        <div id="scanArea">
+          <video id="video" width="300"></video>  
+          <button type="button" id="scanCancel">取消</button>
+          <!-- <div class="scanAreaLeftTop"></div>
+          <div class="scanAreaRightTop"></div>
+          <div class="scanAreaLeftDown"></div>
+          <div class="scanAreaRightDown"></div> -->
+          <div class="scanAreaCenter"></div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <footer>
+      </footer>
+    </div> <!-- /container -->
+    <script type="text/javascript">
+      const d1 = new Date();
+      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth() + 1)).slice(-2);
+      var navJade = jade.compileFile("views/nav.jade");
+      const _ = require("lodash");
+      const QrCode = require('qrcode-reader');
+      const exec = require('child_process').exec;
+      var child;
+      const request = require('request');
+      const async = require("async");
+      const qr = new QrCode();
+      
+      const postUrl = config.apiHost + 'postdata/pointInfo';
+      var sopWorkJade = jade.compileFile("views/sopWorkList.jade");
+      var sopWorkHtml;
+      var otTypeList;
+      $(document).ready(function(){
+        const sopSaveButton = $("#sopSaveButton");
+        const d1 = new Date();
+        $("input[name='date']").val(d1.getFullYear() + "-" +String(d1.getMonth() + 1).padStart(2,"0")+ "-" +String(d1.getDate()).padStart(2,"0"));
+        var canvas = document.createElement("canvas");
+            canvas.id = "canvas";
+            canvas.width = 100;
+            canvas.height = 100;
+        canvas = $("#canvas2")[0];
+        var context = canvas.getContext('2d');
+        var pointSop = $(".pointSop");
+        var scanArea = $("#scanArea");
+        var empId = $("input[name='F_EMP_ID']");
+        const scanCancel = $("#scanCancel");
+        var video = document.getElementById('video');
+        var intvalWorker ;
+        // Get access to the camera!
+        async.parallel({
+          empType: function(callback){
+            /*
+              車場管理員   警衛  公設大廳中控哨 前哨保全員 後哨保全員 前後哨保全員    清潔 機電 代班警衛 大廳安管員 車道管理員  總幹事 注意事項         */
+            request(config.apiHost + 'api/getCode/1', function (error, response, body) {
+              if(error == null){
+                callback(null,JSON.parse(body));  
+              }else{
+                callback(null,[]);
+              }
+            });
+          },
+          pointSop: function(callback){
+            request(config.apiHost + 'api/pointSop/'+currentCust+'/0/0', function (error, response, body) {
+              if(error == null){
+                callback(null,JSON.parse(body));  
+              }else{
+                callback(null,[]);
+              }
+            });
+          },
+          workRecord: function(callback){
+            console.log(config.apiHost + 'api/pointSopRecord/'+currentCust+'/0/0');
+            request(config.apiHost + 'api/pointSopRecord/'+currentCust+'/0/0', function (error, response, body) {
+              if(error == null){
+                callback(null,JSON.parse(body));  
+              }else{
+                callback(null,[]);
+              }
+            });
+          }
+        }, function(err, results) {
+          console.log(results);
+          var empType = [];
+          var workRecord = [];
+          //梳理1
+          results.empType.map(function(v){
+            empType[v.F_CID] = v.F_DESC;
+          });
+          //梳理2 設定上班紀錄
+          results.workRecord.map(function(v){
+            workRecord[v['F_D2_SEQ']] = v['F_EMP_NAME'];
+          });
+          
+          //梳理3
+          _.forEach(results.pointSop, function(sopList,sopListKey) {
+            sopList.list.map(function(sop,sopk){
+              results.pointSop[sopListKey].list[sopk].done = false;
+              if(typeof(workRecord[sop['F_D2_SEQ']])!="undefined"){
+                results.pointSop[sopListKey].list[sopk].done = true;
+                results.pointSop[sopListKey].list[sopk].name = workRecord[sop['F_D2_SEQ']];
+              }
+            });
+          });
+          sopWorkHtml = sopWorkJade({data: results});
+          pointSop.html(sopWorkHtml);
+        });
+        qr.callback = function(error, result) {
+          if(error) {
+            return;
+          }
+          if(!result.result.trim().match(/^[A-Z]{1}[0-9]{5}$/)){
+            console.log(result.result.trim().length);
+            return;
+          }
+          empId.val(result.result);
+          submitWorkData();
+          scanCancel.trigger("click");
+        }
+        var checkCheckbox = function(){
+          var checkedCount = 0;
+          var boxs = pointSop.find("input:checkbox");
+          boxs.each(function(){
+            if($(this).prop("checked") == true){
+              checkedCount++;
+            }
+          });
+          if(checkedCount>0)
+            return false;
+          else
+            return true;
+        }
+
+        sopSaveButton.click(function(){
+          if($("input[name='workItemSeq[]']:checked").length <1){
+            alert("請選擇至少一個工作項目!!");
+            return false;
+          }
+          var scaned = false;
+          
+          if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          // Not adding `{ audio: true }` since we only want video now
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                video.src = window.URL.createObjectURL(stream);
+                video.play();
+            }).catch(function(err){
+              alert("攝影機故障或沒有攝影機!");
+              return false;
+            });
+          }
+          scanArea.css({top: '40%'});    
+          
+          intvalWorker = setInterval(function(){ 
+            context.drawImage(video, 190, 100, 280, 280,0,0,100,100);
+            var image = canvas.toDataURL("image/png");
+            //console.log(image)
+            qr.decode(image);
+          }, 1000);
+          
+        });
+        scanCancel.click(function(){
+          scanArea.css({top: '100%',transition: 'top 2s'});
+          video.pause();
+          clearInterval(intvalWorker);
+        });
+        const submitWorkData = function(){
+          const postData = $("form[name='sopForm']").serialize();
+          console.log(postData);
+          $.ajax(config.apiHost + 'postdata/pointInfo' , {
+            type: "POST",
+            data: postData+"&cuid="+currentCust,
+            dataType: 'json',
+            complete: function(data,status){
+              console.log(data);
+              alert("儲存完成!");
+            }
+          });
+        }
+        /*
+      ,[F_CU_ID]
+      ,[F_D2_SEQ]
+      ,[F_OT_TYPE]
+      ,[F_OT_TIME]
+      ,[F_OT_ATTINFO]
+      工作類別
+      時間
+      駐點須知內容
+                  console.log({
+                action: action,
+                cuid : currentCust,
+                ot_type : ot_type,
+                time : time.val(),
+                content : content.val(),
+                seq : seq
+              });*/
+          /*$.ajax(config.apiHost + 'postdata/pointInfo' , {
+            type: "POST",
+            data: {
+              action: action,
+              cuid : currentCust,
+              ot_type : ot_type,
+              time : time.val().trim(),
+              content : content.val().trim(),
+              seq : seq
+            },
+            complete: function(data,status){
+              if(status == "success"){
+                switch(action){
+                  case("add"):
+                    //add html to 
+                    var sopHtml = '<li d2_seq="'+data.responseJSON.newSeq+'" class="sopItem"><div class="sopTime">時間:<span>'+time.val()+'</span></div><div class="sopInfo">駐點需知內容:<span>'+content.val()+'</span></div></li>';
+                    time.parent().before(sopHtml);
+                    time.val("");
+                    content.val("");
+                  break;
+                  case("delete"):
+                    sopLi.remove();
+                  break;
+                }
+              }else{
+                alert("請確認網路!若網路正常請通知主管");
+              }
+              
+            },
+            dataType: "json"
+          });*/
+      });
+    </script>
+  </body>
+</html>

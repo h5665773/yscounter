@@ -59,7 +59,6 @@
       $(document).ready(function(){
       	var selectYm = $("#selectYm");
       	var loadSchedule = function(ym){
-          console.log(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0/0/'+ym);
       		http.get(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0/0/'+ym, (res) => {
 
 	          var classContent="";

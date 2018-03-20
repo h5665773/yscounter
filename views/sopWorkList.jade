@@ -1,0 +1,24 @@
+each sops,k in data.pointSop
+	table(class="table table-bordered") 
+		thead
+			tr
+				th(colspan="3")
+					| #{sops.typeName}
+			tr
+				th(width="100")
+					| 狀態
+				th
+					| 時間
+				th
+					| 項目名稱
+			each sopList in sops.list
+				tr
+					td
+						if sopList.done == true
+							| #{sopList.name}
+						else
+							input(type="checkbox" name="workItemSeq[]" value=sopList.F_D2_SEQ)
+					td
+						| #{sopList.F_OT_TIME}
+					td
+						| #{sopList.F_OT_ATTINFO}
