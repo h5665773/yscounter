@@ -214,14 +214,15 @@
         });
         const submitWorkData = function(){
           const postData = $("form[name='sopForm']").serialize();
-          console.log(postData);
+          //console.log(postData);
           $.ajax(config.apiHost + 'postdata/pointInfo' , {
             type: "POST",
             data: postData+"&cuid="+currentCust,
             dataType: 'json',
             complete: function(data,status){
-              console.log(data);
+              //console.log(data);
               alert("儲存完成!");
+              location.reload();
             }
           });
         }
