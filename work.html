@@ -83,7 +83,7 @@
       $(document).ready(function(){
         const sopSaveButton = $("#sopSaveButton");
         const d1 = new Date();
-        $("input[name='date']").val(d1.getFullYear() + "-" +String(d1.getMonth() + 1).padStart(2,"0")+ "-" +String(d1.getDate()).padStart(2,"0"));
+        $("input[name='date']").val(d1.getFullYear() + "-" +_.padStart((d1.getMonth() + 1), 2, "0")+ "-" +_.padStart(d1.getDate(), 2, "0"));
         var canvas = document.createElement("canvas");
             canvas.id = "canvas";
             canvas.width = 100;
