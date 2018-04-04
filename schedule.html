@@ -20,13 +20,11 @@
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-    	
-    </script>
     <link rel="stylesheet" href="/css/main.css">
     <script type="text/javascript" src="/js/Common.js"></script>
   </head>
   <body> 
+    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
     <header>
       <nav class="navbar">
       
@@ -53,29 +51,38 @@
     </div> <!-- /container -->
     <script type="text/javascript">
       //var navJade = jade.compileFile("views/nav.jade");
+      const scan = require("./js/scan.js");
+      const request = require("request");
       var classList = $(".classList");
       var classJade = jade.compileFile("views/classList.jade");
       var classHtml;
       $(document).ready(function(){
+        var loading = $("#loading");
+        var loadingMask = $(".loadingMask");
       	var selectYm = $("#selectYm");
-      	var loadSchedule = function(ym){
-      		http.get(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0/0/'+ym, (res) => {
-
-	          var classContent="";
-	          res.on('data',(d) =>{
-	            classContent+=d;
-	            //$("#message").html(news[0].F_MESSAGE);
-	          });
-	          res.on('end',function(){
-	            var classListData = JSON.parse(classContent);
-	            classHtml = classJade({data: classListData});
-	            classList.html(classHtml);
-	          });
-	          res.resume();
-	          res.on('error', (e) => {
-	              console.log(`Got error: ${e.message}`);
-	          });
-	        });
+      	const loadSchedule = function(ym){
+          loadingMask.css("display","block");
+          loading.removeClass("rotateOut");
+          loading.css("display","block");
+          loading.addClass("rotateIn");
+      		scan(empId => {
+            console.log(empId);
+            console.log(`${config.apiHost}api/scheduleByEmp/${currentCust}/0/${empId}/${ym}`);
+            //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
+            request(config.apiHost + `api/scheduleByEmp/${currentCust}/0/${empId}/${ym}`, function (error, response, body) {
+              if(error == null){
+                let classListData = JSON.parse(body);
+                classHtml = classJade({data: classListData});
+                classList.html(classHtml);
+              }else{
+                alert("error 請通知管理員!");
+              }
+              loadingMask.css("display","none");
+              loading.css("display","none");
+              loading.removeClass("rotateIn");
+              loading.addClass("rotateOut");
+            });
+          });
       	};
       	loadSchedule("0");
       	var d1 = new Date();
@@ -93,5 +100,6 @@
       	});
       });
     </script>
+        <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
   </body>
 </html>
