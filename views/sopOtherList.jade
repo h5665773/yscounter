@@ -1,0 +1,54 @@
+table(class="table table-bordered todoTable otherJob") 
+	thead
+		tr
+			th(colspan="5")
+				| 其它
+		tr
+			th(width="100")
+				| 狀態
+			th
+				| 類型
+			th
+				| 時間
+			th
+				| 內容說明
+			th
+				| 備註
+		each rec,k in data.otherRecord
+			tr
+				td
+					input(type="hidden" name="workOtherSeq[]" value=rec.F_D2_SEQ)
+					| #{rec.F_EMP_NAME}
+				td
+					select(name="workOtherType[]" class="form-control" disabled=true )
+						each otherOption in data.otherType
+							option(value=otherOption.F_CID selected=rec.F_OT_TYPE==otherOption.F_CID?true:false)
+								| #{otherOption.F_DESC}
+				td
+					div(class="input-group")
+						input(type="text" class="form-control " name="OT_OTHER_TIME[]" disabled=true  aria-describedby="sizing-addon2" value=rec.F_OT_TIME)
+				td
+					div(class="input-group")
+						input(type="text" class="form-control" name="OT_OTHER_ATTINFO[]" disabled=true  aria-describedby="sizing-addon2" value=rec.F_OT_ATTINFO)
+				td
+					div(class="input-group")
+						input(type="text" class="form-control" name="OT_OTHER_COMMENT[]" disabled=true aria-describedby="sizing-addon2" value=rec.F_OT_COMMENT)
+		tr
+			td
+				input(type="hidden" name="workOtherSeq[]" value="true")
+			td
+				select(name="workOtherType[]" class="form-control")
+					each otherOption in data.otherType
+						option(value=otherOption.F_CID)
+							| #{otherOption.F_DESC}
+			td
+				div(class="input-group")
+					input(type="text" class="form-control " name="OT_OTHER_TIME[]"  aria-describedby="sizing-addon2" value="")
+			td
+				div(class="input-group")
+					input(type="text" class="form-control" name="OT_OTHER_ATTINFO[]"  aria-describedby="sizing-addon2" value="")
+			td
+				div(class="input-group")
+					input(type="text" class="form-control" name="OT_OTHER_COMMENT[]" aria-describedby="sizing-addon2" value="")
+button(type="button" id="addOtherJob")
+	| 新增

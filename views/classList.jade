@@ -9,7 +9,10 @@ each c in data
 					each detail in c.emp
 						tr
 							td(rowspan="3")
-								| #{detail.name}
+								b
+									| #{detail.name}
+								hr
+								| #{detail.companyName}
 							each sch in detail.schedule	
 								td(width="3%")
 									| #{sch.day}

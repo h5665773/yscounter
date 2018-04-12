@@ -1,8 +1,8 @@
-each sops,k in data.pointSop
-	table(class="table table-bordered") 
+each sops,k in data.sopData
+	table(class="table table-bordered todoTable") 
 		thead
 			tr
-				th(colspan="3")
+				th(colspan="4")
 					| #{sops.typeName}
 			tr
 				th(width="100")
@@ -11,14 +11,21 @@ each sops,k in data.pointSop
 					| 時間
 				th
 					| 項目名稱
-			each sopList in sops.list
+				th
+					| 備註
+			each sopList,slk in sops.list
 				tr
 					td
 						if sopList.done == true
 							| #{sopList.name}
 						else
-							input(type="checkbox" name="workItemSeq[]" value=sopList.F_D2_SEQ)
+							input(type="checkbox" name="workItem_"+slk value=sopList.F_D2_SEQ)
 					td
-						| #{sopList.F_OT_TIME}
+						div(class="input-group")
+							input(type="text" class="form-control " name="OT_TIME_"+slk readonly aria-describedby="sizing-addon2" value=sopList.F_OT_TIME)
 					td
-						| #{sopList.F_OT_ATTINFO}
+						div(class="input-group")
+							input(type="text" class="form-control" name="OT_ATTINFO_"+slk readonly aria-describedby="sizing-addon2" value=sopList.F_OT_ATTINFO)
+					td
+						div(class="input-group")
+							input(type="text" class="form-control" name="OT_COMMENT_"+slk readonly=sopList.done?true:false aria-describedby="sizing-addon2" value=sopList.comment)
