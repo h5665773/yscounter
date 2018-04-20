@@ -85,6 +85,7 @@
         var sopWorkHtml;
         var sopOtherHtml;
         var newOtherTrHtml = "";
+        var otherTypeList = [];
         const loading = $("#loading");
         const loadingMask = $(".loadingMask");
         const sopSaveButton = $("#sopSaveButton");
@@ -100,6 +101,7 @@
         // Get access to the camera!
         async.parallel({
           pointSop: function(callback){
+            console.log(config.apiHost + 'api/pointSop/'+currentCust+'/0/0');
             request(config.apiHost + 'api/pointSop/'+currentCust+'/0/0', function (error, response, body) {
               if(error == null){
                 callback(null,JSON.parse(body));  
@@ -112,6 +114,7 @@
           console.log(results);
           var otherType = [];
           var workRecord = [];
+          otherTypeList = results.pointSop.otherTypeList;
           //梳理1
           //results.otherType.map(function(v){
           //  otherType[v.F_CID] = v.F_DESC;
@@ -143,7 +146,32 @@
             $(".otherJob tr:last").after(`<tr>${newOtherTrHtml}</tr>`);
             $(".otherJob tr:last input[name='workOtherSeq[]']").val($(".otherJob tr").length-2)
           });
+          $(".otherJob").delegate("select[name='workOtherType[]']","change",function(){
+            let target = $(this).parent().parent().find("select[name='OT_OTHER_ATTINFO[]']");
+            target.empty();
+            otherTypeList[$(this).val()].map((v,k)=>{
+              target.append($("<option></option>").attr("value",v.F_CID).text(v.F_DESC));
+            });
+          });
+          $("select[name='workOtherType[]']").trigger("change");
+          $(".otherJob").delegate("textarea[name='OT_OTHER_COMMENT[]']","focus",function(){
+            $(this).css({
+              position: "absolute",
+              width: "400px",
+              height: "300px",
+              top: "-150px"
+            });
+          });
+          $(".otherJob").delegate("textarea[name='OT_OTHER_COMMENT[]']","blur",function(){
+            $(this).css({
+              position: "relative",
+              width: "auto",
+              height: "auto",
+              top: "auto"
+            });
+          });
         });
+        
         var checkCheckbox = function(){
           var checkedCount = 0;
           var boxs = pointSop.find("input:checkbox");
@@ -160,7 +188,12 @@
 
         sopSaveButton.click(function(){
           var otherSubmitCheck = false;
-          $("input[name='OT_OTHER_ATTINFO[]']").each(function(){
+          $("input[name='OT_OTHER_TIME[]']").each(function(){
+            if($(this).val() !=""){
+              otherSubmitCheck = true;
+            }
+          });
+          $("textarea[name='OT_OTHER_COMMENT[]']").each(function(){
             if($(this).val() !=""){
               otherSubmitCheck = true;
             }
@@ -175,7 +208,7 @@
           loading.addClass("rotateIn");
           scan(empId => {
             //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
-            if(empId == ""){
+            if(empId == "" || empId==null){
               loadingMask.css("display","none");
               loading.css("display","none");
               loading.removeClass("rotateIn");
@@ -185,25 +218,6 @@
               submitWorkData();
             }
           });
-          /*if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          // Not adding `{ audio: true }` since we only want video now
-            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-                video.src = window.URL.createObjectURL(stream);
-                video.play();
-            }).catch(function(err){
-              alert("攝影機故障或沒有攝影機!");
-              return false;
-            });
-          }
-          scanArea.css({top: '40%'});    
-          
-          intvalWorker = setInterval(function(){ 
-            context.drawImage(video, 190, 100, 280, 280,0,0,100,100);
-            var image = canvas.toDataURL("image/png");
-            //console.log(image)
-            qr.decode(image);
-          }, 1000);*/
-          
         });
         scanCancel.click(function(){
           scanArea.css({top: '100%',transition: 'top 2s'});

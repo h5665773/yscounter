@@ -6,11 +6,11 @@ table(class="table table-bordered todoTable otherJob")
 		tr
 			th(width="100")
 				| 狀態
-			th
+			th(width="200")
 				| 類型
-			th
+			th(width="150")
 				| 時間
-			th
+			th(width="250")
 				| 內容說明
 			th
 				| 備註
@@ -22,8 +22,8 @@ table(class="table table-bordered todoTable otherJob")
 				td
 					select(name="workOtherType[]" class="form-control" disabled=true )
 						each otherOption in data.otherType
-							option(value=otherOption.F_CID selected=rec.F_OT_TYPE==otherOption.F_CID?true:false)
-								| #{otherOption.F_DESC}
+							option(value=otherOption.F_TID selected=rec.F_TID==otherOption.F_TID?true:false)
+								| #{otherOption.F_TNAME}
 				td
 					div(class="input-group")
 						input(type="text" class="form-control " name="OT_OTHER_TIME[]" disabled=true  aria-describedby="sizing-addon2" value=rec.F_OT_TIME)
@@ -39,16 +39,15 @@ table(class="table table-bordered todoTable otherJob")
 			td
 				select(name="workOtherType[]" class="form-control")
 					each otherOption in data.otherType
-						option(value=otherOption.F_CID)
-							| #{otherOption.F_DESC}
+						option(value=otherOption.F_TID)
+							| #{otherOption.F_TNAME}
 			td
 				div(class="input-group")
 					input(type="text" class="form-control " name="OT_OTHER_TIME[]"  aria-describedby="sizing-addon2" value="")
 			td
-				div(class="input-group")
-					input(type="text" class="form-control" name="OT_OTHER_ATTINFO[]"  aria-describedby="sizing-addon2" value="")
+				select(name="OT_OTHER_ATTINFO[]" class="form-control")
 			td
 				div(class="input-group")
-					input(type="text" class="form-control" name="OT_OTHER_COMMENT[]" aria-describedby="sizing-addon2" value="")
+					textarea(cols="30" rows="1" class="form-control" name="OT_OTHER_COMMENT[]" aria-describedby="sizing-addon2" value="")
 button(type="button" id="addOtherJob")
 	| 新增
