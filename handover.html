@@ -37,7 +37,12 @@
           <input type="hidden" name="action" value="addWorkRecord">
           <input type="hidden" name="F_EMP_ID" value="">
           <div class="panel panel-warning"> 
-            <div class="panel-heading"> <h3 class="panel-title"><input name="date" style="margin-right:10px;" readonly="readonly" value="" size="8">現場工作紀錄</h3> </div> 
+            <div class="panel-heading"> 
+              <h3 class="panel-title">
+                <select style="margin-right:10px;padding:3px;" name="selectDate" id="selectDate"></select>
+                現場工作紀錄
+              </h3> 
+            </div> 
             <div class="panel-body pointSop"> 
               
             </div>
@@ -86,12 +91,16 @@
         var sopOtherHtml;
         var newOtherTrHtml = "";
         var otherTypeList = [];
+        var selectDate = $("#selectDate");
         const loading = $("#loading");
         const loadingMask = $(".loadingMask");
         const sopSaveButton = $("#sopSaveButton");
         const d1 = new Date();
-
-        $("input[name='date']").val(d1.getFullYear() + "-" +_.padStart((d1.getMonth() + 1), 2, "0")+ "-" +_.padStart(d1.getDate(), 2, "0"));
+        for(let i =0;i>-7;i--){
+          let sd = new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+i);
+          let dateStr = sd.getFullYear() + "-" +_.padStart((sd.getMonth() + 1), 2, "0")+ "-" +_.padStart(sd.getDate(), 2, "0")
+          selectDate.append("<option>"+dateStr+"</option");
+        }
         var pointSop = $(".pointSop");
         //var scanArea = $("#scanArea");
         var inputEmpId = $("input[name='F_EMP_ID']");
@@ -99,48 +108,59 @@
         //var video = document.getElementById('video');
         var intvalWorker ;
         // Get access to the camera!
-        async.parallel({
-          pointSop: function(callback){
-            console.log(config.apiHost + 'api/pointSop/'+currentCust+'/0/0');
-            request(config.apiHost + 'api/pointSop/'+currentCust+'/0/0', function (error, response, body) {
-              if(error == null){
-                callback(null,JSON.parse(body));  
-              }else{
-                callback(null,[]);
-              }
+        selectDate.change(function(){
+          loadAllData(null);
+        });
+        var loadAllData = function(callbackLoad){
+          async.parallel({
+            pointSop: function(callback){
+              console.log(config.apiHost + 'api/pointSop/'+currentCust+'/0/0?selectdate='+selectDate.val());
+              request(config.apiHost + 'api/pointSop/'+currentCust+'/0/0?selectdate='+selectDate.val(), function (error, response, body) {
+                if(error == null){
+                  callback(null,JSON.parse(body));  
+                }else{
+                  callback(null,[]);
+                }
+              });
+            }
+          }, function(err, results) {
+            console.log(results);
+            var otherType = [];
+            var workRecord = [];
+            otherTypeList = results.pointSop.otherTypeList;
+            //梳理1
+            //results.otherType.map(function(v){
+            //  otherType[v.F_CID] = v.F_DESC;
+            //});
+            //梳理2 設定上班紀錄
+            results.pointSop.sopRecord.map(function(v){
+              workRecord[v['F_D2_SEQ']] = v;
             });
-          }
-        }, function(err, results) {
-          console.log(results);
-          var otherType = [];
-          var workRecord = [];
-          otherTypeList = results.pointSop.otherTypeList;
-          //梳理1
-          //results.otherType.map(function(v){
-          //  otherType[v.F_CID] = v.F_DESC;
-          //});
-          //梳理2 設定上班紀錄
-          results.pointSop.sopRecord.map(function(v){
-            workRecord[v['F_D2_SEQ']] = v;
-          });
-          //梳理3
-          _.forEach(results.pointSop.sopData, function(sopList,sopListKey) {
-            sopList.list.map(function(sop,sopk){
-              results.pointSop.sopData[sopListKey].list[sopk].done = false;
-              if(typeof(workRecord[sop['F_D2_SEQ']])!="undefined"){
-                results.pointSop.sopData[sopListKey].list[sopk].done = true;
-                results.pointSop.sopData[sopListKey].list[sopk].name = workRecord[sop['F_D2_SEQ']]["F_EMP_NAME"];
-                results.pointSop.sopData[sopListKey].list[sopk].comment = workRecord[sop['F_D2_SEQ']]["F_OT_COMMENT"];
-              }
+            //梳理3
+            _.forEach(results.pointSop.sopData, function(sopList,sopListKey) {
+              sopList.list.map(function(sop,sopk){
+                results.pointSop.sopData[sopListKey].list[sopk].done = false;
+                if(typeof(workRecord[sop['F_D2_SEQ']])!="undefined"){
+                  results.pointSop.sopData[sopListKey].list[sopk].done = true;
+                  results.pointSop.sopData[sopListKey].list[sopk].name = workRecord[sop['F_D2_SEQ']]["F_EMP_NAME"];
+                  results.pointSop.sopData[sopListKey].list[sopk].comment = workRecord[sop['F_D2_SEQ']]["F_OT_COMMENT"];
+                }
+              });
             });
+            sopWorkHtml = sopWorkJade({data: results.pointSop});
+            //sopOtherHtml = "";
+            sopOtherHtml = sopOtherJade({data: results.pointSop});
+            //pointSop.html(sopWorkHtml);
+            pointSop.html(sopWorkHtml+sopOtherHtml);
+            
+            $(".otherJob tr:last input[name='workOtherSeq[]']").val($(".otherJob tr").length-2);
+            if(callbackLoad != null){
+              callbackLoad(otherTypeList);
+            }
           });
-          sopWorkHtml = sopWorkJade({data: results.pointSop});
-          //sopOtherHtml = "";
-          sopOtherHtml = sopOtherJade({data: results.pointSop});
-          //pointSop.html(sopWorkHtml);
-          pointSop.html(sopWorkHtml+sopOtherHtml);
+        }
+        var eventSetting = function(otherTypeList){
           newOtherTrHtml = $(".otherJob tr:last").html();
-          $(".otherJob tr:last input[name='workOtherSeq[]']").val($(".otherJob tr").length-2)
           $("#addOtherJob").click(function(){
             
             $(".otherJob tr:last").after(`<tr>${newOtherTrHtml}</tr>`);
@@ -170,7 +190,8 @@
               top: "auto"
             });
           });
-        });
+        }
+        loadAllData(eventSetting);
         
         var checkCheckbox = function(){
           var checkedCount = 0;
@@ -238,54 +259,6 @@
             }
           });
         }
-        /*
-      ,[F_CU_ID]
-      ,[F_D2_SEQ]
-      ,[F_OT_TYPE]
-      ,[F_OT_TIME]
-      ,[F_OT_ATTINFO]
-      工作類別
-      時間
-      駐點須知內容
-                  console.log({
-                action: action,
-                cuid : currentCust,
-                ot_type : ot_type,
-                time : time.val(),
-                content : content.val(),
-                seq : seq
-              });*/
-          /*$.ajax(config.apiHost + 'postdata/pointInfo' , {
-            type: "POST",
-            data: {
-              action: action,
-              cuid : currentCust,
-              ot_type : ot_type,
-              time : time.val().trim(),
-              content : content.val().trim(),
-              seq : seq
-            },
-            complete: function(data,status){
-              if(status == "success"){
-                switch(action){
-                  case("add"):
-                    //add html to 
-                    var sopHtml = '<li d2_seq="'+data.responseJSON.newSeq+'" class="sopItem"><div class="sopTime">時間:<span>'+time.val()+'</span></div><div class="sopInfo">駐點需知內容:<span>'+content.val()+'</span></div></li>';
-                    time.parent().before(sopHtml);
-                    time.val("");
-                    content.val("");
-                  break;
-                  case("delete"):
-                    sopLi.remove();
-                  break;
-                }
-              }else{
-                alert("請確認網路!若網路正常請通知主管");
-              }
-              
-            },
-            dataType: "json"
-          });*/
       });
     </script>
     <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
