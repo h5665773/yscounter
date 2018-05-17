@@ -1,0 +1,5 @@
+ul(class="nav nav-tabs")
+	each point,k in data
+		li(role="presentation" class=k==0?"active":"")
+			a(class="pointTab" data-value=point.F_POINT_ID href="#")
+				| #{point.F_POINT_NAME}

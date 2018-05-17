@@ -7,7 +7,7 @@
 .nav>li>a:focus, .nav>li>a:hover{
         background-color: none;
 }
-.nav>li>a{
+#menu .nav>li>a{
     color:#333333;
     font-size: 16px;
     font-weight: bold;

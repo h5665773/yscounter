@@ -36,14 +36,20 @@
         <form name="sopForm" method="POST" action="">
           <input type="hidden" name="action" value="addWorkRecord">
           <input type="hidden" name="F_EMP_ID" value="">
+          <input type="hidden" name="F_POINT_ID" value="">
           <div class="panel panel-warning"> 
             <div class="panel-heading"> 
               <h3 class="panel-title">
                 <select style="margin-right:10px;padding:3px;" name="selectDate" id="selectDate"></select>
                 現場工作紀錄
               </h3> 
+
             </div> 
-            <div class="panel-body pointSop"> 
+            <div class="panel-body ">
+              <div id="pointTabs"></div>
+              <div class="pointSop">
+                
+              </div>
               
             </div>
             <div class="panel-footer">
@@ -87,25 +93,26 @@
       $(document).ready(function(){
         var sopWorkJade = jade.compileFile("views/sopWorkList.jade");
         var sopOtherJade = jade.compileFile("views/sopOtherList.jade");
+        var sopPointsJade = jade.compileFile("views/sopPointList.jade");
+        var pointListHtml;
         var sopWorkHtml;
         var sopOtherHtml;
         var newOtherTrHtml = "";
         var otherTypeList = [];
         var selectDate = $("#selectDate");
+        const inputPointId = $("input[name='F_POINT_ID']");
         const loading = $("#loading");
         const loadingMask = $(".loadingMask");
         const sopSaveButton = $("#sopSaveButton");
         const d1 = new Date();
         for(let i =0;i>-7;i--){
           let sd = new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+i);
-          let dateStr = sd.getFullYear() + "-" +_.padStart((sd.getMonth() + 1), 2, "0")+ "-" +_.padStart(sd.getDate(), 2, "0")
+          let dateStr = sd.getFullYear() + "-" +_.padStart((sd.getMonth() + 1), 2, "0")+ "-" +_.padStart(sd.getDate(), 2, "0");
           selectDate.append("<option>"+dateStr+"</option");
         }
         var pointSop = $(".pointSop");
-        //var scanArea = $("#scanArea");
         var inputEmpId = $("input[name='F_EMP_ID']");
         const scanCancel = $("#scanCancel");
-        //var video = document.getElementById('video');
         var intvalWorker ;
         // Get access to the camera!
         selectDate.change(function(){
@@ -114,8 +121,8 @@
         var loadAllData = function(callbackLoad){
           async.parallel({
             pointSop: function(callback){
-              console.log(config.apiHost + 'api/pointSop/'+currentCust+'/0/0?selectdate='+selectDate.val());
-              request(config.apiHost + 'api/pointSop/'+currentCust+'/0/0?selectdate='+selectDate.val(), function (error, response, body) {
+              console.log(config.apiHost + 'api/pointSop/'+currentCust+'/'+inputPointId.val()+'/0?selectdate='+selectDate.val());
+              request(config.apiHost + 'api/pointSop/'+currentCust+'/'+inputPointId.val()+'/0?selectdate='+selectDate.val(), function (error, response, body) {
                 if(error == null){
                   callback(null,JSON.parse(body));  
                 }else{
@@ -124,7 +131,7 @@
               });
             }
           }, function(err, results) {
-            console.log(results);
+            //console.log(results);
             var otherType = [];
             var workRecord = [];
             otherTypeList = results.pointSop.otherTypeList;
@@ -191,7 +198,31 @@
             });
           });
         }
-        loadAllData(eventSetting);
+        request(config.apiHost + 'api/pointByCust/'+currentCust+'/000/000',(error, response, body)=>{
+          const pointList = JSON.parse(body);
+          pointListHtml = sopPointsJade({data: pointList});
+          $("#pointTabs").html(pointListHtml);
+          inputPointId.val($("li.active a").attr("data-value"));
+          loadAllData(eventSetting);
+          $("a.pointTab").click(function(){
+            let currentTab = $(this);
+            console.log(currentTab);
+            if(currentTab.length <1){
+              return false;
+            }
+            let currentActive = $("#pointTabs li.active");
+            let targetActive = currentTab.parent();
+            //console.log(currentTab.attr("data-value"));
+            inputPointId.val(currentTab.attr("data-value"));
+            currentActive.removeClass("active");
+            targetActive.addClass("active");
+            loadAllData(eventSetting);
+          });
+          /*
+          todo list
+          bind tabs click event
+          */
+        });
         
         var checkCheckbox = function(){
           var checkedCount = 0;
@@ -229,13 +260,14 @@
           loading.addClass("rotateIn");
           scan(empId => {
             //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
-            if(empId == "" || empId==null){
+            if(empId.match(/^[A-Z]{1}[0-9]{5}/) == false){
               loadingMask.css("display","none");
               loading.css("display","none");
               loading.removeClass("rotateIn");
               loading.addClass("rotateOut");
             }else{
               inputEmpId.val(empId);
+              console.log(empId);
               submitWorkData();
             }
           });
