@@ -23,6 +23,14 @@
     
     <link rel="stylesheet" href="/css/main.css">
     <script type="text/javascript" src="/js/Common.js"></script>
+    <style type="text/css">
+      textarea {
+        resize: none;
+        overflow: hidden;
+        min-height: 50px;
+        max-height: 100px;
+      }
+    </style>
   </head>
   <body> 
     <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
@@ -86,9 +94,7 @@
       const request = require('request');
       const async = require("async");
       //const qr = new QrCode();
-      
       const postUrl = config.apiHost + 'postdata/pointInfo';
-      
       var otTypeList;
       $(document).ready(function(){
         var sopWorkJade = jade.compileFile("views/sopWorkList.jade");
@@ -197,6 +203,9 @@
               top: "auto"
             });
           });
+          $("textarea").each(function(){
+            auto_grow(this);
+          });
         }
         request(config.apiHost + 'api/pointByCust/'+currentCust+'/000/000',(error, response, body)=>{
           const pointList = JSON.parse(body);
@@ -267,7 +276,6 @@
               loading.addClass("rotateOut");
             }else{
               inputEmpId.val(empId);
-              console.log(empId);
               submitWorkData();
             }
           });
@@ -285,11 +293,15 @@
             data: postData+"&cuid="+currentCust,
             dataType: 'json',
             complete: function(data,status){
-              console.log(data);
+              //console.log(data);
               alert("儲存完成!");
               location.reload();
             }
           });
+        }
+        const auto_grow = function(element) {
+            element.style.height = "5px";
+            element.style.height = (element.scrollHeight)+"px";
         }
       });
     </script>
