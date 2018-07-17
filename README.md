@@ -11,4 +11,4 @@
 1. extract 
 1. cd to dir
 1. npm i
-1. execute command "../node webkit dir/nw ./"
+1. execute command "/node webkit dir path/nw ./"
