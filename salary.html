@@ -41,15 +41,15 @@
   <!-- Main jumbotron for a primary marketing message or call to action -->
   <div class="jumbotron">
     <div class="container" id="query">
-      選擇年月 :
-      <select id="selectYm">
-
-      </select>
+      年月 :
+      <span class="YM"></span>
       <a class="btn btn-default" id="scanEmp" href="#" role="button">查詢薪資</a>
+      <span style="color:red;" class="dataIsNull"></span>
     </div>
     <div class="container">
       <div id="salary" class="panel panel-warning" style="display:none">
-        <h3>{{peps.detail.F_EMP_NAME}}<span id="YMshow"></span>薪資明細表</h3>
+        <h3>{{peps.detail.F_EMP_NAME}}
+          <span id="YMshow"></span>薪資明細表</h3>
         <table class="table">
           <tr>
             <th colspan="2" scope="col">應得項目</th>
@@ -182,7 +182,6 @@
     $(document).ready(function () {
       var loading = $("#loading");
       var loadingMask = $(".loadingMask");
-      var selectYm = $("#selectYm");
       var salary = $("#salary")
       const loadSchedule = function (ym) {
         loadingMask.css("display", "block");
@@ -193,15 +192,17 @@
           // console.log(empId);
           // console.log(`${config.apiHost}api/personalSalary/${ym}/${empId}`);
           //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
-          request(config.apiHost + `api/personalSalary/${ym}/${empId}`, function (error,
-            response, body) {
+          request(config.apiHost + `api/personalSalary/${ym}/${empId}`, function (error,response, body) {
             if (error == null) {
-              console.log(JSON.parse(body));
-              salary.removeAttr("style");
-              pushDom(JSON.parse(body));
-              $("#YMshow").text(selectYm.val());
-              $("#query").css("display", "none");
-            } else {
+              if (JSON.stringify(body).length > 100) {
+                salary.removeAttr("style");
+                pushDom(JSON.parse(body));
+              } 
+              else {
+                $(".dataIsNull").text("資料查詢為空");
+              }
+            } 
+            else {
               alert("error 請通知管理員!");
             }
             loadingMask.css("display", "none");
@@ -212,6 +213,7 @@
           });
         });
       };
+
       function pushDom(data1) {
         console.log("vue");
         var vm = new Vue({
@@ -222,14 +224,11 @@
         })
       }
       var d1 = new Date();
-      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth())).slice(-2);
-      var d2Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth() - 1)).slice(-2);
-      var d3Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth() - 2)).slice(-2);
-      selectYm.append("<option value='" + d3Ym + "'>" + d3Ym + "</option>");
-      selectYm.append("<option value='" + d2Ym + "'>" + d2Ym + "</option>");
-      selectYm.append("<option selected='selected'value='" + d1Ym + "'>" + d1Ym + "</option>");
+      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth()));
+      $(".YM").text(d1Ym);
       scanEmp.click(function () {
-        ym = $("#selectYm").val();
+        var dt = new Date();
+        var ym = dt.getFullYear() + "-" + ("0" + (dt.getMonth()));
         loadSchedule(ym);
       });
     });
