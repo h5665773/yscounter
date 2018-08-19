@@ -193,7 +193,7 @@
           // console.log(empId);
           // console.log(`${config.apiHost}api/personalSalary/${ym}/${empId}`);
           //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
-          request(config.apiHost + `api/personalSalary/${ym}/${empId}`, function (error,
+          request(config.apiHost + `api/personalSalary/${ym}/${currentCust}/${empId}`, function (error,
             response, body) {
             if (error == null) {
               console.log(JSON.parse(body));
