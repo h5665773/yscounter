@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="tw">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>悅盛保全 - 櫃台服務系統</title>
+
+  <!-- Bootstrap core CSS -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+    crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+    crossorigin="anonymous">
+
+  <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <link rel="stylesheet" href="/css/main.css">
+  <script type="text/javascript" src="/js/Common.js"></script>
+</head>
+
+<body>
+  <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+  <header>
+    <nav class="navbar">
+
+    </nav>
+  </header>
+
+
+  <!-- Main jumbotron for a primary marketing message or call to action -->
+  <div class="jumbotron">
+    <div class="container" id="query">
+      年月 :
+      <span class="YM"></span>
+      <a class="btn btn-default" id="scanEmp" href="#" role="button">查詢薪資</a>
+      <span style="color:red;" class="dataIsNull"></span>
+    </div>
+    <div class="container">
+      <div id="salary" class="panel panel-warning" style="display:none">
+        <h3>{{peps.detail.F_EMP_NAME}}
+          <span id="YMshow"></span>薪資明細表</h3>
+        <table class="table">
+          <tr>
+            <th colspan="2" scope="col">應得項目</th>
+            <th colspan="2" scope="col">應扣項目</th>
+            <th colspan="2" scope="col">其他項目</th>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P0.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P0}}</td>
+            <td>{{peps.item.F_M0.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M0}}</td>
+            <td>{{peps.item.F_P6.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P6}}</td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P1.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P1}}</td>
+            <td>{{peps.item.F_M1.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M1}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P2.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P2}}</td>
+            <td>{{peps.item.F_M2.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M2}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P3.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P3}}</td>
+            <td>{{peps.item.F_M3.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M3}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P4.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P4}}</td>
+            <td>{{peps.item.F_M4.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M4}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P5.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P5}}</td>
+            <td>{{peps.item.F_M5.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M5}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>{{peps.item.F_M6.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M6}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P7.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P7}}</td>
+            <td>{{peps.item.F_M7.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M7}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P8.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P8}}</td>
+            <td>{{peps.item.F_M8.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M8}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_P9.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_P9}}</td>
+            <td>{{peps.item.F_M9.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_M9}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_PA.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_PA}}</td>
+            <td>{{peps.item.F_MA.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_MA}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_PB.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_PB}}</td>
+            <td>{{peps.item.F_MB.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_MB}}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>{{peps.item.F_PC.F_ITEM_NAME}}</td>
+            <td>{{peps.detail.F_PC}}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+        <h3>實得所領:{{peps.detail.F_TT}}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <footer>
+      <p>&copy; 2016 悅盛保全, Inc.</p>
+    </footer>
+  </div>
+  <!-- /container -->
+  <script type="text/javascript">
+    //var navJade = jade.compileFile("views/nav.jade");
+    const scan = require("./js/scan.js");
+    const request = require("request");
+    var classList = $(".classList");
+    var classHtml;
+    var scanEmp = $("#scanEmp")
+    $(document).ready(function () {
+      var loading = $("#loading");
+      var loadingMask = $(".loadingMask");
+      var salary = $("#salary");
+      const loadSalary = function (ym) {
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+        $("#salary").hide();
+        scan(empId => {
+          console.log(empId);
+          console.log(config.apiHost + `api/personalSalary/${ym}/${currentCust}/${empId}`);
+          //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
+          request(config.apiHost + `api/personalSalary/${ym}/${currentCust}/${empId}`, function (error,
+            response, body) {
+            const salaryObj = JSON.parse(body);
+            //console.log(salaryObj);
+            //console.log(salaryObj.detail.length);
+            if (error == null) {
+              if (salaryObj.detail.length != 0) {
+                salary.removeAttr("style");
+                pushDom(JSON.parse(body));
+              } 
+              else {
+                $(".dataIsNull").text("資料查詢為空");
+              }
+            } 
+            else {
+              alert("error 請通知管理員!");
+            }
+            loadingMask.css("display", "none");
+            loading.css("display", "none");
+            loading.removeClass("rotateIn");
+            loading.addClass("rotateOut");
+            console.log("done");
+          });
+        });
+      };
+
+      function pushDom(data1) {
+        console.log("vue");
+        var vm = new Vue({
+          el: '#salary',
+          data: {
+            peps: data1
+          }
+        })
+      }
+      var d1 = new Date();
+      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth()));
+      $(".YM").text(d1Ym);
+      scanEmp.click(function () {
+        var dt = new Date();
+        var ym = dt.getFullYear() + "-" + ("0" + (dt.getMonth()));
+        loadSalary(ym);
+      });
+    });
+  </script>
+  <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
+    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
+</body>
+
+</html>
