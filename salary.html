@@ -182,20 +182,24 @@
     $(document).ready(function () {
       var loading = $("#loading");
       var loadingMask = $(".loadingMask");
-      var salary = $("#salary")
-      const loadSchedule = function (ym) {
+      var salary = $("#salary");
+      const loadSalary = function (ym) {
         loadingMask.css("display", "block");
         loading.removeClass("rotateOut");
         loading.css("display", "block");
         loading.addClass("rotateIn");
+        $("#salary").hide();
         scan(empId => {
-          // console.log(empId);
-          // console.log(`${config.apiHost}api/personalSalary/${ym}/${empId}`);
+          console.log(empId);
+          console.log(config.apiHost + `api/personalSalary/${ym}/${currentCust}/${empId}`);
           //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
           request(config.apiHost + `api/personalSalary/${ym}/${currentCust}/${empId}`, function (error,
             response, body) {
+            const salaryObj = JSON.parse(body);
+            //console.log(salaryObj);
+            //console.log(salaryObj.detail.length);
             if (error == null) {
-              if (JSON.stringify(body).length > 100) {
+              if (salaryObj.detail.length != 0) {
                 salary.removeAttr("style");
                 pushDom(JSON.parse(body));
               } 
@@ -230,7 +234,7 @@
       scanEmp.click(function () {
         var dt = new Date();
         var ym = dt.getFullYear() + "-" + ("0" + (dt.getMonth()));
-        loadSchedule(ym);
+        loadSalary(ym);
       });
     });
   </script>
