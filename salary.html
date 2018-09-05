@@ -229,12 +229,10 @@
         })
       }
       var d1 = new Date();
-      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth()));
+      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth()+1));
       $(".YM").text(d1Ym);
       scanEmp.click(function () {
-        var dt = new Date();
-        var ym = dt.getFullYear() + "-" + ("0" + (dt.getMonth()));
-        loadSalary(ym);
+        loadSalary(d1Ym);
       });
     });
   </script>
