@@ -229,7 +229,7 @@
         })
       }
       var d1 = new Date();
-      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth()+1));
+      var d1Ym = d1.getFullYear() + "-" + ("0" + d1.getMonth());
       $(".YM").text(d1Ym);
       scanEmp.click(function () {
         loadSalary(d1Ym);
