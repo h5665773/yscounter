@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="tw">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>悅盛保全 - 櫃台服務系統</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.css"  crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.css"  crossorigin="anonymous">
+    
+    <script src="/js/jquery.js"></script>
+    <script src="/js/vue.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/js/bootstrap.min.js"  crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/Common.js"></script>
+    <style type="text/css">
+      .schedule-header{
+        font-size:10px;
+        padding-top: 5px !important;
+        position:relative;
+        text-align: center;
+      }
+      .schedule-header b{
+        position: relative;
+        top:10px;
+      }
+      .schedule-header .go-work{
+        position: absolute;
+        top:60px;
+        left: 40%;
+      }
+      .schedule-header .off-work{
+        position: absolute;
+        top:90px;
+        left: 40%;
+      }
+    </style>
+  </head>
+  <body> 
+    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+    <header>
+      <nav class="navbar">
+      
+      </nav>
+    </header>
+    
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+    	<div class="container" >
+    		
+        <div class="col-md-12" align="left">
+          選擇年月 : 
+        <select id="selectYm" name="selectYm">
+
+        </select>
+        </div>
+        
+        <!-- <div class="col-md-6" align="center">
+          <h4>打卡畫面</h4>
+          
+        </div> -->
+    		<div class="col-md-6" align="center">
+            <h4>廠商類別</h4>          
+              <div class="form-group">
+                
+                <select class="form-control" id="coworkerType" name="coworkerType">
+                
+                </select>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-success" id="goWork" style="width: 100px; height: 44px; line-height: 1; font-size: 20px; font-weight: bold;" aria-haspopup="true" aria-expanded="false">上班打卡</button>
+
+                <button type="button" class="btn btn-warning" id="offWork" style="width: 100px; height: 44px; line-height: 1; font-size: 20px; font-weight: bold;" aria-haspopup="true" aria-expanded="false">下班打卡</button>    
+              </div>
+          
+        </div>
+        <div class="col-md-6" align="center">
+          <h4>攝影機畫面</h4>
+          <video id="video" width="320" height="270" autoplay></video>
+          <canvas id="canvas" style="position: fixed;z-index:-999;left: 9999px;" width="320" height="270"></canvas>
+        </div>
+        <div class="col-md-12" align="center" id="classList">
+
+	      	<div class="panel panel-warning" v-for="(scheduleData,coworker) in schedule" style="margin-top:15px;">
+	      		<div class="panel-heading">
+              <h3 class="panel-title">{{coworker}}</h3>
+	      		</div>
+	      		<div class="panel-body" style="padding:15px 0">
+	      			<table class="table table-bordered table-hover table-striped" >
+			      		<tr>
+			      			<td rowspan="4" class="schedule-header">
+			      				<b>日期</b>
+			      				<span class="go-work">上班</span>
+                    <span class="off-work">下班</span>
+			      			</td>
+			      		</tr>
+                <tr>
+			      			<td v-for="day in scheduleData.days" width="3%" style="height:30px;">
+			      				{{ day }}
+			      			</td>
+			      		</tr>
+                  <td v-for="checkin in scheduleData.am" width="3%"  height="30">
+                    <a :href="checkin.image" target="_blank">{{checkin.status}}</a>
+                  </td>
+                </tr>
+                </tr>
+			      			<td v-for="checkin in scheduleData.pm" width="3%"  height="30">
+                    <a :href="checkin.image" target="_blank">{{checkin.status}}</a>
+                  </td>
+			      		</tr>
+
+			      	</table>	
+	      		</div>
+      		
+      		</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <footer>
+        <p>&copy; 2016 悅盛保全, Inc.</p>
+      </footer>
+    </div> <!-- /container -->
+    <script type="text/javascript">
+      //var navJade = jade.compileFile("views/nav.jade");
+      const scan = require("./js/scan.js");
+      const request = require("request");
+      function dataURItoBlob(dataURI) {
+          // convert base64/URLEncoded data component to raw binary data held in a string
+          var byteString;
+          if (dataURI.split(',')[0].indexOf('base64') >= 0)
+              byteString = atob(dataURI.split(',')[1]);
+          else
+              byteString = unescape(dataURI.split(',')[1]);
+
+          // separate out the mime component
+          var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+          // write the bytes of the string to a typed array
+          var ia = new Uint8Array(byteString.length);
+          for (var i = 0; i < byteString.length; i++) {
+              ia[i] = byteString.charCodeAt(i);
+          }
+
+          return new Blob([ia], {type:mimeString});
+      }
+      $(document).ready(function(){
+        var loading = $("#loading");
+        var loadingMask = $(".loadingMask");
+      	var selectYm = $("#selectYm");
+      	var gowork = $("#goWork");
+        var offwork = $("#offWork");
+        var coworkerType = $("#coworkerType");
+      	var vueClassList = new Vue({
+    		  el: '#classList',
+    		  data: {
+    		  	schedule: {}
+    		  }
+    		});
+      	const loadSchedule = function(ym){
+      		let schedule =  [];
+      		if(ym == "0"){
+      			let d = new Date();
+      		}else{
+      			let d = new Date(ym+"-01");
+      		}
+      		let dLast = new Date(d.getFullYear(),d.getMonth(),0);
+          //console.log(config.apiHost + `api/scheduleByCoworker/${currentCust}/${ym}`);
+          request(config.apiHost + `api/scheduleByCoworker/${currentCust}/${ym}`, function (error, response, body) {
+            $("#classList").show();
+            if(error == null){
+              let classListData = JSON.parse(body);
+
+              schedule = classListData.schedule;
+              let coworkers = classListData.coworkers;
+              if(coworkers.length <1){
+                alert("請先到後台設定廠商名稱!!");
+                return false;
+              }
+              if(coworkerType.find("option").length <1){
+                for(let i in coworkers){
+                  //console.log(coworkers[i]);
+                  coworkerType.append($("<option>",{
+                    value: coworkers[i].F_CO_ID ,
+                    text: coworkers[i].F_CO_NAME
+                  }));  
+                }
+              }
+              //console.log(schedule);
+              vueClassList.schedule = schedule;
+            }else{
+              alert("error 請通知管理員!");
+            }
+          });
+      	};
+      	loadSchedule("0");
+      	var d1 = new Date();
+      	var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth() + 1)).slice(-2);
+      	var d2 = new Date(d1.getFullYear()+"-"+d1.getMonth()+"-01");
+      	var d2Ym = d2.getFullYear() + "-" + ("0" + (d2.getMonth() + 1)).slice(-2);
+      	var d3 = new Date(d1.getFullYear(),d1.getMonth()+1,01);
+      	var d3Ym = d3.getFullYear() + "-" + ("0" + (d3.getMonth() + 1)).slice(-2);
+      	selectYm.append("<option value='"+d2Ym+"'>"+d2Ym+"</option>");
+      	selectYm.append("<option selected='selected' value='"+d1Ym+"'>"+d1Ym+"</option>");
+      	selectYm.append("<option value='"+d3Ym+"'>"+d3Ym+"</option>");
+      	selectYm.change(function(){
+      		ym = $(this).val();
+      		loadSchedule(ym);
+      	});
+      	gowork.click(function(){
+          if($(this).attr("disabled") != true){
+            checkin("goWork");
+          }
+        });
+        offwork.click(function(){
+          if($(this).attr("disabled") != true){
+            checkin("offWork");
+          }
+        });
+        var video = document.getElementById('video');
+
+        // Get access to the camera!
+        if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Not adding `{ audio: true }` since we only want video now
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                video.src = window.URL.createObjectURL(stream);
+                video.play();
+            });
+        }
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var video = document.getElementById('video');
+
+        // Trigger photo take
+        // document.getElementById("snap").addEventListener("click", function() {
+        //   context.drawImage(video, 0, 0, 320, 270);
+        // });
+        var showloading = function(){
+          loadingMask.css("display","block");
+          loading.removeClass("rotateOut");
+          loading.css("display","block");
+          loading.addClass("rotateIn");
+        };
+        var hideloading = function(){
+          loadingMask.css("display","none");
+              loading.css("display","none");
+              loading.removeClass("rotateIn");
+              loading.addClass("rotateOut");
+        };
+        var checkin = function(workType){
+          var checkinWording ="";
+          checkinWording = workType=="goWork"?"上班":"下班";
+          if(!confirm("確定要"+checkinWording+"打卡嗎?")){
+            return false;
+          }
+          showloading();
+          context.drawImage(video, 0, 0, 320, 270);
+          var imageData = canvas.toDataURL("image/png");
+          //console.log(imageData);
+          var imageDir = `./public/coworkerImages`;
+          if(!fs.existsSync(imageDir)){
+            fs.mkdirSync(imageDir,0777);
+          }
+          var imageLocation = `${imageDir}/${selectYm.val()}-${d1.getDate()}-${coworkerType.val()}-${workType}.png`;
+          imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
+          var buf = new Buffer(imageData, 'base64');
+          fs.appendFileSync(imageLocation, buf,{flag: 'w'});
+
+          //return;
+        	//console.log(config.apiHost + 'barcode/checkinCoworker/'+currentCust+"/"+workType+"/"+coworkerType.val());
+            var url = config.apiHost + 'barcode/checkinCoworker/'+currentCust+"/"+workType+"/"+coworkerType.val();
+            request(url, function (error, response, body) {
+              //console.log(error);
+            	//console.log(body);
+              if(error == null){
+                let resObj = JSON.parse(body);
+                console.log(resObj);
+                if(resObj.error == true){
+                	alert(resObj.msg);
+                }else{
+                  
+                	alert("打卡完成!!");
+                  location.reload();
+                }
+              }else{
+                alert("error 請通知管理員!");
+              }
+              hideloading();
+            });
+        }
+      });
+    </script>
+        <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
+          <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>打卡處理中
+        </button>
+  </body>
+</html>

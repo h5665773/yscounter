@@ -19,6 +19,7 @@
     "async": "v2.0.0-rc.6",
     "bootstrap": "*",
     "date-now": "^1.0.1",
+    "dropbox": "^4.0.9",
     "jade": "1.11.0",
     "lodash": "*",
     "qrcode-reader": "^1.0.4",
