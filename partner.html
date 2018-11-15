@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tw">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>悅盛保全 - 櫃台服務系統</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    
+    <script src="/js/jquery.js"></script>
+    <script src="/js/vue.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/js/bootstrap.min.js"  crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/Common.js"></script>
+    <style type="text/css">
+      textarea {
+        resize: none;
+        overflow: hidden;
+        min-height: 50px;
+        max-height: 100px;
+      }
+    </style>
+  </head>
+  <body> 
+    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+    <header>
+      <nav class="navbar">
+      </nav>
+    </header>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <form name="sopForm" method="POST" action="">
+          <input type="hidden" name="action" value="addWorkRecord">
+          <input type="hidden" name="F_EMP_ID" value="">
+          <input type="hidden" name="F_POINT_ID" value="">
+          <div class="panel panel-warning"> 
+            <div class="panel-heading"> 
+              <h3 class="panel-title">
+                社區協力廠商聯絡資料
+              </h3> 
+
+            </div> 
+            <div class="panel-body ">
+              <table class="table table-bordered table-hover table-striped" id="partnerList">
+	      		<tr>
+	      			<th>廠商名稱</th>
+	      			<th>廠商電話</th>
+	      			<th>廠商地址</th>
+	      			<th>廠商聯絡人</th>
+	      			<th>服務中</th>
+	      			<th>服務項目</th>
+	      		</tr>
+	      		<tr v-for="partner in partnerList">
+	      			<td>{{partner.F_PARTNER_NAME}}</td>
+	      			<td>{{partner.F_PARTNER_TEL}}</td>
+	      			<td>{{partner.F_PARTNER_ADDRESS}}</td>
+	      			<td>{{partner.F_PARTNER_CONTACT}}</td>
+	      			<td>{{partner.F_PARTNER_STATUS}}</td>
+	      			<td>{{partner.F_PARTNER_Service}}</td>
+	      		</tr>
+			  </table>	
+            </div>
+          </div>
+        </form>
+        <!-- <video id="cameraPreview"></video> -->
+        
+      </div>
+    </div>
+    <div class="container">
+      <footer>
+      </footer>
+    </div> <!-- /container -->
+
+    <script type="text/javascript">
+      const _ = require("lodash");
+      const request = require('request');
+      const async = require("async");
+      $(document).ready(function(){
+        //var sopPointsJade = jade.compileFile("views/sopPointList.jade");
+        const d1 = new Date();
+        var vuePartnerList = new Vue({
+		  el: '#partnerList',
+		  data: {
+		  	partnerList: {}
+		  }
+		});
+        //console.log(config.apiHost + 'api/custPartner/'+currentCust+'/000/000');
+        request(config.apiHost + 'api/custPartner/'+currentCust+'/000/000',(error, response, body)=>{
+          const partnerList = JSON.parse(body);
+          vuePartnerList.partnerList = partnerList;
+          //console.log(partnerList);
+          //pointListHtml = sopPointsJade({data: pointList});
+        });
+      });
+    </script>
+    <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
+  </body>
+</html>
