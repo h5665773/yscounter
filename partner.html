@@ -12,10 +12,10 @@
 
     <!-- Bootstrap core CSS -->
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/bootstrap.css"  crossorigin="anonymous">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/bootstrap-theme.css"  crossorigin="anonymous">
     
     <script src="/js/jquery.js"></script>
     <script src="/js/vue.js"></script>
@@ -58,6 +58,7 @@
 	      		<tr>
 	      			<th>廠商名稱</th>
 	      			<th>廠商電話</th>
+              <th>廠商行動</th>
 	      			<th>廠商地址</th>
 	      			<th>廠商聯絡人</th>
 	      			<th>服務中</th>
@@ -65,7 +66,8 @@
 	      		</tr>
 	      		<tr v-for="partner in partnerList">
 	      			<td>{{partner.F_PARTNER_NAME}}</td>
-	      			<td>{{partner.F_PARTNER_TEL}}</td>
+              <td>{{partner.F_PARTNER_TEL}}</td>
+	      			<td>{{partner.F_PARTNER_MTEL}}</td>
 	      			<td>{{partner.F_PARTNER_ADDRESS}}</td>
 	      			<td>{{partner.F_PARTNER_CONTACT}}</td>
 	      			<td>{{partner.F_PARTNER_STATUS}}</td>
