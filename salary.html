@@ -42,7 +42,7 @@
   <div class="jumbotron">
     <div class="container" id="query">
       年月 :
-      <span class="YM"></span>
+      <select class="YM"></select>
       <a class="btn btn-default" id="scanEmp" href="#" role="button">查詢薪資</a>
       <span style="color:red;" class="dataIsNull"></span>
     </div>
@@ -228,11 +228,21 @@
           }
         })
       }
-      var d1 = new Date();
-      var d1Ym = d1.getFullYear() + "-" + ("0" + d1.getMonth());
-      $(".YM").text(d1Ym);
+      selectYm = $(".YM");
+      var d = new Date();
+      var d1 = new Date(d.getFullYear(),d.getMonth(),0);
+      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth() + 1)).slice(-2);
+      var d2 = new Date(d1.getFullYear(),d1.getMonth(),0);
+      var d2Ym = d2.getFullYear() + "-" + ("0" + (d2.getMonth() + 1)).slice(-2);
+      var d3 = new Date(d2.getFullYear(),d2.getMonth(),0);
+      var d3Ym = d3.getFullYear() + "-" + ("0" + (d3.getMonth() + 1)).slice(-2);
+      selectYm.append("<option selected='selected' value='"+d1Ym+"'>"+d1Ym+"</option>");
+      selectYm.append("<option value='"+d2Ym+"'>"+d2Ym+"</option>");
+      selectYm.append("<option value='"+d3Ym+"'>"+d3Ym+"</option>");
       scanEmp.click(function () {
-        loadSalary(d1Ym);
+        let ym = selectYm.val();
+        console.log(ym);
+        loadSalary(ym);
       });
     });
   </script>
