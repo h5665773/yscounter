@@ -45,11 +45,16 @@
     <!-- Begin page content -->
     <div class="container main" >
       <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-6">
             
             <p>
               <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
             </p>
+          </div>
+          <div class="col-md-6" align="center">
+            <h4>攝影機畫面</h4>
+            <video id="video" width="320" height="270" autoplay></video>
+            <canvas id="canvas" style="position: fixed;z-index:-999;left: 9999px;" width="320" height="270"></canvas>
           </div>
           <div class="col-md-6" style="display:none" id="pointDetail">
             <div class="alert alert-success" style="width:200px" role="alert">
@@ -79,7 +84,7 @@
     <script type="text/javascript">
       var exec = require('child_process').exec,
           child;
-      
+      const request = require("request");
       $(document).ready(function(){
         var empName= $("#empName");
         var loading = $("#loading");
@@ -94,6 +99,20 @@
         var offlinePointFile = "offlinePoint.json";
         var offlineCheckinFile = "offlineCheckin.json";
         var pointData = {};
+        var video = document.getElementById('video');
+        var d = new Date();
+        // Get access to the camera!
+        if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Not adding `{ audio: true }` since we only want video now
+            navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+                video.src = window.URL.createObjectURL(stream);
+                video.play();
+            });
+        }
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var video = document.getElementById('video');
+
         var options = {
           hostname: '61.220.182.219',
           port: 80,
@@ -106,21 +125,12 @@
           loading.addClass("rotateOut");
           pointList.empty();
           var resEmpName="";
-          http.get(config.apiHost + 'api/empName/000/000/'+empId, (res) => {
-            var resContent="";
-            res.resume();
-            res.on('data',(d) =>{
-              resContent+=d;
-            });
-            res.on('end',(d) =>{
-              var resObj = JSON.parse(resContent);
-              resEmpName = resObj[0].F_EMP_NAME;
-              
-              empName.html(resEmpName);
-            });
-          }).on('error', (e) => {
-            console.log(`Got error: ${e.message}`);
-          });  
+          request(config.apiHost + 'api/empName/000/000/'+empId, function (error, response, body) {
+            var resObj = JSON.parse(body);
+            resEmpName = resObj[0].F_EMP_NAME;
+            
+            empName.html(resEmpName);
+          });
           for(var i in pointData){
             pointList.append('<a href="#" pointid="'+pointData[i].F_POINT_ID+'" class="list-group-item">'+pointData[i].F_POINT_NAME+'</a>');
           }
@@ -142,21 +152,18 @@
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId, (res) => {
-                var resContent="";
-                res.resume();
-                res.on('data',(d) =>{
-                  resContent+=d;
-                });
-                res.on('end',(d) =>{
-                  pointData = JSON.parse(resContent);
+              request(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
+                if(error != null){
+                  pointData = JSON.parse(fs.readFileSync(offlinePointFile));
                   showPoint(pointData,scanEmpId);
-                });
-              }).on('error', (e) => {
-                console.log(`Got error: ${e.message}`);
-                pointData = JSON.parse(fs.readFileSync(offlinePointFile));
-                showPoint(pointData,scanEmpId);
-              });  
+                }else{
+                  pointData = JSON.parse(body);
+                  showPoint(pointData,scanEmpId);  
+                }
+                console.log(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId);
+                console.log(body);
+                console.log(pointData);
+              });
             }else{
               loadingMask.css("display","none");
               loading.css("display","none");
@@ -165,7 +172,6 @@
               console.log(err);
             }
           });
-          //$(this).attr("disabled",true);
         });
         pointList.delegate(".list-group-item","click",function(){
           var pointid=$(this).attr("pointid");
@@ -186,13 +192,52 @@
           }
         });
         var checkin = function(workType){
+          gowork.prop("disabled",true);
+          offwork.prop("disabled",true);
           var url ;
           if(scanEmpId != "" && choosePoint!=""&&currentCust!=""){
+            context.drawImage(video, 0, 0, 320, 270);
+            var imageData = canvas.toDataURL("image/png");
+            //console.log(imageData);
+            var imageDir = `./public/coworkerImages`;
+            if(!fs.existsSync(imageDir)){
+              fs.mkdirSync(imageDir,0777);
+            }
+            var imageLocation = `${imageDir}/${d.getYear()}-${d.getMonth()}-${d.getDate()}-checkin-${workType}.png`;
+            imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
+            var buf = new Buffer(imageData, 'base64');
+            fs.appendFileSync(imageLocation, buf,{flag: 'w'});
             url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId;
-            http.get(url , (res) => {
-              res.resume();
-              res.on('data',(d) =>{
-                switch(String(d)){
+            var formData = {
+              checkin_image: fs.createReadStream(imageLocation)
+            };
+            request.post({url: url, formData: formData}, function (error, httpResponse, body) {
+              console.log(body);
+              if( error !=null){
+                console.log(111);
+                fs.stat(offlineCheckinFile,(err)=>{
+                  
+                  var n = d.toLocaleString();
+                  url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId+"/"+n.replace(/\//g,"-");
+                  var offlineCheckinList;
+                  var offlineCheckinContent ="";
+                  offlineCheckinContent = fs.readFileSync(offlineCheckinFile);
+                  if(err == null && offlineCheckinContent !=""){
+                    offlineCheckinList = JSON.parse(offlineCheckinContent);
+                    offlineCheckinList.push(url);
+                  }else{
+                    console.log(err);
+                    offlineCheckinList = [url];
+                  }
+                  fs.appendFile(offlineCheckinFile, JSON.stringify(offlineCheckinList),{flag: "w"}, (err2) => {
+                    alert("打卡完成!");
+                    location.href="index.html";
+                    if (err2) console.log(err);
+                  });
+                });
+              }else{
+                console.log(222);
+                switch(String(body)){
                   case("3"):
                     alert("打卡完成");
                   break;
@@ -210,28 +255,7 @@
                   break;
                 }
                 location.href="index.html"
-              })
-            }).on('error', (e) => {
-              fs.stat(offlineCheckinFile,(err)=>{
-                var d = new Date();
-                var n = d.toLocaleString();
-                url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId+"/"+n.replace(/\//g,"-");
-                var offlineCheckinList;
-                var offlineCheckinContent ="";
-                offlineCheckinContent = fs.readFileSync(offlineCheckinFile);
-                if(err == null && offlineCheckinContent !=""){
-                  offlineCheckinList = JSON.parse(offlineCheckinContent);
-                  offlineCheckinList.push(url);
-                }else{
-                  console.log(err);
-                  offlineCheckinList = [url];
-                }
-                fs.appendFile(offlineCheckinFile, JSON.stringify(offlineCheckinList),{flag: "w"}, (err) => {
-                  alert("打卡完成!");
-                  location.href="index.html";
-                  if (err) console.log(err);
-                });
-              });
+              }
             });
           }else{
             alert("資料有錯誤");
