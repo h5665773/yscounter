@@ -69,7 +69,7 @@ nav .logo{
     top: -1px;
 }
 #menu ul {
-    margin-top: 70px;
+    
 }
 #menu li a{
     font-size: 16px;
@@ -83,7 +83,7 @@ nav .logo{
 }
 #menu li {
     display: inline-block;
-    width:108px;
+    width:125px;
 }
 #menu{
     position: relative;

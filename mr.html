@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/colorbox.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.css" >
+    <script src="/js/jquery.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/js/bootstrap.min.js" ></script>
+    <script src="/js/vue.js" ></script>
+    <link rel="stylesheet" href="/css/main.css" >
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.css" >
+    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+    <script type="text/javascript" src="/js/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-datetimepicker.js"></script>
+    <style>
+      h2{
+        font-size: 24px;
+      }
+      .left-side .input-group{
+        margin-bottom:10px;
+      }
+      #mr-detail{
+        height:280px;
+        border:1px dashed #999999;
+        border-top:0;
+        border-radius: 0 0 6px 6px;
+        margin-bottom:10px;
+      }
+    </style>
+    <script type="text/javascript" src="/js/Common.js"></script>
+  </head>
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+    <header>
+      <nav class="navbar">
+      </nav>  
+    </header>
+    
+
+    <!-- Begin page content -->
+    <div class="container main" >
+      <div class="row">
+        <div class="col-md-3 left-side">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">棟別</span>
+          </div>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">戶號</span>
+          </div>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">姓名</span>
+          </div>
+          <div class="list-group" style="margin-bottom:0">
+            <a href="#" class="list-group-item active">
+              住戶名單
+            </a>
+          </div>
+          <div class="list-group" id="left-list" style="height:400px;overflow-y: scroll">
+            <a href="#" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-for="liver in list">{{ liver.F_CU_AREA }} - {{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+              <li role="presentation" class="active success"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">停車類</a></li>
+              <li role="presentation" class="info"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">公設類</a></li>
+              <li role="presentation" class="danger"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">事務類</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content" id="mr-detail">
+              <div role="tabpanel" class="tab-pane active" id="home">
+                <table class="table table-hover table-bordered"> 
+                  <tbody> 
+                    <tr> 
+                      <th class="success" width="20%">進場時間</th> 
+                      <td  width="40%">
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                        </div>
+                      </td> 
+                      <td  width="20%" class="success">離場時間</td> 
+                      <td  width="40%">
+                        <div class='input-group date' id='datetimepicker1'>
+                          <input type="text" class="form-control" aria-describedby="basic-addon2"><span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                        </div>
+                      </td>  
+                    </tr> 
+                    <tr> 
+                      <th class="success" width="20%">姓名</th> 
+                      <td  width="40%">
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                        </div>
+                      </td> 
+                      <td  width="20%" class="success">戶號</td> 
+                      <td  width="40%">
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                        </div>
+                      </td>  
+                    </tr> 
+                    <tr> 
+                      <th class="success" width="20%">計費時數</th> 
+                      <td  width="40%">
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                        </div>
+                      </td> 
+                      <td  width="20%" class="success">車位編號</td> 
+                      <td  width="40%">
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                        </div>
+                      </td>  
+                    </tr> 
+                  </tbody> 
+                </table>
+                <button type="button" class="btn btn-default" style="margin-left:10px">列印入場聯</button>
+                <button type="button" class="btn btn-danger">列印結帳聯</button> 
+              </div>
+              <div role="tabpanel" class="tab-pane" id="profile">...</div>
+              <div role="tabpanel" class="tab-pane" id="messages">...</div>
+              <div role="tabpanel" class="tab-pane" id="settings">...</div>
+            </div>
+          </div>
+          <div class="bs-example" data-example-id="hoverable-table"> 
+            <table class="table table-hover table-bordered"> 
+              <thead> 
+                <tr class="info"> 
+                  <th>棟別</th> 
+                  <th>戶號</th> 
+                  <th>姓名</th> 
+                  <th>開始時間</th> 
+                </tr> 
+              </thead> 
+              <tbody> 
+                <tr> <th scope="row">1</th> <td>Mark</td> <td>Otto</td> <td>@mdo</td> </tr> 
+                <tr> <th scope="row">2</th> <td>Jacob</td> <td>Thornton</td> <td>@fat</td> </tr> 
+                <tr> <th scope="row">3</th> <td>Larry</td> <td>the Bird</td> <td>@twitter</td> </tr> 
+              </tbody> 
+            </table> 
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+      </div>
+    </footer>
+    <script type="text/javascript">
+      //left-list
+      var liveList = new Vue({
+        el: '#left-list',
+        data: {
+          list: []
+        }
+      })
+      var exec = require('child_process').exec,
+          child;
+      const request = require("request");
+      $(document).ready(function(){
+        // $('#myTabs a').click(function (e) {
+        //   e.preventDefault()
+        //   $(this).tab('show')
+        // })
+        request(config.apiHost + 'api/liverList/'+currentCust+'/000/000', function (error, response, body) {
+          var resObj = JSON.parse(body);
+          console.log(resObj);
+          liveList.list = resObj; 
+
+        });
+        $('#datetimepicker1').datetimepicker();
+      });
+    </script>
+    <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
+    <script type="text/javascript" src="/js/main.js"></script>
+  </body>
+</html>

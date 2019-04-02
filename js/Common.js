@@ -22,8 +22,7 @@ $(document).ready(function(){
   if(currentCust.substr(0,1) == "W"){
     displayLogo = false;
   }
-	var navJade = jade.compileFile("views/header.jade");
-	var navHtml = navJade({current: "checkin",displayLogo: displayLogo});
+	var navHtml = fs.readFileSync("views/nav.html", {encoding:'utf-8'});
 	$("nav").html(navHtml);
   var footerJade = jade.compileFile("views/footer.jade");
   var footerHtml = footerJade({year: d.getFullYear()});

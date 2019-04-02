@@ -12,17 +12,14 @@
 
     <!-- Bootstrap core CSS -->
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap-theme.css" >
     
     <script src="/js/jquery.js"></script>
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-    	
-    </script>
+    <script src="js/bootstrap.min.js" ></script>
     <link rel="stylesheet" href="/css/main.css">
     <script type="text/javascript" src="/js/Common.js"></script>
   </head>
@@ -69,76 +66,51 @@
       var newsJade = jade.compileFile("views/newsList.jade");
       var offlinePointFile = "offlinePoint.json";
       var offlineCheckinFile ="offlineCheckin.json";
+      const request = require("request");
       var newsHtml;
       $(document).ready(function(){
         /* 全區新聞 */
-        http.get(config.apiHost + 'api/news/0/0/0', (res) => {
-          var newsContent="";
-          res.on('data',(d) =>{
-            newsContent+=d;
-          });
-          res.on('end',function(){
-            var news = JSON.parse(newsContent);
-            newsHtml=newsJade({data: news});
-            $(".news-body").html(newsHtml.replace("\n","<br>"));
-          });
-          res.resume();
-        }).on('error', (e) => {
-              console.log(`Got error: ${e.message}`);
+        request(config.apiHost + 'api/news/0/0/0', function (error, response, body) {
+          var news = JSON.parse(body);
+          newsHtml=newsJade({data: news});
+          $(".news-body").html(newsHtml.replace("\n","<br>"));
         });
         /* 社區新聞 */
-        http.get(config.apiHost + 'api/news/'+currentCust+'/0/0', (res) => {
-          var newsContent="";
-          res.on('data',(d) =>{
-            newsContent+=d;
-          });
-          res.on('end',function(){
-            var news = JSON.parse(newsContent);
-            newsHtml=newsJade({data: news});
-            $(".cust-news-body").html(newsHtml.replace("\n","<br>"));
-          });
-          res.resume();
-        }).on('error', (e) => {
-              console.log(`Got error: ${e.message}`);
+        request(config.apiHost + 'api/news/'+currentCust+'/0/0', function (error, response, body) {
+          let news = JSON.parse(body);
+          newsHtml=newsJade({data: news});
+          $(".cust-news-body").html(newsHtml.replace("\n","<br>"));
         });
-        http.get(config.apiHost + 'api/pointByCust/'+currentCust+'/000/000', (res) => {
-          var pointContent="";
-          var offlineCheckinContent="";
-          res.on('data',(d) =>{
-            pointContent+=d;
-          });
-          res.on('end',function(){
-            fs.unlink(offlinePointFile,(err)=>{
-              fs.appendFile(offlinePointFile, pointContent, (err) => {
-                  if (err) console.log(err);
-              });
-            });
-            fs.stat(offlineCheckinFile,(err)=>{
-              var offlineCheckinList;
-              if(err == null){
-                offlineCheckinContent = fs.readFileSync(offlineCheckinFile);
-                if(offlineCheckinContent ==""){
-                  return false;
-                } 
-                offlineCheckinList = JSON.parse(offlineCheckinContent);
-                offlineCheckinList.map(function(v,k){
-                  http.get(v, (offRes) => {
-                    offRes.resume();
-                  }).on('error', (e) => {
-                        console.log(`Got error: ${e.message}`);
-                  });
-                });
-              }else{
-                console.log(err);
-              }
-              fs.appendFile(offlineCheckinFile, "",{flag: "w"}, (err) => {
+        request(config.apiHost + 'api/pointByCust/'+currentCust+'/000/000', function (error, response, body) {
+          let pointContent=body;
+          let offlineCheckinContent="";
+          fs.unlink(offlinePointFile,(err)=>{
+            fs.appendFile(offlinePointFile, pointContent, (err) => {
                 if (err) console.log(err);
-              });
             });
           });
-          res.resume();
-        }).on('error', (e) => {
-              console.log(`Got error: ${e.message}`);
+          fs.stat(offlineCheckinFile,(err)=>{
+            var offlineCheckinList;
+            if(err == null){
+              offlineCheckinContent = fs.readFileSync(offlineCheckinFile);
+              if(offlineCheckinContent ==""){
+                return false;
+              } 
+              offlineCheckinList = JSON.parse(offlineCheckinContent);
+              offlineCheckinList.map(function(v,k){
+                http.get(v, (offRes) => {
+                  offRes.resume();
+                }).on('error', (e) => {
+                      console.log(`Got error: ${e.message}`);
+                });
+              });
+            }else{
+              console.log(err);
+            }
+            fs.appendFile(offlineCheckinFile, "",{flag: "w"}, (err) => {
+              if (err) console.log(err);
+            });
+          });
         });
         
       });
