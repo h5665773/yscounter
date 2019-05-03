@@ -43,6 +43,10 @@
         border-radius: 0 0 6px 6px;
         margin-bottom:10px;
       }
+      #CFList button{
+        margin-left: 15px;
+        margin-right: 5px;
+      }
     </style>
     <script type="text/javascript" src="/js/Common.js"></script>
   </head>
@@ -78,91 +82,232 @@
             </a>
           </div>
           <div class="list-group" id="left-list" style="height:400px;overflow-y: scroll">
-            <a href="#" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-for="liver in list">{{ liver.F_CU_AREA }} - {{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
+            <a href="#" v-on:click="selectLiver(liver.F_CU_DID,liver.F_OWNER_NAME)" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-for="liver in list">{{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
           </div>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9" id="mrDetail">
           <div>
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
-              <li role="presentation" class="active success"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">停車類</a></li>
-              <li role="presentation" class="info"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">公設類</a></li>
-              <li role="presentation" class="danger"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">事務類</a></li>
+              <li role="presentation" :class="{ active: mk==chooseClass }" v-for="(main,mk) in classes">
+                <a href="#" v-on:click="switchTab(mk)" :data-sub-class-id="main.subclass" :data-class-id="main.class">{{main.name}}</a>
+              </li>
             </ul>
 
             <!-- Tab panes -->
-            <div class="tab-content" id="mr-detail">
-              <div role="tabpanel" class="tab-pane active" id="home">
-                <table class="table table-hover table-bordered"> 
-                  <tbody> 
-                    <tr> 
-                      <th class="success" width="20%">進場時間</th> 
-                      <td  width="40%">
-                        <div class="input-group">
-                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
-                        </div>
-                      </td> 
-                      <td  width="20%" class="success">離場時間</td> 
-                      <td  width="40%">
-                        <div class='input-group date' id='datetimepicker1'>
-                          <input type="text" class="form-control" aria-describedby="basic-addon2"><span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                        </div>
-                      </td>  
-                    </tr> 
-                    <tr> 
-                      <th class="success" width="20%">姓名</th> 
-                      <td  width="40%">
-                        <div class="input-group">
-                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
-                        </div>
-                      </td> 
-                      <td  width="20%" class="success">戶號</td> 
-                      <td  width="40%">
-                        <div class="input-group">
-                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
-                        </div>
-                      </td>  
-                    </tr> 
-                    <tr> 
-                      <th class="success" width="20%">計費時數</th> 
-                      <td  width="40%">
-                        <div class="input-group">
-                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
-                        </div>
-                      </td> 
-                      <td  width="20%" class="success">車位編號</td> 
-                      <td  width="40%">
-                        <div class="input-group">
-                          <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
-                        </div>
-                      </td>  
-                    </tr> 
-                  </tbody> 
-                </table>
-                <button type="button" class="btn btn-default" style="margin-left:10px">列印入場聯</button>
-                <button type="button" class="btn btn-danger">列印結帳聯</button> 
+            <div class="tab-content" >
+              <div role="tabpanel" class="tab-panel panel panel-default active" id="home">
+                <div  class="panel-body" style="min-height:300px"> 
+                  <div id="CFList" v-show="displayCFList">
+                    <button type="button" v-on:click="selectForm(k)" class="btn btn-lg" :class="btnColors[k%6]" v-for="(v,k) in customForms">{{v.F_CF_TITLE}}</button>
+                  </div>
+                
+                  <div id="formDetail" v-show="displayDetail">
+                    <form id="myform" action="" method="post">
+                      <table class="table table-hover table-bordered"> 
+                        <tbody> 
+                          <tr> 
+                            <th class="success" width="20%">進場時間</th> 
+                            <td  width="30%">
+                              <div class='input-group date' id='datetimepicker1'>
+                                <input type="text" name="start-time"  class="form-control" placeholder="" aria-describedby="basic-addon2">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                              </div>
+                            </td> 
+                            <td  width="20%" class="success">離場時間</td> 
+                            <td  width="30%">
+                              <div class='input-group date' id='datetimepicker2'>
+                                <input type="text" class="form-control"  name="end-time" aria-describedby="basic-addon2">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                              </div>
+                            </td>  
+                          </tr> 
+                          <tr> 
+                            <th class="success" width="20%">姓名</th> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" class="form-control" :value="liverName" readonly name="liver-name" placeholder="" aria-describedby="basic-addon2">
+                              </div>
+                            </td> 
+                            <td  width="20%" class="success">戶號</td> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" class="form-control" readonly :value="liverDid" placeholder="" name="liver-id" aria-describedby="basic-addon2">
+                              </div>
+                            </td>  
+                          </tr> 
+                          <tr v-show="customForm.F_ITEM1_TITLE!=''"> 
+                            <th class="success" width="20%">{{customForm.F_ITEM1_TITLE}}</th> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input name="name-item1" type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                              </div>
+                            </td> 
+                            <td  width="20%" class="success">{{customForm.F_ITEM2_TITLE}}</td> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" name="name-item2" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                              </div>
+                            </td>  
+                          </tr> 
+                          <tr v-show="customForm.F_ITEM3_TITLE!=' '"> 
+                            <th class="success" width="20%">{{customForm.F_ITEM3_TITLE}}</th> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" name="name-item3" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                              </div>
+                            </td> 
+                            <td  width="20%" class="success">{{customForm.F_ITEM4_TITLE}}</td> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" name="name-item4" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                              </div>
+                            </td>  
+                          </tr> 
+                          <tr v-show="customForm.F_ITEM5_TITLE !=' '"> 
+                            <th class="success" width="20%">{{customForm.F_ITEM5_TITLE}}</th> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" class="form-control" name="name-item5" placeholder="" aria-describedby="basic-addon2">
+                              </div>
+                            </td> 
+                            <td  width="20%" class="success">{{customForm.F_ITEM6_TITLE}}</td> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" class="form-control" placeholder="" name="name-item6" aria-describedby="basic-addon2">
+                              </div>
+                            </td>  
+                          </tr> 
+                          <tr v-show="customForm.F_ITEM7_TITLE!=' '"> 
+                            <th class="success" width="20%">{{customForm.F_ITEM7_TITLE}}</th> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" class="form-control" placeholder="" name="name-item7" aria-describedby="basic-addon2">
+                              </div>
+                            </td> 
+                            <td  width="20%" class="success">{{customForm.F_ITEM8_TITLE}}</td> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" class="form-control" placeholder="" name="name-item8" aria-describedby="basic-addon2">
+                              </div>
+                            </td>  
+                          </tr> 
+                          <tr v-show="customForm.F_ITEM9_TITLE!=' '"> 
+                            <th class="success" width="20%">{{customForm.F_ITEM9_TITLE}}</th> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" class="form-control" placeholder=""  name="name-item9" aria-describedby="basic-addon2">
+                              </div>
+                            </td> 
+                            <td  width="20%" class="success">{{customForm.F_ITEM10_TITLE}}</td> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" name="name-item10" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                              </div>
+                            </td>  
+                          </tr> 
+                          <tr> 
+                            <th class="success" width="20%">計費單位</th> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input type="text" class="form-control" name='unit-type' readonly :value="customForm.F_CF_UNIT_TYPE">
+                              </div>
+                            </td> 
+                            <td  width="20%" class="success">單位金額</td> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input  type="text" class="form-control" name='unit-price' :value="customForm.F_UNIT_PRICE">
+                              </div>
+                            </td>  
+                          </tr> 
+                        </tbody> 
+                      </table>
+                      <button id="startPrint" type="button" class="btn btn-default" style="margin-left:10px">列印入場聯</button>
+                      <button id="endPrint" type="button" class="btn btn-danger">列印結帳聯</button> 
+                    </form>
+                  </div>
+                  
+                </div>
               </div>
-              <div role="tabpanel" class="tab-pane" id="profile">...</div>
-              <div role="tabpanel" class="tab-pane" id="messages">...</div>
-              <div role="tabpanel" class="tab-pane" id="settings">...</div>
             </div>
           </div>
           <div class="bs-example" data-example-id="hoverable-table"> 
             <table class="table table-hover table-bordered"> 
               <thead> 
+                <tr  class="info " style="color: #a94442;background-color: #f2dede !important;border-color: #ebccd1;">  
+                  <th colspan="5" class="alert-danger">未結帳</th> 
+                </tr>
                 <tr class="info"> 
-                  <th>棟別</th> 
                   <th>戶號</th> 
-                  <th>姓名</th> 
-                  <th>開始時間</th> 
+                  <th>主分類</th> 
+                  <th>表單名稱</th> 
+                  <th>費用</th> 
+                  <th>起始時間</th> 
                 </tr> 
               </thead> 
               <tbody> 
-                <tr> <th scope="row">1</th> <td>Mark</td> <td>Otto</td> <td>@mdo</td> </tr> 
-                <tr> <th scope="row">2</th> <td>Jacob</td> <td>Thornton</td> <td>@fat</td> </tr> 
-                <tr> <th scope="row">3</th> <td>Larry</td> <td>the Bird</td> <td>@twitter</td> </tr> 
+                <tr> 
+                  <th >1-1</th> 
+                  <td>停車</td> 
+                  <td>臨時停車費用</td> 
+                  <td>20元</td> 
+                  <td>2019/05/02 AM:10~PM8</td> 
+                </tr>
+                <tr> 
+                  <th >1-1</th> 
+                  <td>事務</td> 
+                  <td>臨時停車費用</td> 
+                  <td>20元</td> 
+                  <td>2019/05/02 AM:10~PM8</td> 
+                </tr> 
+                <tr> 
+                  <th >1-1</th> 
+                  <td>公設</td> 
+                  <td>臨時停車費用</td> 
+                  <td>20元</td> 
+                  <td>2019/05/02 AM:10~PM8</td> 
+                </tr>
+              </tbody> 
+            </table> 
+            <table class="table table-hover table-bordered"> 
+              <thead> 
+                <tr  class="info">  
+                  <th colspan="5" class="alert-success">已結帳</th> 
+                </tr>
+                <tr class="info"> 
+                  <th>戶號</th> 
+                  <th>主分類</th> 
+                  <th>表單名稱</th> 
+                  <th>費用</th> 
+                  <th>起始時間</th> 
+                </tr> 
+              </thead> 
+              <tbody> 
+                <tr> 
+                  <th >1-1</th> 
+                  <td>停車</td> 
+                  <td>臨時停車費用</td> 
+                  <td>20元</td> 
+                  <td>2019/05/02 AM:10~PM8</td> 
+                </tr>
+                <tr> 
+                  <th >1-1</th> 
+                  <td>事務</td> 
+                  <td>臨時停車費用</td> 
+                  <td>20元</td> 
+                  <td>2019/05/02 AM:10~PM8</td> 
+                </tr> 
+                <tr> 
+                  <th >1-1</th> 
+                  <td>公設</td> 
+                  <td>臨時停車費用</td> 
+                  <td>20元</td> 
+                  <td>2019/05/02 AM:10~PM8</td> 
+                </tr>
               </tbody> 
             </table> 
           </div>
@@ -177,27 +322,140 @@
     </footer>
     <script type="text/javascript">
       //left-list
+      var printData = {}; 
+      var mrDetail = new Vue({
+        el: '#mrDetail',
+        data: {
+          classes: [
+            
+          ],
+          subclasses: {
+          },
+          customForms: [],
+          customForm: {},
+          liverName: "",
+          liverDid: "",
+          currentTab: 1,
+          displaySubClass: true,
+          displayCFList: true,
+          displayDetail: false,
+          chooseSubClass: 1,
+          chooseClass: 1,
+          btnColors: ['btn-default','btn-primary','btn-success',"btn-info",'btn-warning','btn-danger'],
+          cf: {}
+        },
+        methods: {
+          switchTab: function (key) {
+            // `this` inside methods points to the Vue instance
+            currentTab = key;
+            this.customForms = this.classes[key].customForms;
+            this.displayCFList = true;
+            this.displayDetail = false;
+            this.chooseClass = key;
+            this.liverName = "";
+            this.liverDid = "";
+            console.log(123);
+          },
+          selectForm: function(key){
+            this.liverName = "";
+            this.liverDid = "";
+            this.displayCFList = false;
+            this.displayDetail = true;
+            this.customForm = this.customForms[key];
+          }
+        }
+      });
       var liveList = new Vue({
         el: '#left-list',
         data: {
           list: []
+        },
+        methods: {
+          selectLiver: function(did,name){
+            mrDetail.liverName = name;
+            mrDetail.liverDid = did;
+          }
         }
       })
       var exec = require('child_process').exec,
           child;
       const request = require("request");
       $(document).ready(function(){
-        // $('#myTabs a').click(function (e) {
-        //   e.preventDefault()
-        //   $(this).tab('show')
-        // })
-        request(config.apiHost + 'api/liverList/'+currentCust+'/000/000', function (error, response, body) {
+        var startTime = $("input[name='start-time']");
+        var endTime = $("input[name='end-time']");
+        var liverName = $("input[name='liver-name']");
+        var liverDid = $("input[name='liver-did']");
+        var unitType = $("input[name='unit-type']");
+        var unitPrice = $("input[name='unit-price']");
+        var startPrint = $("#startPrint");
+        var endPrint = $("#endPrint");
+        request(config.apiHost + 'api/mrData/'+currentCust+'/000/000', function (error, response, body) {
           var resObj = JSON.parse(body);
           console.log(resObj);
-          liveList.list = resObj; 
-
+          liveList.list = resObj.liver; 
+          mrDetail.classes = resObj.mr; 
+          mrDetail.switchTab(1);
         });
+
         $('#datetimepicker1').datetimepicker();
+        $('#datetimepicker2').datetimepicker();
+        startPrint.click(function(){
+          checkForm("");
+          const postData = $("#myform").serialize();
+          $.ajax(config.apiHost + 'post/mrcheckin' , {
+            type: "POST",
+            data: postData+"&cuid="+currentCust,
+            dataType: 'json',
+            complete: function(data,status){
+              //console.log(data);
+              mrDetail.displayCFList = true;
+              mrDetail.displayDetail = false;
+              alert("儲存完成!");
+              window.open("print/mrCheckin.html");
+              console.log(data);
+            }
+          });
+        });
+        endPrint.click(function(){
+          checkForm("end");
+          const postData = $("#myform").serialize();
+          $.ajax(config.apiHost + 'post/mrcheckin' , {
+            type: "POST",
+            data: postData+"&cuid="+currentCust,
+            dataType: 'json',
+            complete: function(data,status){
+              //console.log(data);
+              printData = $("#myform").serializeArray();
+              window.open();
+              alert("儲存完成!");
+              console.log(data);
+            }
+          });
+        });
+        var checkForm = function(type){
+          if(type == 'end'){
+            if(endTime.val()==''){
+              alert("請輸入結束時間");
+              return false;
+            }
+          }
+          if(startTime.val()==''){
+            alert("請輸入開始時間");
+            return false;
+          }
+          if(liverName.val()==''){
+            alert("請輸入住戶名稱");
+            return false;
+          }
+          if(liverDid.val()==''){
+            alert("請輸入住戶戶號");
+            return false;
+          }
+          if(unitPrice.val()==''){
+            alert("請輸入單位金額");
+            return false;
+          }
+        }
       });
     </script>
     <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
