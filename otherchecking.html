@@ -180,7 +180,7 @@
       			let d = new Date(ym+"-01");
       		}
       		let dLast = new Date(d.getFullYear(),d.getMonth(),0);
-          //console.log(config.apiHost + `api/scheduleByCoworker/${currentCust}/${ym}`);
+          console.log(config.apiHost + `api/scheduleByCoworker/${currentCust}/${ym}`);
           request(config.apiHost + `api/scheduleByCoworker/${currentCust}/${ym}`, function (error, response, body) {
             $("#classList").show();
             if(error == null){
@@ -201,7 +201,7 @@
                   }));  
                 }
               }
-              //console.log(schedule);
+              console.log(schedule);
               vueClassList.schedule = schedule;
             }else{
               alert("error 請通知管理員!");

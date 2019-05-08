@@ -104,6 +104,7 @@
                 
                   <div id="formDetail" v-show="displayDetail">
                     <form id="myform" action="" method="post">
+                      <input type="hidden" name="cf-id" :value="customForm.F_CF_ID">
                       <table class="table table-hover table-bordered"> 
                         <tbody> 
                           <tr> 
@@ -245,32 +246,19 @@
                   <th>戶號</th> 
                   <th>主分類</th> 
                   <th>表單名稱</th> 
-                  <th>費用</th> 
+                  <th>單價</th> 
                   <th>起始時間</th> 
                 </tr> 
               </thead> 
               <tbody> 
-                <tr> 
-                  <th >1-1</th> 
-                  <td>停車</td> 
-                  <td>臨時停車費用</td> 
-                  <td>20元</td> 
-                  <td>2019/05/02 AM:10~PM8</td> 
+                <tr v-for="(val,key) in checkin"> 
+                  <th >{{val.F_DID}}</th> 
+                  <td>{{val.F_CLASS_NAME}}</td> 
+                  <td>{{val.F_CF_TITLE}}</td> 
+                  <td>{{val.F_UNIT_PRICE}}元</td> 
+                  <td>{{val.F_START_TIME}}~{{val.F_END_TIME}}</td> 
                 </tr>
-                <tr> 
-                  <th >1-1</th> 
-                  <td>事務</td> 
-                  <td>臨時停車費用</td> 
-                  <td>20元</td> 
-                  <td>2019/05/02 AM:10~PM8</td> 
-                </tr> 
-                <tr> 
-                  <th >1-1</th> 
-                  <td>公設</td> 
-                  <td>臨時停車費用</td> 
-                  <td>20元</td> 
-                  <td>2019/05/02 AM:10~PM8</td> 
-                </tr>
+                
               </tbody> 
             </table> 
             <table class="table table-hover table-bordered"> 
@@ -342,7 +330,9 @@
           chooseSubClass: 1,
           chooseClass: 1,
           btnColors: ['btn-default','btn-primary','btn-success',"btn-info",'btn-warning','btn-danger'],
-          cf: {}
+          cf: {},
+          checkin: [],
+          checkout: []
         },
         methods: {
           switchTab: function (key) {
@@ -395,12 +385,16 @@
           liveList.list = resObj.liver; 
           mrDetail.classes = resObj.mr; 
           mrDetail.switchTab(1);
+          mrDetail.checkin = resObj.mrCheckin;
+          mrDetail.checkout = resObj.mrCheckout;
         });
 
-        $('#datetimepicker1').datetimepicker();
-        $('#datetimepicker2').datetimepicker();
+        $('#datetimepicker1').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
+        $('#datetimepicker2').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
         startPrint.click(function(){
-          checkForm("");
+          if(checkForm("") == false){
+            return;
+          }
           const postData = $("#myform").serialize();
           $.ajax(config.apiHost + 'post/mrcheckin' , {
             type: "POST",
