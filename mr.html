@@ -105,13 +105,14 @@
                   <div id="formDetail" v-show="displayDetail">
                     <form id="myform" action="" method="post">
                       <input type="hidden" name="cf-id" :value="customForm.F_CF_ID">
+                      <input type="hidden" name="record-id" :value="customForm.F_RECORD_ID">
                       <table class="table table-hover table-bordered"> 
                         <tbody> 
                           <tr> 
                             <th class="success" width="20%">進場時間</th> 
                             <td  width="30%">
                               <div class='input-group date' id='datetimepicker1'>
-                                <input type="text" name="start-time"  class="form-control" placeholder="" aria-describedby="basic-addon2">
+                                <input type="text" name="start-time"  class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_START_TIME">
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span>
@@ -120,7 +121,7 @@
                             <td  width="20%" class="success">離場時間</td> 
                             <td  width="30%">
                               <div class='input-group date' id='datetimepicker2'>
-                                <input type="text" class="form-control"  name="end-time" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control"  name="end-time" aria-describedby="basic-addon2" :value="customForm.F_END_TIME">
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span>
@@ -145,13 +146,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM1_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input name="name-item1" type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                                <input name="name-item1" type="text" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM1_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM2_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item2" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                                <input type="text" name="name-item2" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM2_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -159,13 +160,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM3_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item3" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                                <input type="text" name="name-item3" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM3_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM4_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item4" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                                <input type="text" name="name-item4" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM4_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -173,13 +174,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM5_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" name="name-item5" placeholder="" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" name="name-item5" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM5_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM6_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item6" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" placeholder="" name="name-item6" aria-describedby="basic-addon2" :value="customForm.F_ITEM6_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -187,13 +188,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM7_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item7" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" placeholder="" name="name-item7" aria-describedby="basic-addon2" :value="customForm.F_ITEM7_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM8_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item8" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" placeholder="" name="name-item8" aria-describedby="basic-addon2" :value="customForm.F_ITEM8_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -201,13 +202,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM9_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder=""  name="name-item9" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" placeholder=""  name="name-item9" aria-describedby="basic-addon2" :value="customForm.F_ITEM9_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM10_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item10" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                                <input type="text" name="name-item10" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM10_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -225,10 +226,18 @@
                               </div>
                             </td>  
                           </tr> 
+                          <tr>
+                            <td colspan="2">
+                              備註
+                              <textarea name="cf-note" class="form-control" rows="3">{{customForm.F_CF_NOTE}}</textarea>
+                            </td>
+                          </tr>
                         </tbody> 
                       </table>
-                      <button id="startPrint" type="button" class="btn btn-default" style="margin-left:10px">列印入場聯</button>
-                      <button id="endPrint" type="button" class="btn btn-danger">列印結帳聯</button> 
+                      <button id="btnCheckin" type="button" :disabled="customForm.F_RECORD_ID!=''" class="btn btn-info" style="margin-left:10px">入場</button>
+                      <button id="btnCheckout" type="button" :disabled="customForm.F_CHECKOUT=='1'" class="btn btn-warning">結帳</button> 
+                      <button v-on:click="startPrint()" :disabled="customForm.F_RECORD_ID!=''" type="button"  class="btn btn-secondary" style="margin-left:10px">入場列印</button>
+                      <button v-on:click="endPrint()" :disabled="customForm.F_CKECKOUT=='1'" type="button" class="btn btn-success">結帳列印</button> 
                     </form>
                   </div>
                   
@@ -240,7 +249,7 @@
             <table class="table table-hover table-bordered"> 
               <thead> 
                 <tr  class="info " style="color: #a94442;background-color: #f2dede !important;border-color: #ebccd1;">  
-                  <th colspan="5" class="alert-danger">未結帳</th> 
+                  <th colspan="6" class="alert-danger">未結帳</th> 
                 </tr>
                 <tr class="info"> 
                   <th>戶號</th> 
@@ -248,6 +257,7 @@
                   <th>表單名稱</th> 
                   <th>單價</th> 
                   <th>起始時間</th> 
+                  <th>功能</th> 
                 </tr> 
               </thead> 
               <tbody> 
@@ -256,15 +266,18 @@
                   <td>{{val.F_CLASS_NAME}}</td> 
                   <td>{{val.F_CF_TITLE}}</td> 
                   <td>{{val.F_UNIT_PRICE}}元</td> 
-                  <td>{{val.F_START_TIME}}~{{val.F_END_TIME}}</td> 
+                  <td>{{val.F_START_TIME}}</td> 
+                  <td>
+                    <button class="btn btnLoadCheckin" v-on:click="loadCheckin(val.F_RECORD_ID)" type="button">載入</button>
+                    <button class="btn btn-danger btnCancelCheckin" v-on:click="CancelCheckin(val.F_RECORD_ID)" >作廢</button>
+                  </td> 
                 </tr>
-                
               </tbody> 
             </table> 
             <table class="table table-hover table-bordered"> 
               <thead> 
                 <tr  class="info">  
-                  <th colspan="5" class="alert-success">已結帳</th> 
+                  <th colspan="6" class="alert-success">已結帳</th> 
                 </tr>
                 <tr class="info"> 
                   <th>戶號</th> 
@@ -272,29 +285,20 @@
                   <th>表單名稱</th> 
                   <th>費用</th> 
                   <th>起始時間</th> 
+                  <th>功能</th> 
                 </tr> 
               </thead> 
               <tbody> 
-                <tr> 
-                  <th >1-1</th> 
-                  <td>停車</td> 
-                  <td>臨時停車費用</td> 
-                  <td>20元</td> 
-                  <td>2019/05/02 AM:10~PM8</td> 
-                </tr>
-                <tr> 
-                  <th >1-1</th> 
-                  <td>事務</td> 
-                  <td>臨時停車費用</td> 
-                  <td>20元</td> 
-                  <td>2019/05/02 AM:10~PM8</td> 
-                </tr> 
-                <tr> 
-                  <th >1-1</th> 
-                  <td>公設</td> 
-                  <td>臨時停車費用</td> 
-                  <td>20元</td> 
-                  <td>2019/05/02 AM:10~PM8</td> 
+                <tr v-for="(val,key) in checkout"> 
+                  <th >{{val.F_DID}}</th> 
+                  <td>{{val.F_CLASS_NAME}}</td> 
+                  <td>{{val.F_CF_TITLE}}</td> 
+                  <td>{{val.F_UNIT_PRICE}}元</td> 
+                  <td>{{val.F_START_TIME}}</td> 
+                  <td>
+                    <button class="btn btnLoadCheckout" v-on:click="loadCheckin(val.F_RECORD_ID)" type="button">載入</button>
+                    <button class="btn btn-danger btnCancelCheckiout" v-on:click="CancelCheckin(val.F_RECORD_ID)" >作廢</button>
+                  </td> 
                 </tr>
               </tbody> 
             </table> 
@@ -344,7 +348,6 @@
             this.chooseClass = key;
             this.liverName = "";
             this.liverDid = "";
-            console.log(123);
           },
           selectForm: function(key){
             this.liverName = "";
@@ -352,6 +355,45 @@
             this.displayCFList = false;
             this.displayDetail = true;
             this.customForm = this.customForms[key];
+          },
+          loadCheckin: function(recordId){
+            let recordRow = this.checkout[recordId];
+            this.switchTab(recordRow.F_CLASS_ID);
+            this.displayCFList = false;
+            this.displayDetail = true;
+            let customForm = this.classes[recordRow.F_CLASS_ID].customForms[recordRow.F_CF_ID];
+            let mergeObj = _.merge(recordRow,customForm);
+            this.liverName = mergeObj.F_LIVER_NAME;
+            this.liverDid = mergeObj.F_DID;
+            this.customForm = _.merge(recordRow,customForm);
+          },
+          CancelCheckin: function(recordId){
+            if(confirm("確定要作廢?")==false){
+              return false;
+            }
+            $.ajax(config.apiHost + 'post/mrCancel' , {
+              type: "POST",
+              data: "record-id="+recordId+"&cuid="+currentCust,
+              dataType: 'json',
+              complete: function(data,status){
+                console.log(data);
+                let obj = data.responseJSON;
+                mrDetail.displayCFList = true;
+                mrDetail.displayDetail = false;
+                alert("作廢完成!");
+                console.log(obj);
+                mrDetail.checkin = obj.checkinRecord;
+                mrDetail.checkout = obj.checkoutRecord;
+              }
+            });
+          },
+          startPrint: function(){
+            printData = this.customForm;
+            window.open("print/mrCheckin.html");
+          },
+          endPrint: function(){
+            printData = this.customForm;
+            window.open("print/mrCheckout.html");
           }
         }
       });
@@ -369,6 +411,7 @@
       })
       var exec = require('child_process').exec,
           child;
+      var _ = require("lodash");
       const request = require("request");
       $(document).ready(function(){
         var startTime = $("input[name='start-time']");
@@ -377,6 +420,8 @@
         var liverDid = $("input[name='liver-did']");
         var unitType = $("input[name='unit-type']");
         var unitPrice = $("input[name='unit-price']");
+        var btnCheckin = $("#btnCheckin");
+        var btnCheckout = $("#btnCheckout");
         var startPrint = $("#startPrint");
         var endPrint = $("#endPrint");
         request(config.apiHost + 'api/mrData/'+currentCust+'/000/000', function (error, response, body) {
@@ -384,14 +429,18 @@
           console.log(resObj);
           liveList.list = resObj.liver; 
           mrDetail.classes = resObj.mr; 
-          mrDetail.switchTab(1);
+          mrDetail.switchTab(Object.keys(resObj.mr)[0]);
           mrDetail.checkin = resObj.mrCheckin;
           mrDetail.checkout = resObj.mrCheckout;
         });
 
         $('#datetimepicker1').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
         $('#datetimepicker2').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
-        startPrint.click(function(){
+
+        btnCheckin.click(function(){
+          if(confirm("確定要存檔?")==false){
+            return false;
+          }
           if(checkForm("") == false){
             return;
           }
@@ -402,27 +451,36 @@
             dataType: 'json',
             complete: function(data,status){
               //console.log(data);
+              let obj = data.responseJSON;
               mrDetail.displayCFList = true;
               mrDetail.displayDetail = false;
               alert("儲存完成!");
-              window.open("print/mrCheckin.html");
-              console.log(data);
+              mrDetail.checkin = obj.checkinRecord;
+              mrDetail.checkout = obj.checkoutRecord;
             }
           });
         });
-        endPrint.click(function(){
-          checkForm("end");
+        btnCheckout.click(function(){
+          if(confirm("確定要結帳?")==false){
+            return false;
+          }
+          if(checkForm("end") == false){
+            return;
+          }
           const postData = $("#myform").serialize();
-          $.ajax(config.apiHost + 'post/mrcheckin' , {
+          $.ajax(config.apiHost + 'post/mrcheckout' , {
             type: "POST",
             data: postData+"&cuid="+currentCust,
             dataType: 'json',
             complete: function(data,status){
-              //console.log(data);
-              printData = $("#myform").serializeArray();
-              window.open();
-              alert("儲存完成!");
               console.log(data);
+              let obj = data.responseJSON;
+              mrDetail.displayCFList = true;
+              mrDetail.displayDetail = false;
+              alert("結帳完成!");
+              console.log(obj);
+              mrDetail.checkin = obj.checkinRecord;
+              mrDetail.checkout = obj.checkoutRecord;
             }
           });
         });
