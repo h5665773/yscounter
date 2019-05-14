@@ -94,7 +94,11 @@
 			          if (fileName.match(/comport\.txt|custid\.txt/) || fileName.match(/\/$/) ) {
 			            entry.autodrain();
 			          }else{
-			            entry.pipe(fs.createWriteStream('.'+fileName.replace("yscounter-master","")));
+                  let fwt = fs.createWriteStream('.'+fileName.replace("yscounter-master",""));
+			            entry.pipe(fwt);
+                  fwt.on('error',(err)=>{
+                    console.log(err);
+                  });
 			          }
 			        });
             exec("npm i" , function(err ,data ,c){

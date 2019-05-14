@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
+    <link rel="icon" href="icon/favicon-32x32.png">
 
     <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
     <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
@@ -234,9 +234,9 @@
                           </tr>
                         </tbody> 
                       </table>
-                      <button id="btnCheckin" type="button" :disabled="customForm.F_RECORD_ID!=''" class="btn btn-info" style="margin-left:10px">入場</button>
+                      <button id="btnCheckin" type="button" :disabled="typeof(customForm.F_RECORD_ID)!='undefined'" class="btn btn-info" style="margin-left:10px">入場</button>
                       <button id="btnCheckout" type="button" :disabled="customForm.F_CHECKOUT=='1'" class="btn btn-warning">結帳</button> 
-                      <button v-on:click="startPrint()" :disabled="customForm.F_RECORD_ID!=''" type="button"  class="btn btn-secondary" style="margin-left:10px">入場列印</button>
+                      <button v-on:click="startPrint()" :disabled="typeof(customForm.F_RECORD_ID)!='undefined'" type="button"  class="btn btn-secondary" style="margin-left:10px">入場列印</button>
                       <button v-on:click="endPrint()" :disabled="customForm.F_CKECKOUT=='1'" type="button" class="btn btn-success">結帳列印</button> 
                     </form>
                   </div>
@@ -461,7 +461,7 @@
             data: postData+"&cuid="+currentCust,
             dataType: 'json',
             complete: function(data,status){
-              //console.log(data);
+              console.log(data);
               let obj = data.responseJSON;
               mrDetail.displayCFList = true;
               mrDetail.displayDetail = false;
