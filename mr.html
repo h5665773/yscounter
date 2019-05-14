@@ -296,7 +296,7 @@
                   <td>{{val.F_UNIT_PRICE}}元</td> 
                   <td>{{val.F_START_TIME}}</td> 
                   <td>
-                    <button class="btn btnLoadCheckout" v-on:click="loadCheckin(val.F_RECORD_ID)" type="button">載入</button>
+                    <button class="btn btnLoadCheckout" v-on:click="loadCheckout(val.F_RECORD_ID)" type="button">載入</button>
                     <button class="btn btn-danger btnCancelCheckiout" v-on:click="CancelCheckin(val.F_RECORD_ID)" >作廢</button>
                   </td> 
                 </tr>
@@ -357,6 +357,17 @@
             this.customForm = this.customForms[key];
           },
           loadCheckin: function(recordId){
+            let recordRow = this.checkin[recordId];
+            this.switchTab(recordRow.F_CLASS_ID);
+            this.displayCFList = false;
+            this.displayDetail = true;
+            let customForm = this.classes[recordRow.F_CLASS_ID].customForms[recordRow.F_CF_ID];
+            let mergeObj = _.merge(recordRow,customForm);
+            this.liverName = mergeObj.F_LIVER_NAME;
+            this.liverDid = mergeObj.F_DID;
+            this.customForm = _.merge(recordRow,customForm);
+          },
+          loadCheckout: function(recordId){
             let recordRow = this.checkout[recordId];
             this.switchTab(recordRow.F_CLASS_ID);
             this.displayCFList = false;
@@ -389,11 +400,11 @@
           },
           startPrint: function(){
             printData = this.customForm;
-            window.open("print/mrCheckin.html");
+            window.open("./mrCheckin.html");
           },
           endPrint: function(){
             printData = this.customForm;
-            window.open("print/mrCheckout.html");
+            window.open("./mrCheckout.html");
           }
         }
       });
