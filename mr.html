@@ -112,19 +112,19 @@
                             <th class="success" width="20%">進場時間</th> 
                             <td  width="30%">
                               <div class='input-group date' id='datetimepicker1'>
-                                <input type="text" name="start-time"  class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_START_TIME">
-                                <span class="input-group-addon">
+                                <input type="text" name="start-time"  class="form-control" placeholder="" aria-describedby="basic-addon2" readonly="readonly" :value="customForm.F_START_TIME">
+                                <!-- <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
+                                </span> -->
                               </div>
                             </td> 
                             <td  width="20%" class="success">離場時間</td> 
                             <td  width="30%">
                               <div class='input-group date' id='datetimepicker2'>
-                                <input type="text" class="form-control"  name="end-time" aria-describedby="basic-addon2" :value="customForm.F_END_TIME">
-                                <span class="input-group-addon">
+                                <input type="text" class="form-control" readonly="readonly" name="end-time" aria-describedby="basic-addon2" :value="customForm.F_END_TIME">
+                                <!-- <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
+                                </span> -->
                               </div>
                             </td>  
                           </tr> 
@@ -132,13 +132,13 @@
                             <th class="success" width="20%">姓名</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" :value="liverName" readonly name="liver-name" placeholder="" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" :value="liverName" name="liver-name" placeholder="" aria-describedby="basic-addon2">
                               </div>
                             </td> 
                             <td  width="20%" class="success">戶號</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" readonly :value="liverDid" placeholder="" name="liver-id" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" :value="liverDid" placeholder="" name="liver-id" aria-describedby="basic-addon2">
                               </div>
                             </td>  
                           </tr> 
@@ -146,7 +146,7 @@
                             <th class="success" width="20%">{{customForm.F_ITEM1_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input name="name-item1" type="text" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM1_VALUE">
+                                <input name="name-item1" @focus="scan(customForm.F_ITEM1_TITLE,$event)" type="text" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM1_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM2_TITLE}}</td> 
@@ -235,9 +235,9 @@
                         </tbody> 
                       </table>
                       <button id="btnCheckin" type="button" :disabled="typeof(customForm.F_RECORD_ID)!='undefined'" class="btn btn-info" style="margin-left:10px">入場</button>
-                      <button id="btnCheckout" type="button" :disabled="customForm.F_CHECKOUT=='1'" class="btn btn-warning">結帳</button> 
-                      <button v-on:click="startPrint()" :disabled="typeof(customForm.F_RECORD_ID)!='undefined'" type="button"  class="btn btn-secondary" style="margin-left:10px">入場列印</button>
-                      <button v-on:click="endPrint()" :disabled="customForm.F_CKECKOUT=='1'" type="button" class="btn btn-success">結帳列印</button> 
+                      <button id="btnCheckout" type="button" :disabled="customForm.F_CHECKOUT=='1' || typeof(customForm.F_RECORD_ID)=='undefined'" class="btn btn-warning">結帳</button> 
+                      <button v-on:click="startPrint()" :disabled="typeof(customForm.F_RECORD_ID)=='undefined'" type="button"  class="btn btn-secondary" style="margin-left:10px">入場列印</button>
+                      <button v-on:click="endPrint()" :disabled="customForm.F_CKECKOUT!='1' || typeof(customForm.F_RECORD_ID)=='undefined'" type="button" class="btn btn-success">結帳列印</button> 
                     </form>
                   </div>
                   
@@ -268,7 +268,7 @@
                   <td>{{val.F_UNIT_PRICE}}元</td> 
                   <td>{{val.F_START_TIME}}</td> 
                   <td>
-                    <button class="btn btnLoadCheckin" v-on:click="loadCheckin(val.F_RECORD_ID)" type="button">載入</button>
+                    <button class="btn btnLoadCheckin" v-on:click="loadCheckin(key)" type="button">載入</button>
                     <button class="btn btn-danger btnCancelCheckin" v-on:click="CancelCheckin(val.F_RECORD_ID)" >作廢</button>
                   </td> 
                 </tr>
@@ -293,11 +293,10 @@
                   <th >{{val.F_DID}}</th> 
                   <td>{{val.F_CLASS_NAME}}</td> 
                   <td>{{val.F_CF_TITLE}}</td> 
-                  <td>{{val.F_UNIT_PRICE}}元</td> 
+                  <td>{{val.F_COST_MONEY}}元</td> 
                   <td>{{val.F_START_TIME}}</td> 
                   <td>
-                    <button class="btn btnLoadCheckout" v-on:click="loadCheckout(val.F_RECORD_ID)" type="button">載入</button>
-                    <button class="btn btn-danger btnCancelCheckiout" v-on:click="CancelCheckin(val.F_RECORD_ID)" >作廢</button>
+                    <button class="btn btnLoadCheckout" v-on:click="loadCheckout(key)" type="button">載入</button>
                   </td> 
                 </tr>
               </tbody> 
@@ -315,6 +314,8 @@
     <script type="text/javascript">
       //left-list
       var printData = {}; 
+      var loading = $("#loading");
+      var loadingMask = $(".loadingMask");
       var mrDetail = new Vue({
         el: '#mrDetail',
         data: {
@@ -358,6 +359,8 @@
           },
           loadCheckin: function(recordId){
             let recordRow = this.checkin[recordId];
+            console.log(this.checkin);
+            console.log(recordRow);
             this.switchTab(recordRow.F_CLASS_ID);
             this.displayCFList = false;
             this.displayDetail = true;
@@ -405,6 +408,28 @@
           endPrint: function(){
             printData = this.customForm;
             window.open("./mrCheckout.html");
+          },
+          scan: function(title,e){
+            if(title != '車號(etag)'){
+              return;
+            }
+            loadingMask.css("display","block");
+            loading.removeClass("rotateOut");
+            loading.css("display","block");
+            loading.addClass("rotateIn");
+            exec("python scan.py" , function(err ,data ,c){
+              if(err == null && data.length > 0){
+                let scanId = data.trim();
+                console.log(scanId);
+                e.target.value=scanId;
+              }else{
+                loadingMask.css("display","none");
+                loading.css("display","none");
+                loading.removeClass("rotateIn");
+                loading.addClass("rotateOut");
+                console.log(err);
+              }
+            });
           }
         }
       });
@@ -449,7 +474,7 @@
         $('#datetimepicker2').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
 
         btnCheckin.click(function(){
-          if(confirm("確定要存檔?")==false){
+          if(confirm("確定要入場?")==false){
             return false;
           }
           if(checkForm("") == false){
@@ -461,8 +486,8 @@
             data: postData+"&cuid="+currentCust,
             dataType: 'json',
             complete: function(data,status){
-              console.log(data);
               let obj = data.responseJSON;
+              console.log(obj.checkinRecord);
               mrDetail.displayCFList = true;
               mrDetail.displayDetail = false;
               alert("儲存完成!");
@@ -496,16 +521,6 @@
           });
         });
         var checkForm = function(type){
-          if(type == 'end'){
-            if(endTime.val()==''){
-              alert("請輸入結束時間");
-              return false;
-            }
-          }
-          if(startTime.val()==''){
-            alert("請輸入開始時間");
-            return false;
-          }
           if(liverName.val()==''){
             alert("請輸入住戶名稱");
             return false;
