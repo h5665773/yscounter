@@ -229,7 +229,7 @@
                       <button id="btnCheckin" type="button" :disabled="typeof(customForm.F_RECORD_ID)!='undefined'" class="btn btn-info" style="margin-left:10px">入場</button>
                       <button id="btnCheckout" type="button" :disabled="customForm.F_CHECKOUT=='1' || typeof(customForm.F_RECORD_ID)=='undefined'" class="btn btn-warning">結帳</button> 
                       <button v-on:click="startPrint()" :disabled="typeof(customForm.F_RECORD_ID)=='undefined'" type="button"  class="btn btn-secondary" style="margin-left:10px">入場列印</button>
-                      <button v-on:click="endPrint()" :disabled="customForm.F_CKECKOUT!='1' || typeof(customForm.F_RECORD_ID)=='undefined'" type="button" class="btn btn-success">結帳列印</button> 
+                      <button v-on:click="endPrint()" :disabled="typeof(customForm.F_RECORD_ID)=='undefined'" type="button" class="btn btn-success">結帳列印</button> 
                     </form>
                   </div>
                   
@@ -241,12 +241,21 @@
             <table class="table table-hover table-bordered"> 
               <thead> 
                 <tr  class="info " style="color: #a94442;background-color: #f2dede !important;border-color: #ebccd1;">  
-                  <th colspan="6" class="alert-danger">未結帳</th> 
+                  <th colspan="5" class="alert-danger">未結帳</th> 
+                  <th colspan="2" class="alert-danger">
+                    <div class="input-group">
+                      <input type="text" class="form-control" id="keywordRecord" placeholder="輸入關鍵字">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" @click="searchRecord" type="button">搜尋!</button>
+                      </span>
+                    </div><!-- /input-group -->
+                  </th> 
                 </tr>
                 <tr class="info"> 
-                  <th>戶號</th> 
                   <th>主分類</th> 
-                  <th>表單名稱</th> 
+                  <th>表單名稱</th>
+                  <th>戶號</th>  
+                  <th>姓名</th>  
                   <th>單價</th> 
                   <th>起始時間</th> 
                   <th>功能</th> 
@@ -254,9 +263,10 @@
               </thead> 
               <tbody> 
                 <tr v-for="(val,key) in checkin"> 
-                  <th >{{val.F_DID}}</th> 
                   <td>{{val.F_CLASS_NAME}}</td> 
                   <td>{{val.F_CF_TITLE}}</td> 
+                  <td >{{val.F_DID}}</td> 
+                  <td >{{val.F_LIVER_NAME}}</td> 
                   <td>{{val.F_UNIT_PRICE}}元</td> 
                   <td>{{val.F_START_TIME}}</td> 
                   <td>
@@ -269,12 +279,13 @@
             <table class="table table-hover table-bordered"> 
               <thead> 
                 <tr  class="info">  
-                  <th colspan="6" class="alert-success">已結帳</th> 
+                  <th colspan="7" class="alert-success">已結帳</th> 
                 </tr>
                 <tr class="info"> 
-                  <th>戶號</th> 
                   <th>主分類</th> 
                   <th>表單名稱</th> 
+                  <th>戶號</th> 
+                  <th>姓名</th> 
                   <th>費用</th> 
                   <th>起始時間</th> 
                   <th>功能</th> 
@@ -282,9 +293,10 @@
               </thead> 
               <tbody> 
                 <tr v-for="(val,key) in checkout"> 
-                  <th >{{val.F_DID}}</th> 
                   <td>{{val.F_CLASS_NAME}}</td> 
                   <td>{{val.F_CF_TITLE}}</td> 
+                  <th >{{val.F_DID}}</th> 
+                  <th >{{val.F_LIVER_NAME}}</th> 
                   <td>{{val.F_COST_MONEY}}元</td> 
                   <td>{{val.F_START_TIME}}</td> 
                   <td>
@@ -343,11 +355,13 @@
             this.liverDid = "";
           },
           selectForm: function(key){
+            var d = new Date();
             this.liverName = "";
             this.liverDid = "";
             this.displayCFList = false;
             this.displayDetail = true;
             this.customForm = this.customForms[key];
+            this.customForm.F_START_TIME = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
           },
           loadCheckin: function(recordId){
             let recordRow = this.checkin[recordId];
@@ -364,6 +378,7 @@
           },
           loadCheckout: function(recordId){
             let recordRow = this.checkout[recordId];
+            console.log(recordRow);
             this.switchTab(recordRow.F_CLASS_ID);
             this.displayCFList = false;
             this.displayDetail = true;
@@ -402,6 +417,7 @@
             window.open("./mrCheckout.html");
           },
           scan: function(title,e){
+            return false;
             if(title != '車號(etag)'){
               return;
             }
@@ -422,7 +438,28 @@
                 console.log(err);
               }
             });
+          },
+          searchRecord: function(e){
+            let keyword = $("#keywordRecord").val();
+            console.log(keyword);
+            if(keyword == "" || keyword.length<2){
+              alert("請至少輸入兩個以上的關鍵字!!");
+              return false;
+            }
+            $.ajax(config.apiHost + 'api/mrRecord' , {
+              type: "POST",
+              data: "keyword="+keyword+"&cuid="+currentCust,
+              dataType: 'json',
+              complete: function(data,status){
+                console.log(data);
+                let obj = data.responseJSON;
+                console.log(obj);
+                mrDetail.checkin = obj.checkinRecord;
+                mrDetail.checkout = obj.checkoutRecord;
+              }
+            });
           }
+
         }
       });
       var liveList = new Vue({
@@ -513,14 +550,14 @@
           });
         });
         var checkForm = function(type){
-          if(liverName.val()==''){
-            alert("請輸入住戶名稱");
-            return false;
-          }
-          if(liverDid.val()==''){
-            alert("請輸入住戶戶號");
-            return false;
-          }
+          // if(liverName.val()==''){
+          //   alert("請輸入住戶名稱");
+          //   return false;
+          // }
+          // if(liverDid.val()==''){
+          //   alert("請輸入住戶戶號");
+          //   return false;
+          // }
           if(unitPrice.val()==''){
             alert("請輸入單位金額");
             return false;
