@@ -241,7 +241,7 @@
             <table class="table table-hover table-bordered"> 
               <thead> 
                 <tr  class="info " style="color: #a94442;background-color: #f2dede !important;border-color: #ebccd1;">  
-                  <th colspan="5" class="alert-danger">未結帳</th> 
+                  <th colspan="6" class="alert-danger">未結帳</th> 
                   <th colspan="2" class="alert-danger">
                     <div class="input-group">
                       <input type="text" class="form-control" id="keywordRecord" placeholder="輸入關鍵字">
@@ -254,6 +254,7 @@
                 <tr class="info"> 
                   <th>主分類</th> 
                   <th>表單名稱</th>
+                  <th>代碼</th>
                   <th>戶號</th>  
                   <th>姓名</th>  
                   <th>單價</th> 
@@ -265,6 +266,7 @@
                 <tr v-for="(val,key) in checkin"> 
                   <td>{{val.F_CLASS_NAME}}</td> 
                   <td>{{val.F_CF_TITLE}}</td> 
+                  <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} : <br>{{val.F_ITEM1_VALUE}}</td> 
                   <td >{{val.F_DID}}</td> 
                   <td >{{val.F_LIVER_NAME}}</td> 
                   <td>{{val.F_UNIT_PRICE}}元</td> 
@@ -279,11 +281,12 @@
             <table class="table table-hover table-bordered"> 
               <thead> 
                 <tr  class="info">  
-                  <th colspan="7" class="alert-success">已結帳</th> 
+                  <th colspan="8" class="alert-success">已結帳</th> 
                 </tr>
                 <tr class="info"> 
                   <th>主分類</th> 
                   <th>表單名稱</th> 
+                  <th>代碼</th>
                   <th>戶號</th> 
                   <th>姓名</th> 
                   <th>費用</th> 
@@ -295,6 +298,7 @@
                 <tr v-for="(val,key) in checkout"> 
                   <td>{{val.F_CLASS_NAME}}</td> 
                   <td>{{val.F_CF_TITLE}}</td> 
+                  <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} :<br> {{val.F_ITEM1_VALUE}}</td> 
                   <th >{{val.F_DID}}</th> 
                   <th >{{val.F_LIVER_NAME}}</th> 
                   <td>{{val.F_COST_MONEY}}元</td> 
@@ -365,8 +369,7 @@
           },
           loadCheckin: function(recordId){
             let recordRow = this.checkin[recordId];
-            console.log(this.checkin);
-            console.log(recordRow);
+            
             this.switchTab(recordRow.F_CLASS_ID);
             this.displayCFList = false;
             this.displayDetail = true;
@@ -378,7 +381,7 @@
           },
           loadCheckout: function(recordId){
             let recordRow = this.checkout[recordId];
-            console.log(recordRow);
+            
             this.switchTab(recordRow.F_CLASS_ID);
             this.displayCFList = false;
             this.displayDetail = true;
@@ -397,12 +400,12 @@
               data: "record-id="+recordId+"&cuid="+currentCust,
               dataType: 'json',
               complete: function(data,status){
-                console.log(data);
+                
                 let obj = data.responseJSON;
                 mrDetail.displayCFList = true;
                 mrDetail.displayDetail = false;
                 alert("作廢完成!");
-                console.log(obj);
+                
                 mrDetail.checkin = obj.checkinRecord;
                 mrDetail.checkout = obj.checkoutRecord;
               }
@@ -516,7 +519,7 @@
             dataType: 'json',
             complete: function(data,status){
               let obj = data.responseJSON;
-              console.log(obj.checkinRecord);
+              //console.log(obj.checkinRecord);
               mrDetail.displayCFList = true;
               mrDetail.displayDetail = false;
               alert("儲存完成!");
@@ -538,12 +541,12 @@
             data: postData+"&cuid="+currentCust,
             dataType: 'json',
             complete: function(data,status){
-              console.log(data);
+              //console.log(data);
               let obj = data.responseJSON;
               mrDetail.displayCFList = true;
               mrDetail.displayDetail = false;
               alert("結帳完成!");
-              console.log(obj);
+              //console.log(obj);
               mrDetail.checkin = obj.checkinRecord;
               mrDetail.checkout = obj.checkoutRecord;
             }
