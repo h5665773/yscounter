@@ -62,7 +62,7 @@
 
     <!-- Begin page content -->
     <div class="container main" >
-      <div class="row">
+      <div class="row" id="mrDetail">
         <div class="col-md-3 left-side">
           <div class="input-group">
             <input type="text" class="form-control" id="filter-did" placeholder="" aria-describedby="basic-addon2">
@@ -73,11 +73,11 @@
               住戶名單
             </a>
           </div>
-          <div class="list-group" id="left-list" style="height:400px;overflow-y: scroll">
-            <a href="#" v-on:click="selectLiver(liver.F_CU_DID,liver.F_OWNER_NAME)" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-show="liver.hide == false" v-for="liver in list">{{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
+          <div class="list-group" style="height:400px;overflow-y: scroll">
+            <a href="#" v-on:click="selectLiver(liver.F_CU_DID,liver.F_OWNER_NAME)" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-show="liver.hide == false" v-for="liver in liverList">{{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
           </div>
         </div>
-        <div class="col-md-9" id="mrDetail">
+        <div class="col-md-9" >
           <div>
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
@@ -302,7 +302,7 @@
                   <th >{{val.F_DID}}</th> 
                   <th >{{val.F_LIVER_NAME}}</th> 
                   <td>{{val.F_COST_MONEY}}元</td> 
-                  <td>{{val.F_START_TIME}}</td> 
+                  <td>{{val.F_START_TIME}}~{{val.F_END_TIME}}</td> 
                   <td>
                     <button class="btn btnLoadCheckout" v-on:click="loadCheckout(key)" type="button">載入</button>
                   </td> 
@@ -327,6 +327,7 @@
       var mrDetail = new Vue({
         el: '#mrDetail',
         data: {
+          liverList: [],
           classes: [
             
           ],
@@ -348,6 +349,10 @@
           checkout: []
         },
         methods: {
+          selectLiver: function(did,name){
+            this.liverName = name;
+            this.liverDid = did;
+          },
           switchTab: function (key) {
             // `this` inside methods points to the Vue instance
             currentTab = key;
@@ -366,6 +371,7 @@
             this.displayDetail = true;
             this.customForm = this.customForms[key];
             this.customForm.F_START_TIME = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+
           },
           loadCheckin: function(recordId){
             let recordRow = this.checkin[recordId];
@@ -374,10 +380,21 @@
             this.displayCFList = false;
             this.displayDetail = true;
             let customForm = this.classes[recordRow.F_CLASS_ID].customForms[recordRow.F_CF_ID];
-            let mergeObj = _.merge(recordRow,customForm);
-            this.liverName = mergeObj.F_LIVER_NAME;
-            this.liverDid = mergeObj.F_DID;
-            this.customForm = _.merge(recordRow,customForm);
+            //let mergeObj = _.merge(recordRow,customForm);
+            recordRow.F_ITEM1_TITLE = customForm.F_ITEM1_TITLE;
+            recordRow.F_ITEM2_TITLE = customForm.F_ITEM2_TITLE;
+            recordRow.F_ITEM3_TITLE = customForm.F_ITEM3_TITLE;
+            recordRow.F_ITEM4_TITLE = customForm.F_ITEM4_TITLE;
+            recordRow.F_ITEM5_TITLE = customForm.F_ITEM5_TITLE;
+            recordRow.F_ITEM6_TITLE = customForm.F_ITEM6_TITLE;
+            recordRow.F_ITEM7_TITLE = customForm.F_ITEM7_TITLE;
+            recordRow.F_ITEM8_TITLE = customForm.F_ITEM8_TITLE;
+            recordRow.F_ITEM9_TITLE = customForm.F_ITEM9_TITLE;
+            recordRow.F_ITEM10_TITLE = customForm.F_ITEM10_TITLE;
+            this.liverName = recordRow.F_LIVER_NAME;
+            this.liverDid = recordRow.F_DID;
+            console.log(recordRow);
+            this.customForm = recordRow;
           },
           loadCheckout: function(recordId){
             let recordRow = this.checkout[recordId];
@@ -386,10 +403,20 @@
             this.displayCFList = false;
             this.displayDetail = true;
             let customForm = this.classes[recordRow.F_CLASS_ID].customForms[recordRow.F_CF_ID];
-            let mergeObj = _.merge(recordRow,customForm);
-            this.liverName = mergeObj.F_LIVER_NAME;
-            this.liverDid = mergeObj.F_DID;
-            this.customForm = _.merge(recordRow,customForm);
+            recordRow.F_ITEM1_TITLE = customForm.F_ITEM1_TITLE;
+            recordRow.F_ITEM2_TITLE = customForm.F_ITEM2_TITLE;
+            recordRow.F_ITEM3_TITLE = customForm.F_ITEM3_TITLE;
+            recordRow.F_ITEM4_TITLE = customForm.F_ITEM4_TITLE;
+            recordRow.F_ITEM5_TITLE = customForm.F_ITEM5_TITLE;
+            recordRow.F_ITEM6_TITLE = customForm.F_ITEM6_TITLE;
+            recordRow.F_ITEM7_TITLE = customForm.F_ITEM7_TITLE;
+            recordRow.F_ITEM8_TITLE = customForm.F_ITEM8_TITLE;
+            recordRow.F_ITEM9_TITLE = customForm.F_ITEM9_TITLE;
+            recordRow.F_ITEM10_TITLE = customForm.F_ITEM10_TITLE;
+            this.liverName = recordRow.F_LIVER_NAME;
+            this.liverDid = recordRow.F_DID;
+            console.log(recordRow);
+            this.customForm = recordRow;
           },
           CancelCheckin: function(recordId){
             if(confirm("確定要作廢?")==false){
@@ -465,18 +492,7 @@
 
         }
       });
-      var liveList = new Vue({
-        el: '#left-list',
-        data: {
-          list: []
-        },
-        methods: {
-          selectLiver: function(did,name){
-            mrDetail.liverName = name;
-            mrDetail.liverDid = did;
-          }
-        }
-      })
+      
       var exec = require('child_process').exec,
           child;
       var _ = require("lodash");
@@ -495,10 +511,11 @@
         request(config.apiHost + 'api/mrData/'+currentCust+'/000/000', function (error, response, body) {
           var resObj = JSON.parse(body);
           console.log(resObj);
-          liveList.list = resObj.liver; 
+          mrDetail.liverList = resObj.liver;
           mrDetail.classes = resObj.mr; 
           mrDetail.switchTab(Object.keys(resObj.mr)[0]);
           mrDetail.checkin = resObj.mrCheckin;
+          console.log(resObj.mrCheckin);
           mrDetail.checkout = resObj.mrCheckout;
         });
 
@@ -541,7 +558,7 @@
             data: postData+"&cuid="+currentCust,
             dataType: 'json',
             complete: function(data,status){
-              //console.log(data);
+              console.log(data);
               let obj = data.responseJSON;
               mrDetail.displayCFList = true;
               mrDetail.displayDetail = false;
