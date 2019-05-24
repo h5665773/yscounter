@@ -45,6 +45,46 @@
 					<th scope="row" width="40%">住戶戶號</th> 
 					<td width="60%">{{info.F_DID}}</td> 
 				</tr>
+				<tr v-show="info.F_ITEM1_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM1_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM1_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM2_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM2_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM2_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM3_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM3_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM3_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM4_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM4_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM4_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM5_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM5_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM5_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM6_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM6_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM6_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM7_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM7_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM7_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM8_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM8_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM8_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM9_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM9_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM9_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM10_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM10_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM10_VALUE}}</td> 
+				</tr>
 				<tr> 
 					<th scope="row" width="40%">計費單位</th> 
 					<td width="60%">{{info.F_UNIT_TYPE}}</td> 
@@ -81,6 +121,46 @@
 					<th scope="row" width="40%">住戶戶號</th> 
 					<td width="60%">{{info.F_DID}}</td> 
 				</tr>
+				<tr v-show="info.F_ITEM1_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM1_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM1_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM2_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM2_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM2_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM3_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM3_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM3_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM4_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM4_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM4_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM5_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM5_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM5_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM6_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM6_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM6_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM7_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM7_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM7_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM8_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM8_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM8_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM9_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM9_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM9_VALUE}}</td> 
+				</tr>
+				<tr v-show="info.F_ITEM10_TITLE!=''"> 
+					<th scope="row" width="40%">{{info.F_ITEM10_TITLE}}</th> 
+					<td width="60%">{{info.F_ITEM10_VALUE}}</td> 
+				</tr>
 				<tr> 
 					<th scope="row" width="40%">計費單位</th> 
 					<td width="60%">{{info.F_UNIT_TYPE}}</td> 
@@ -112,8 +192,13 @@
 		          }
 		        }
 		    });
-		    dataInfo.info = window.opener.printData;
-		    console.log(dataInfo.info );
+		    var printData = window.opener.printData;
+		    for(var i =1;i<=10;i++){
+		    	console.log(printData['F_ITEM'+i+'_TITLE']);
+		    	printData['F_ITEM'+i+'_TITLE'] = printData['F_ITEM'+i+'_TITLE'].trim();
+		    }
+		    dataInfo.info = printData;
+		    //console.log(dataInfo.info );
 		    window.print();
 		</script>
 	</body>
