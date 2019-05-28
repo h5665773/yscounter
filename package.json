@@ -21,9 +21,9 @@
     "date-now": "^1.0.1",
     "dropbox": "^4.0.9",
     "jade": "1.11.0",
-    "lodash": "*",
+    "lodash": "^4.17.11",
     "qrcode-reader": "^1.0.4",
-    "request": "^2.85.0",
+    "request": "^2.88.0",
     "unzip": "0.1.11",
     "url-download": "0.0.4"
   }

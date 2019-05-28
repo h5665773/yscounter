@@ -590,15 +590,16 @@
         var filterDid = $("#filter-did");
         $("#filter-did").keyup(function(){
           let str = $(this).val();
-
-          liveList.list.map(function(v,k){
+          let liveList = mrDetail.liverList;
+          console.log(mrDetail.liverList);
+          mrDetail.liverList.map(function(v,k){
             if(str == ""){
-              liveList.list[k].hide = false;
+              mrDetail.liverList[k].hide = false;
             }else{
               if(v.F_CU_DID.indexOf(str)<0 && v.F_OWNER_NAME.indexOf(str)<0){
-                liveList.list[k].hide = true;
+                mrDetail.liverList[k].hide = true;
               }else{
-                liveList.list[k].hide = false;
+                mrDetail.liverList[k].hide = false;
               }  
             }
             
