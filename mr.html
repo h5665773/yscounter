@@ -91,7 +91,7 @@
               <div role="tabpanel" class="tab-panel panel panel-default active" id="home">
                 <div  class="panel-body" style="min-height:300px"> 
                   <div id="CFList" v-show="displayCFList">
-                    <button type="button" v-on:click="selectForm(k)" class="btn btn-lg" :class="btnColors[k%6]" v-for="(v,k) in customForms">{{v.F_CF_TITLE}}</button>
+                    <button type="button" v-on:click="selectForm(k)" class="btn col-md-2 btn-lg" :class="btnColors[k%6]" style="margin-bottom:10px" v-for="(v,k) in customForms">{{v.F_CF_TITLE}}</button>
                   </div>
                 
                   <div id="formDetail" v-show="displayDetail">
