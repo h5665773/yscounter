@@ -47,6 +47,12 @@
         margin-left: 15px;
         margin-right: 5px;
       }
+      .nav-tabs li.active a,.nav-tabs li.active a:hover,.nav-tabs li.active a:focus{
+        background: #99ccff;
+        font-weight: bold;
+        width: 100px;
+        text-align: center;
+      }
     </style>
     <script type="text/javascript" src="/js/Common.js"></script>
   </head>
@@ -65,7 +71,7 @@
       <div class="row" id="mrDetail">
         <div class="col-md-3 left-side">
           <div class="input-group">
-            <input type="text" class="form-control" id="filter-did" placeholder="" aria-describedby="basic-addon2">
+            <input type="text" class="form-control" id="filter-did" placeholder="" >
             <span class="input-group-addon" id="basic-addon2">搜尋戶號或姓名</span>
           </div>
           <div class="list-group" style="margin-bottom:0">
@@ -104,7 +110,7 @@
                             <th class="success" width="20%">進場時間</th> 
                             <td  width="30%">
                               <div class='input-group date' id='datetimepicker1'>
-                                <input type="text" name="start-time"  class="form-control" placeholder="" aria-describedby="basic-addon2" readonly="readonly" :value="customForm.F_START_TIME">
+                                <input type="text" name="start-time"  class="form-control" placeholder=""  readonly="readonly" :value="customForm.F_START_TIME">
                                 <!-- <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span> -->
@@ -113,7 +119,7 @@
                             <td  width="20%" class="success">離場時間</td> 
                             <td  width="30%">
                               <div class='input-group date' id='datetimepicker2'>
-                                <input type="text" class="form-control" readonly="readonly" name="end-time" aria-describedby="basic-addon2" :value="customForm.F_END_TIME">
+                                <input type="text" class="form-control" readonly="readonly" name="end-time"  :value="customForm.F_END_TIME">
                                 <!-- <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span> -->
@@ -124,13 +130,13 @@
                             <th class="success" width="20%">姓名</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" :value="liverName" name="liver-name" placeholder="" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" :value="liverName" name="liver-name" placeholder="" >
                               </div>
                             </td> 
                             <td  width="20%" class="success">戶號</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" :value="liverDid" placeholder="" name="liver-id" aria-describedby="basic-addon2">
+                                <input type="text" class="form-control" :value="liverDid" placeholder="" name="liver-id" >
                               </div>
                             </td>  
                           </tr> 
@@ -138,13 +144,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM1_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input name="name-item1" @focus="scan(customForm.F_ITEM1_TITLE,$event)" type="text" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM1_VALUE">
+                                <input name="name-item1" @focus="scan(customForm.F_ITEM1_TITLE,$event)" type="text" class="form-control" placeholder=""  :value="customForm.F_ITEM1_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM2_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item2" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM2_VALUE">
+                                <input type="text" name="name-item2" class="form-control" placeholder=""  :value="customForm.F_ITEM2_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -152,13 +158,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM3_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item3" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM3_VALUE">
+                                <input type="text" name="name-item3" class="form-control" placeholder=""  :value="customForm.F_ITEM3_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM4_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item4" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM4_VALUE">
+                                <input type="text" name="name-item4" class="form-control" placeholder=""  :value="customForm.F_ITEM4_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -166,13 +172,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM5_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" name="name-item5" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM5_VALUE">
+                                <input type="text" class="form-control" name="name-item5" placeholder=""  :value="customForm.F_ITEM5_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM6_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item6" aria-describedby="basic-addon2" :value="customForm.F_ITEM6_VALUE">
+                                <input type="text" class="form-control" placeholder="" name="name-item6"  :value="customForm.F_ITEM6_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -180,13 +186,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM7_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item7" aria-describedby="basic-addon2" :value="customForm.F_ITEM7_VALUE">
+                                <input type="text" class="form-control" placeholder="" name="name-item7"  :value="customForm.F_ITEM7_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM8_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item8" aria-describedby="basic-addon2" :value="customForm.F_ITEM8_VALUE">
+                                <input type="text" class="form-control" placeholder="" name="name-item8"  :value="customForm.F_ITEM8_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -194,13 +200,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM9_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder=""  name="name-item9" aria-describedby="basic-addon2" :value="customForm.F_ITEM9_VALUE">
+                                <input type="text" class="form-control" placeholder=""  name="name-item9"  :value="customForm.F_ITEM9_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM10_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item10" class="form-control" placeholder="" aria-describedby="basic-addon2" :value="customForm.F_ITEM10_VALUE">
+                                <input type="text" name="name-item10" class="form-control" placeholder=""  :value="customForm.F_ITEM10_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -442,12 +448,14 @@
           },
           startPrint: function(key){
             this.loadCheckin(key);
+            this.customForm.companyName = $("#companyName").text();
             printData = this.customForm;
             window.open("./mrCheckin.html");
           },
           endPrint: function(recordId){
             console.log(recordId);
             this.loadCheckout(recordId);
+            this.customForm.companyName = $("#companyName").text();
             printData = this.customForm;
             window.open("./mrCheckout.html");
           },
@@ -567,13 +575,22 @@
               mrDetail.displayCFList = true;
               mrDetail.displayDetail = false;
               alert("結帳完成!");
-              console.log(obj);
               mrDetail.checkin = obj.checkinRecord;
               mrDetail.checkout = obj.checkoutRecord;
             }
           });
         });
         var checkForm = function(type){
+          for(let i =1;i<=10;i++){
+            let itemTitle =mrDetail.customForm['F_ITEM'+i+'_TITLE'].trim();
+            if(itemTitle == "行動電話"){
+              let chkVal = String($("input[name='name-item"+i+"']").val());
+              if(chkVal.match(/^[0-9]{10}$/) == null){
+                alert("請填寫正確的行動電話格式(10位數)!");
+                return false;
+              }
+            }
+          }
           // if(liverName.val()==''){
           //   alert("請輸入住戶名稱");
           //   return false;

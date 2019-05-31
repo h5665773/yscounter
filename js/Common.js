@@ -15,7 +15,7 @@ $(document).ready(function(){
       });
       res.on('end',function(){
         var cust = JSON.parse(resContent);
-        $("#companyName").html(cust[0].F_CU_SNAME)
+        $("#companyName").html(cust[0].F_CU_NAME)
       });
       res.resume();
     });

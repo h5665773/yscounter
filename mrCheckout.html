@@ -9,7 +9,7 @@
 	    <meta name="author" content="">
 	    <link rel="icon" href="../../favicon.ico">
 
-	    <title>悅盛保全 - 櫃台服務系統 - 列印入場聯</title>
+	    <title>悅盛保全 - 櫃台服務系統 - 列印結帳聯</title>
 	    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
 	    <link rel="stylesheet" href="/css/colorbox.css" />
 	    <link rel="stylesheet" href="/css/main.css" />
@@ -24,160 +24,237 @@
 	    <script src="/js/bootstrap.min.js" ></script>
 	    <script src="/js/vue.js" ></script>
 	    <link rel="stylesheet" href="/css/main.css" >
+	    <style type="text/css">
+		  @media print {
+		      body{
+		          width: 21cm;
+		          height: 29.7cm;
+		          margin: 30mm 45mm 30mm 45mm; 
+		          /* change the margins as you want them to be. */
+		     } 
+		  }
+		      body {
+		        width: 100%;
+		        height: 100%;
+		        margin: 0;
+		        padding: 0;
+		        background-color: #FAFAFA;
+		        font: 12pt "Tahoma";
+		    }
+		    * {
+		        box-sizing: border-box;
+		        -moz-box-sizing: border-box;
+		    }
+		    .page {
+		        width: 210mm;
+		        min-height: 297mm;
+		        padding: 0mm;
+		        margin: 10mm auto;
+		        border: 1px #D3D3D3 solid;
+		        border-radius: 5px;
+		        background: white;
+		        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+		    }
+		    .subpage {
+		        padding: 0;
+		        border: 1px transparent solid;
+		        height: 257mm;
+		        outline: 0cm #FFEAEA solid;
+		        position:relative;
+		    }
+		    
+		    @page {
+		        size: A4;
+		        margin: 0;
+		    }
+		    @media print {
+		        html, body {
+		            width: 210mm;
+		            height: 297mm;        
+		        }
+		        .page {
+		            margin: 0;
+		            border: initial;
+		            border-radius: initial;
+		            width: initial;
+		            min-height: initial;
+		            box-shadow: initial;
+		            background: initial;
+		            page-break-after: always;
+		        }
+		    }
+		    .img-mask{
+		      position:absolute;
+		      top:0;
+		      left:0;
+		      width:100%;
+		      height:100%;
+		      display: block;
+		    }
+		</style>
 	</head>
 	<body>
-		<div class="bs-example" data-example-id="striped-table" id="dataInfo" style="width:600px;"> 
-			<table class="table table-striped"> 
-				<tbody> 
-				<tr> 
-					<th scope="row" width="40%" class="alert-warning">進場時間</th> 
-					<td width="60%" class="alert-warning">{{info.F_START_TIME}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%" class="alert-danger">離場時間</th> 
-					<td width="60%" class="alert-danger">{{info.F_END_TIME}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%" >住戶姓名</th> 
-					<td width="60%">{{info.F_LIVER_NAME}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%">住戶戶號</th> 
-					<td width="60%">{{info.F_DID}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM1_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM1_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM1_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM2_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM2_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM2_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM3_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM3_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM3_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM4_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM4_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM4_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM5_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM5_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM5_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM6_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM6_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM6_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM7_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM7_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM7_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM8_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM8_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM8_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM9_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM9_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM9_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM10_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM10_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM10_VALUE}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%">計費單位</th> 
-					<td width="60%">{{info.F_UNIT_TYPE}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%">單位金額</th> 
-					<td width="60%">{{info.F_UNIT_PRICE}}</td> 
-				</tr> 
-				<tr> 
-					<th scope="row" width="40%">金額總計</th> 
-					<td width="60%">{{info.F_COST_MONEY}}</td> 
-				</tr>
-				<tr> 
-					<th colspan="2" width="40%">客戶聯</th> 
-				</tr>  
-				</tbody> 
-			</table> 
-			<hr>
-			<table class="table table-striped"> 
-				<tbody> 
-				<tr> 
-					<th scope="row" width="40%" class="alert-warning">進場時間</th> 
-					<td width="60%" class="alert-warning">{{info.F_START_TIME}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%" class="alert-danger">離場時間</th> 
-					<td width="60%" class="alert-danger">{{info.F_END_TIME}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%" >住戶姓名</th> 
-					<td width="60%">{{info.F_LIVER_NAME}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%">住戶戶號</th> 
-					<td width="60%">{{info.F_DID}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM1_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM1_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM1_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM2_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM2_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM2_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM3_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM3_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM3_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM4_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM4_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM4_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM5_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM5_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM5_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM6_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM6_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM6_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM7_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM7_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM7_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM8_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM8_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM8_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM9_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM9_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM9_VALUE}}</td> 
-				</tr>
-				<tr v-show="info.F_ITEM10_TITLE!=''"> 
-					<th scope="row" width="40%">{{info.F_ITEM10_TITLE}}</th> 
-					<td width="60%">{{info.F_ITEM10_VALUE}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%">計費單位</th> 
-					<td width="60%">{{info.F_UNIT_TYPE}}</td> 
-				</tr>
-				<tr> 
-					<th scope="row" width="40%">單位金額</th> 
-					<td width="60%">{{info.F_UNIT_PRICE}}</td> 
-				</tr> 
-				<tr> 
-					<th scope="row" width="40%">金額總計</th> 
-					<td width="60%">{{info.F_COST_MONEY}}</td> 
-				</tr> 
-				<tr> 
-					<th colspan="2" width="40%">收執聯</th> 
-				</tr> 
-				</tbody> 
-			</table> 
+		<div id="dataInfo"> 
+			<div class="page">
+				<div class="subpage">
+				<table class="table table-striped"> 
+					<tbody> 
+					<tr> 
+						<th colspan="2" class="alert-warning" align="center" style="text-align: center;">
+							{{info.companyName}}
+						</th> 
+					</tr>	
+					<tr> 
+						<th scope="row" width="40%" class="alert-warning">進場時間</th> 
+						<td width="60%" class="alert-warning">{{info.F_START_TIME}}</td> 
+					</tr>
+					<tr> 
+						<th scope="row" width="40%" >住戶姓名</th> 
+						<td width="60%">{{info.F_LIVER_NAME}}</td> 
+					</tr>
+					<tr> 
+						<th scope="row" width="40%">住戶戶號</th> 
+						<td width="60%">{{info.F_DID}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM1_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM1_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM1_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM2_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM2_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM2_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM3_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM3_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM3_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM4_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM4_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM4_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM5_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM5_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM5_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM6_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM6_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM6_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM7_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM7_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM7_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM8_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM8_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM8_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM9_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM9_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM9_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM10_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM10_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM10_VALUE}}</td> 
+					</tr>
+					<tr> 
+						<th scope="row" width="40%">計費單位</th> 
+						<td width="60%">{{info.F_UNIT_TYPE}}</td> 
+					</tr>
+					<tr> 
+						<th scope="row" width="40%">單位金額</th> 
+						<td width="60%">{{info.F_UNIT_PRICE}}</td> 
+					</tr> 
+					<tr> 
+						<th scope="row" width="40%">金額總計</th> 
+						<td width="60%">{{info.F_COST_MONEY}}</td> 
+					</tr> 
+					<tr> 
+						<th colspan="2" width="40%">客戶聯</th> 
+					</tr>  
+					</tbody> 
+				</table> 
+				</div>
+			</div>
+			<div class="page">
+				<div class="subpage">
+				<table class="table table-striped"> 
+					<tbody>
+					<tr> 
+						<th colspan="2" class="alert-warning" align="center" style="text-align: center;">
+							{{info.companyName}}
+						</th> 
+					</tr>	 
+					<tr> 
+						<th scope="row" width="40%" class="alert-warning">進場時間</th> 
+						<td width="60%" class="alert-warning">{{info.F_START_TIME}}</td> 
+					</tr>
+					<tr> 
+						<th scope="row" width="40%" >住戶姓名</th> 
+						<td width="60%">{{info.F_LIVER_NAME}}</td> 
+					</tr>
+					<tr> 
+						<th scope="row" width="40%">住戶戶號</th> 
+						<td width="60%">{{info.F_DID}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM1_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM1_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM1_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM2_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM2_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM2_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM3_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM3_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM3_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM4_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM4_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM4_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM5_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM5_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM5_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM6_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM6_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM6_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM7_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM7_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM7_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM8_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM8_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM8_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM9_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM9_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM9_VALUE}}</td> 
+					</tr>
+					<tr v-show="info.F_ITEM10_TITLE!=''"> 
+						<th scope="row" width="40%">{{info.F_ITEM10_TITLE}}</th> 
+						<td width="60%">{{info.F_ITEM10_VALUE}}</td> 
+					</tr>
+					<tr> 
+						<th scope="row" width="40%">計費單位</th> 
+						<td width="60%">{{info.F_UNIT_TYPE}}</td> 
+					</tr>
+					<tr> 
+						<th scope="row" width="40%">單位金額</th> 
+						<td width="60%">{{info.F_UNIT_PRICE}}</td> 
+					</tr> 
+					<tr> 
+						<th scope="row" width="40%">金額總計</th> 
+						<td width="60%">{{info.F_COST_MONEY}}</td> 
+					</tr> 
+					<tr> 
+						<th colspan="2" width="40%">收執聯</th> 
+					</tr> 
+					</tbody> 
+				</table> 
+				</div>
+			</div>
 		</div>
 		<script type="text/javascript">
 			var dataInfo = new Vue({
@@ -193,6 +270,7 @@
 		        }
 		    });
 		    var printData = window.opener.printData;
+		    console.log(printData);
 		    for(var i =1;i<=10;i++){
 		    	console.log(printData['F_ITEM'+i+'_TITLE']);
 		    	printData['F_ITEM'+i+'_TITLE'] = printData['F_ITEM'+i+'_TITLE'].trim();
