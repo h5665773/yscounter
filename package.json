@@ -16,14 +16,18 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@linways/table-to-excel": "^1.0.4",
     "async": "v2.0.0-rc.6",
     "bootstrap": "*",
     "date-now": "^1.0.1",
     "dropbox": "^4.0.9",
+    "html-to-xlsx": "^1.1.1",
     "jade": "1.11.0",
     "lodash": "^4.17.11",
+    "puppeteer": "^1.17.0",
     "qrcode-reader": "^1.0.4",
     "request": "^2.88.0",
+    "table-to-excel": "^1.0.6",
     "unzip": "0.1.11",
     "url-download": "0.0.4"
   }

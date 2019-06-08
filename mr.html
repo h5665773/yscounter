@@ -312,7 +312,8 @@
                   <td>開始 {{val.F_START_TIME}}<br>結束 {{val.F_END_TIME}}</td> 
                   <td>
                     <button class="btn btnLoadCheckout" v-on:click="loadCheckout(key)" type="button">載入</button>
-                    <button v-on:click="endPrint(key)" type="button" class="btn btn-success">列印</button> 
+                    <button v-on:click="endPrint(key)" type="button" class="btn btn-primary">列印</button>
+                    <button v-on:click="endExcel(key)" type="button" class="btn btn-success">Excel</button>
                   </td> 
                 </tr>
               </tbody> 
@@ -327,7 +328,10 @@
         <p class="text-muted">Place sticky footer content here.</p>
       </div>
     </footer>
+
     <script type="text/javascript">
+      var TableToExcel = require('table-to-excel');
+      var tableToExcel=new TableToExcel();
       //left-list
       var printData = {}; 
       var loading = $("#loading");
@@ -458,6 +462,10 @@
             this.customForm.companyName = $("#companyName").text();
             printData = this.customForm;
             window.open("./mrCheckout.html");
+          },
+          endExcel: function(recordId){
+            this.loadCheckout(recordId);
+            tableToExcel.render(this.customForm,[{text:"結帳聯",bg:"#333",color:"#fff"}]);
           },
           scan: function(title,e){
             return false;
