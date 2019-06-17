@@ -72,6 +72,19 @@
       #myBtn:hover {
         background-color: #555; /* Add a dark-grey background on hover */
       }
+      .pageNavSpan{
+        padding:5px;
+        border:3px solid #dddddd;
+        border-radius: 5px;
+        color:black;
+        background: #ffffff;
+      }
+      .pageNavDisable{
+        color:#dddddd;
+      }
+      #checkItemList .btn{
+        padding:6px;
+      }
     </style>
     <script type="text/javascript" src="/js/Common.js"></script>
   </head>
@@ -262,16 +275,24 @@
               </div>
             </div>
           </div>
-          <div class="bs-example" data-example-id="hoverable-table"> 
+          <div class="bs-example" id="checkItemList"> 
             <table class="table table-hover table-bordered"> 
               <thead> 
                 <tr  class="info " style="color: #a94442;background-color: #f2dede !important;border-color: #ebccd1;">  
                   <th colspan="6" class="alert-danger">未結帳</th> 
                   <th colspan="2" class="alert-danger">
-                    <div class="input-group">
+                    <div class="input-group" style="width:100%;">
                       <input type="text" class="form-control" id="keywordRecord" placeholder="輸入關鍵字">
                       <span class="input-group-btn">
                         <button class="btn btn-default" @click="searchRecord" type="button">搜尋!</button>
+                      </span>
+                      <span style="float:right;height: 26px;">
+                        <a class="pageNavSpan">
+                          <span @click="checkinPrev" :readonly="checkinPage==0" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                        </a> 
+                        <a class="pageNavSpan">
+                          <span @click="checkinNext" :readonly="checkinPage==checkinMaxPage" class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                        </a>
                       </span>
                     </div><!-- /input-group -->
                   </th> 
@@ -307,7 +328,17 @@
             <table class="table table-hover table-bordered"> 
               <thead> 
                 <tr  class="info">  
-                  <th colspan="8" class="alert-success">已結帳</th> 
+                  <th colspan="8" class="alert-success">
+                    已結帳
+                    <span style="float:right;">
+                        <a  class="pageNavSpan">
+                          <span @click="checkoutPrev" :readonly="checkoutPage==0" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                        </a> 
+                        <a class="pageNavSpan">
+                          <span @click="checkoutNext" :readonly="checkoutPage==checkoutMaxPage" class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                        </a>
+                      </span>
+                  </th> 
                 </tr>
                 <tr class="info"> 
                   <th>主分類</th> 
@@ -321,7 +352,7 @@
                 </tr> 
               </thead> 
               <tbody> 
-                <tr v-for="(val,key) in checkout"> 
+                <tr v-for="(val,key) in checkout" v-if="val.DISPLAY_FLAG"> 
                   <td>{{val.F_CLASS_NAME}}</td> 
                   <td>{{val.F_CF_TITLE}}</td> 
                   <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} :<br> {{val.F_ITEM1_VALUE}}</td> 
@@ -371,12 +402,13 @@
     </footer>
 
     <script type="text/javascript">
-      var TableToExcel = require('table-to-excel');
+      var TableToExcel = require('./js/table-to-excel');
       var tableToExcel=new TableToExcel();
       //left-list
       var printData = {}; 
       var loading = $("#loading");
       var loadingMask = $(".loadingMask");
+      var pageBase = 5;
       var mrDetail = new Vue({
         el: '#mrDetail',
         data: {
@@ -400,7 +432,11 @@
           btnColors: ['btn-default','btn-primary','btn-success',"btn-info",'btn-warning','btn-danger'],
           cf: {},
           checkin: [],
-          checkout: []
+          checkout: [],
+          checkinPage: 0,
+          checkoutPage: 0,
+          checkinMaxPage: 1,
+          checkoutMaxPage: 1
         },
         methods: {
           selectLiver: function(did,name){
@@ -489,6 +525,8 @@
                 
                 mrDetail.checkin = obj.checkinRecord;
                 mrDetail.checkout = obj.checkoutRecord;
+                mrDetail.checkinMaxPage = Math.floor(obj.checkinRecord.length/pageBase);
+                mrDetail.checkoutMaxPage = Math.floor(obj.checkoutRecord.length/pageBase);
               }
             });
           },
@@ -564,6 +602,8 @@
                 console.log(obj);
                 mrDetail.checkin = obj.checkinRecord;
                 mrDetail.checkout = obj.checkoutRecord;
+                mrDetail.checkinMaxPage = Math.floor(obj.checkinRecord.length/pageBase);
+                mrDetail.checkoutMaxPage = Math.floor(obj.checkoutRecord.length/pageBase);
               }
             });
           },
@@ -580,6 +620,94 @@
                   printData.push([v.F_START_TIME,v.F_END_TIME,v.F_UNIT_TYPE,v.F_UNIT_PRICE,v.F_COST_MONEY,v.F_EMP_END_NAME,v.F_CLASS_NAME]);
                 });
                 tableToExcel.render(printData,[{text:ymd+"結帳列表",bg:"#333",color:"#fff"}]);
+              }
+            });
+          },
+          checkinPrev: function(){
+            let self = this;
+            this.checkinPage --;
+            if(this.checkinPage < 0){
+              this.checkinPage =0 ;
+              return;
+            }
+            if(this.checkinMaxPage <1){
+              this.checkinMaxPage = 1;
+              return;
+            }
+            let pStart = this.checkinPage*pageBase;
+            let pEnd = pStart+pageBase;
+            mrDetail.checkin.map(function(v,k){
+              if(k>=pStart && k<pEnd){
+                v.DISPLAY_FLAG = 1;
+              }else{
+                v.DISPLAY_FLAG = 0;
+              }
+            });
+          },
+          checkinNext: function(){
+            let self = this;
+            if(mrDetail.checkinPage == mrDetail.checkinMaxPage){
+              return;
+            }
+            if(this.checkinMaxPage <1){
+              this.checkinMaxPage = 1;
+              return;
+            }
+            this.checkinPage++;
+            let pStart = this.checkinPage*pageBase;
+            let pEnd = pStart+pageBase;
+            console.log(mrDetail.checkoutPage);
+            console.log(pageBase);
+            console.log(pStart);
+            console.log(pEnd);
+            mrDetail.checkin.map(function(v,k){
+              if(k>=pStart && k<pEnd){
+                v.DISPLAY_FLAG = 1;
+              }else{
+                v.DISPLAY_FLAG = 0;
+              }
+            });
+          },
+          checkoutPrev: function(){
+            let self = this;
+            mrDetail.checkoutPage --;
+            if(mrDetail.checkoutPage < 0){
+              mrDetail.checkoutPage =0 ;
+              return;
+            }
+            if(mrDetail.checkoutMaxPage <1){
+              mrDetail.checkoutMaxPage = 1;
+              return;
+            }
+            let pStart = this.checkoutPage*pageBase;
+            let pEnd = pStart+pageBase;
+            mrDetail.checkout.map(function(v,k){
+              if(k>=pStart && k<pEnd){
+                v.DISPLAY_FLAG = 1;
+              }else{
+                v.DISPLAY_FLAG = 0;
+              }
+            });
+          },
+          checkoutNext: function(){
+            
+            let self = this;
+            if(mrDetail.checkoutPage == mrDetail.checkoutMaxPage){
+              return;
+            }
+            if(mrDetail.checkoutMaxPage <1){
+              mrDetail.checkoutMaxPage = 1;
+              return;
+            }
+            mrDetail.checkoutPage++;
+            let pStart = mrDetail.checkoutPage*pageBase;
+            let pEnd = pStart+pageBase;
+            mrDetail.checkout.map(function(v,k){
+              if(k>=pStart && k<pEnd){
+                console.log(k);
+                v.DISPLAY_FLAG = 1;
+              }else{
+                v.DISPLAY_FLAG = 0;
               }
             });
           }
@@ -610,6 +738,8 @@
           mrDetail.checkin = resObj.mrCheckin;
           mrDetail.checkout = resObj.mrCheckout;
           mrDetail.subtotal = resObj.mrSubtotal;
+          mrDetail.checkinMaxPage = Math.floor(mrDetail.checkin.length/pageBase);
+          mrDetail.checkoutMaxPage = Math.floor(mrDetail.checkout.length/pageBase);
         });
 
         $('#datetimepicker1').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
