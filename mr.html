@@ -371,7 +371,7 @@
     </footer>
 
     <script type="text/javascript">
-      var TableToExcel = require('table-to-excel');
+      var TableToExcel = require('./js/table-to-excel');
       var tableToExcel=new TableToExcel();
       //left-list
       var printData = {}; 
@@ -576,9 +576,12 @@
                 console.log(obj);
                 let printData = [];
                 printData.push(['入場時間','結帳時間','單位','單價','結帳金額','結帳者','分類']);
+                let total = 0;
                 obj.map(function(v,k){
                   printData.push([v.F_START_TIME,v.F_END_TIME,v.F_UNIT_TYPE,v.F_UNIT_PRICE,v.F_COST_MONEY,v.F_EMP_END_NAME,v.F_CLASS_NAME]);
+                  total+=parseInt(v.F_COST_MONEY);
                 });
+                printData.push(['總計','','','',total,'','']);
                 tableToExcel.render(printData,[{text:ymd+"結帳列表",bg:"#333",color:"#fff"}]);
               }
             });
