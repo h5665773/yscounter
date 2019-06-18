@@ -85,6 +85,9 @@
       #checkItemList .btn{
         padding:6px;
       }
+      .container {
+          width: 1112px;
+      }
     </style>
     <script type="text/javascript" src="/js/Common.js"></script>
   </head>
@@ -345,10 +348,10 @@
                   <th>表單名稱</th> 
                   <th>代碼</th>
                   <th>戶號</th> 
-                  <th>姓名</th> 
-                  <th>費用</th> 
+                  <th width="100" >姓名</th> 
+                  <th >費用</th> 
                   <th>起始時間</th> 
-                  <th>功能</th> 
+                  <th >功能</th> 
                 </tr> 
               </thead> 
               <tbody> 
@@ -359,7 +362,7 @@
                   <th >{{val.F_DID}}</th> 
                   <th >{{val.F_LIVER_NAME}}</th> 
                   <td>{{val.F_COST_MONEY}}元</td> 
-                  <td>開始 {{val.F_START_TIME}}<br>結束 {{val.F_END_TIME}}</td> 
+                  <td >入{{val.F_START_TIME}}<br>結{{val.F_END_TIME}}</td> 
                   <td>
                     <button class="btn btnLoadCheckout" v-on:click="loadCheckout(key)" type="button">載入</button>
                     <button v-on:click="endPrint(key)" type="button" class="btn btn-primary">列印</button>
