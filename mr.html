@@ -290,10 +290,11 @@
                         <button class="btn btn-default" @click="searchRecord" type="button">搜尋!</button>
                       </span>
                       <span style="float:right;height: 26px;">
-                        <a class="pageNavSpan">
+                        <a class="pageNavSpan" :class="{pageNavDisable: checkinPage==0}">
                           <span @click="checkinPrev" :readonly="checkinPage==0" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
                         </a> 
-                        <a class="pageNavSpan">
+                        <span>{{checkinMaxPage}}</span> - <span>{{checkinPage}}</span>
+                        <a class="pageNavSpan" :class="{pageNavDisable: checkinPage==checkinMaxPage}">
                           <span @click="checkinNext" :readonly="checkinPage==checkinMaxPage" class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
                         </a>
                       </span>
@@ -312,7 +313,7 @@
                 </tr> 
               </thead> 
               <tbody> 
-                <tr v-for="(val,key) in checkin"> 
+                <tr v-for="(val,key) in checkin" v-if="val.DISPLAY_FLAG"> 
                   <td>{{val.F_CLASS_NAME}}</td> 
                   <td>{{val.F_CF_TITLE}}</td> 
                   <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} : <br>{{val.F_ITEM1_VALUE}}</td> 
@@ -334,10 +335,11 @@
                   <th colspan="8" class="alert-success">
                     已結帳
                     <span style="float:right;">
-                        <a  class="pageNavSpan">
+                        <a  class="pageNavSpan"  :class="{pageNavDisable: checkoutPage==0}">
                           <span @click="checkoutPrev" :readonly="checkoutPage==0" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
                         </a> 
-                        <a class="pageNavSpan">
+                        <span>{{checkoutMaxPage}}</span> - <span>{{checkoutPage}}</span>
+                        <a class="pageNavSpan" :class="{pageNavDisable: checkoutPage==checkoutMaxPage}">
                           <span @click="checkoutNext" :readonly="checkoutPage==checkoutMaxPage" class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
                         </a>
                       </span>
@@ -528,10 +530,19 @@
                 
                 mrDetail.checkin = obj.checkinRecord;
                 mrDetail.checkout = obj.checkoutRecord;
-                mrDetail.checkinMaxPage = Math.floor(obj.checkinRecord.length/pageBase);
-                mrDetail.checkoutMaxPage = Math.floor(obj.checkoutRecord.length/pageBase);
+                mrDetail.countPage();
               }
             });
+          },
+          countPage: function(){
+            mrDetail.checkinMaxPage = Math.floor(mrDetail.checkin.length/pageBase);
+            mrDetail.checkoutMaxPage = Math.floor(mrDetail.checkout.length/pageBase);
+            if(mrDetail.checkin.length%pageBase==0 && mrDetail.checkinMaxPage>0){
+              mrDetail.checkinMaxPage-=1;
+            }
+            if(mrDetail.checkout.length%pageBase==0 && mrDetail.checkoutMaxPage>0){
+              mrDetail.checkoutMaxPage-=1;
+            }
           },
           startPrint: function(key){
             this.loadCheckin(key);
@@ -605,8 +616,7 @@
                 console.log(obj);
                 mrDetail.checkin = obj.checkinRecord;
                 mrDetail.checkout = obj.checkoutRecord;
-                mrDetail.checkinMaxPage = Math.floor(obj.checkinRecord.length/pageBase);
-                mrDetail.checkoutMaxPage = Math.floor(obj.checkoutRecord.length/pageBase);
+                mrDetail.countPage();
               }
             });
           },
@@ -744,8 +754,7 @@
           mrDetail.checkin = resObj.mrCheckin;
           mrDetail.checkout = resObj.mrCheckout;
           mrDetail.subtotal = resObj.mrSubtotal;
-          mrDetail.checkinMaxPage = Math.floor(mrDetail.checkin.length/pageBase);
-          mrDetail.checkoutMaxPage = Math.floor(mrDetail.checkout.length/pageBase);
+          mrDetail.countPage();
         });
 
         $('#datetimepicker1').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
