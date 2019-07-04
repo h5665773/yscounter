@@ -248,6 +248,7 @@
                           <tr> 
                             <th class="success" width="20%">計費單位</th> 
                             <td  width="30%">
+                              <input type="hidden" name="billing-method" :value="customForm.F_B_METHOD">
                               <div class="input-group">
                                 <input type="text" class="form-control" name='unit-type' readonly :value="customForm.F_CF_UNIT_TYPE">
                               </div>
@@ -465,6 +466,7 @@
             this.displayCFList = false;
             this.displayDetail = true;
             this.customForm = this.customForms[key];
+            console.log(this.customForm);
             this.customForm.F_START_TIME = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
 
           },
