@@ -1,3 +1,3 @@
 module.exports =	{
-	apiHost: "http://61.220.182.219/"
+	apiHost: "http://api.wyattst.com.tw/"
 };

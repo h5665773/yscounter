@@ -6,7 +6,7 @@ import os
 import pycurl
 import time
 comf = open('public/comport.txt', 'r');
-host = "http://61.220.182.219/";
+host = "http://api.wyattst.com.tw/";
 ser = serial.Serial('COM'+comf.read(),timeout=21)  # open serial port
 comf.close()
 now = time.time();

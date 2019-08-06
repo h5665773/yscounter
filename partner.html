@@ -94,11 +94,11 @@
         //var sopPointsJade = jade.compileFile("views/sopPointList.jade");
         const d1 = new Date();
         var vuePartnerList = new Vue({
-		  el: '#partnerList',
-		  data: {
-		  	partnerList: {}
-		  }
-		});
+    		  el: '#partnerList',
+    		  data: {
+    		  	partnerList: {}
+    		  }
+    		});
         //console.log(config.apiHost + 'api/custPartner/'+currentCust+'/000/000');
         request(config.apiHost + 'api/custPartner/'+currentCust+'/000/000',(error, response, body)=>{
           const partnerList = JSON.parse(body);
