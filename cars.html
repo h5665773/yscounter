@@ -51,7 +51,7 @@
           <table class="table table-condensed">  
             <tbody> 
               <tr> 
-                <th>廠牌</th> <td>{{v.F_LIVER_NAME}}</td> </tr> 
+                <th>廠牌</th> <td>{{v.CAR_LABEL}}</td> </tr> 
                 <th>車色</th> <td>{{v.F_COLOUR}}</td> </tr> 
                 <th>車位類型</th> <td>{{v.F_PARKING_KIND}}</td> </tr> 
                 <th>車主</th> <td>{{v.F_OWNER}}</td> </tr> 
@@ -97,7 +97,7 @@
             if(str == ""){
               vueCarList.carList[k].HIDE = false;
             }else{
-              if(v.F_LIVER_NAME.indexOf(str)<0 && v.F_CAR_ID.indexOf(str)<0 && v.F_OWNER.indexOf(str)<0 && v.F_PHONE.indexOf(str)<0){
+              if(v.F_LIVER_NAME.indexOf(str)<0 && v.F_CAR_ID.indexOf(str)<0 && v.F_OWNER.indexOf(str)<0 && v.F_PHONE.indexOf(str)<0 &&  v.CAR_LABEL.indexOf(str)<0){
                 vueCarList.carList[k].HIDE = true;
               }else{
                 vueCarList.carList[k].HIDE = false;
