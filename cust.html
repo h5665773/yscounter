@@ -88,6 +88,10 @@
                   <th scope="row">下班打卡</th> 
                   <td v-for="(v,k) in list">{{v.checkin['OFF_WORKTIME']}}</td> 
                 </tr> 
+                <tr> 
+                  <th scope="row">哨點</th> 
+                  <td v-for="(v,k) in list">{{v['pointName']}}</td> 
+                </tr> 
               </tbody> 
             </table>            
           </div>
