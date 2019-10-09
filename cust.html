@@ -31,7 +31,7 @@
       h2{
         font-size: 24px;
       }
-      tr >td:nth-child(2){
+      tr >td:nth-child(3){
         background-color: #41a6ee
       }
       table#scheduleList td, table#scheduleList th {
@@ -250,8 +250,16 @@
           choosePoint = pointid;
           $("a.current").removeClass("current");
           $(this).addClass("current");
-          if(vueScheduleList.list[3]["checkin"]["GO_WORKTIME"]==""){
+          var yesterday = vueScheduleList.list[0]["checkin"];
+          if(vueScheduleList.list[1]["checkin"]["GO_WORKTIME"]==""){
             gowork.show();
+            if(yesterday["GO_WORKTIME"]!="" && yesterday["OFF_WORKTIME"]=="" ){
+              let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0,2));
+              if(startHour>15 && d.getHours()<8){
+                offwork.show();
+                gowork.hide();
+              }
+            }
           }else{
             offwork.show();
           }
@@ -326,13 +334,15 @@
                     alert("當日已在其他地方打卡了");
                   break;
                 }
-                var nowMinSec = d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
-                if(workType == "offWork"){
-                  vueScheduleList.list[3]['checkin']["OFF_WORKTIME"] = nowMinSec;
-                }else{
-                  vueScheduleList.list[3]['checkin']["GO_WORKTIME"] = nowMinSec;
-                }
-                $("#pointDetail").hide();
+                request(config.apiHost + 'api/empCurrentSchedule/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
+                  var rows = JSON.parse(body);
+                  if(error != null){
+                    pointData = JSON.parse(fs.readFileSync(offlinePointFile));
+                    showPoint(pointData,scanEmpId);
+                  }
+                  $("#pointDetail").hide();
+                  vueScheduleList.list = rows;
+                });
               }
             });
           }else{
