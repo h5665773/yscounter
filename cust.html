@@ -28,18 +28,22 @@
     <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
     <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
     <style>
+      html{
+        overflow: visible;
+      }
       h2{
         font-size: 24px;
       }
       tr >td:nth-child(3){
         background-color: #41a6ee
       }
-      table#scheduleList td, table#scheduleList th {
+      .point-schedule td, .point-schedule th {
           font-size: 12px;
       }
-      table#scheduleList th {
+      .point-schedule th {
         padding:3px;
       }
+      
     </style>
     <script type="text/javascript" src="/js/Common.js"></script>
   </head>
@@ -54,64 +58,65 @@
     
 
     <!-- Begin page content -->
-    <div class="container main" >
+    <div class="container main" id="scheduleList">
       <div class="row">
-          <div class="col-lg-3">
+          <div class="col-lg-3" style="position:relative">
             
             <p>
               <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
             </p>
+            <div  style="display:none" id="pointDetail">
+              <div class="alert alert-success" style="width:200px" role="alert">
+                您好 
+                <strong id="empName">
+                  
+                </strong>
+              </div>
+              <strong >請選擇駐點清單</strong>
+              <div class="list-group pointList">
+              </div>
+            </div>
           </div>
           <div class="col-lg-3" align="center">
             <h4>攝影機畫面</h4>
             <video id="video" width="320" height="270" autoplay></video>
             <canvas id="canvas" style="position: fixed;z-index:-999;left: 9999px;" width="320" height="270"></canvas>
           </div>
-          <div class="col-lg-6" align="center">
-            <table class="table table-bordered" id="scheduleList" v-show="list.length>0"> 
+          <div class="col-lg-6 point-schedule" align="center" v-for="(ps,pk) in list">
+            <table class="table table-bordered" > 
+              <thead>
+                <tr><th colspan="8">{{ps.F_POINT_NAME}}</tr>
+              </thead>
               <tbody> 
                 <tr> 
                   <th>日期</th> 
-                  <td v-for="(v,k) in list">{{v.date}}</td> 
+                  <td v-for="(v,k) in ps.list" v-html="v.date"></td> 
                 </tr> 
                 <tr> 
                   <th scope="row">班別</th> 
-                  <td v-for="(v,k) in list">{{v.classType}}</td> 
+                  <td v-for="(v,k) in ps.list">{{v.classType}}</td> 
                 </tr> 
                 <tr> 
                   <th scope="row">應上班</th> 
-                  <td v-for="(v,k) in list">{{v.sdt}}</td> 
+                  <td v-for="(v,k) in ps.list">{{v.sdt}}</td> 
                 </tr> 
                 <tr> 
                   <th scope="row">上班打卡</th> 
-                  <td v-for="(v,k) in list">{{v.checkin['GO_WORKTIME']}}</td> 
+                  <td v-for="(v,k) in ps.list">{{v.checkin['GO_WORKTIME']}}</td> 
                 </tr> 
                 <tr> 
                   <th scope="row">應下班</th> 
-                  <td v-for="(v,k) in list">{{v.edt}}</td> 
+                  <td v-for="(v,k) in ps.list">{{v.edt}}</td> 
                 </tr> 
                 <tr> 
                   <th scope="row">下班打卡</th> 
-                  <td v-for="(v,k) in list">{{v.checkin['OFF_WORKTIME']}}</td> 
+                  <td v-for="(v,k) in ps.list">{{v.checkin['OFF_WORKTIME']}}</td> 
                 </tr> 
-                <tr> 
-                  <th scope="row">哨點</th> 
-                  <td v-for="(v,k) in list">{{v['pointName']}}</td> 
-                </tr> 
+                
               </tbody> 
             </table>            
           </div>
-          <div class="col-lg-6" style="display:none" id="pointDetail">
-            <div class="alert alert-success" style="width:200px" role="alert">
-              您好 
-              <strong id="empName">
-                
-              </strong>
-            </div>
-            <strong >請選擇駐點清單</strong>
-            <div class="list-group pointList">
-            </div>
-          </div>
+          
           <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px" >
           </div>
           <div class="col-md-12" align="center">
@@ -153,10 +158,11 @@
         var video = document.getElementById('video');
         var d = new Date();
         var mediaConfig =  { video: true };
+        var body = $("html");
         var errBack = function(e) {
           console.log('An error has occurred!', e)
         };
-
+        
       // Put video listeners into place
         if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 navigator.mediaDevices.getUserMedia(mediaConfig).then(function(stream) {
@@ -218,7 +224,7 @@
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              request(config.apiHost + 'api/pointByCust&empCurrentSchedule/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
+              request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
                 if(error != null){
                   pointData = JSON.parse(fs.readFileSync(offlinePointFile));
@@ -231,6 +237,12 @@
                 if(typeof(rows['data2']) !='undefined'){
                   console.log(rows['data2']);
                   vueScheduleList.list = rows['data2']  ;
+                  var html = $("html");
+                  $(window).scroll(function(){
+                    if($(this).scrollTop()){
+                        html.css("overflow","visible");
+                    }
+                  });
                 }
                 // console.log(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId);
                 // console.log(body);
