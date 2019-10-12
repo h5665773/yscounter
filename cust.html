@@ -43,6 +43,9 @@
       .point-schedule th {
         padding:3px;
       }
+      thead th{
+        background-color: #ccff;
+      }
       
     </style>
     <script type="text/javascript" src="/js/Common.js"></script>
@@ -76,14 +79,18 @@
               <div class="list-group pointList">
               </div>
             </div>
+            <div  align="center">
+              <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
+              <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
+            </div>
           </div>
           <div class="col-lg-3" align="center">
             <h4>攝影機畫面</h4>
             <video id="video" width="320" height="270" autoplay></video>
             <canvas id="canvas" style="position: fixed;z-index:-999;left: 9999px;" width="320" height="270"></canvas>
           </div>
-          <div class="col-lg-6 point-schedule" align="center" v-for="(ps,pk) in list">
-            <table class="table table-bordered" > 
+          <div class="col-lg-6 point-schedule" align="center" >
+            <table class="table table-bordered" v-for="(ps,pk) in list"> 
               <thead>
                 <tr><th colspan="8">{{ps.F_POINT_NAME}}</tr>
               </thead>
@@ -119,10 +126,7 @@
           
           <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px" >
           </div>
-          <div class="col-md-12" align="center">
-            <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
-            <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
-          </div>
+          
       </div>
     </div>
 
@@ -262,8 +266,8 @@
           choosePoint = pointid;
           $("a.current").removeClass("current");
           $(this).addClass("current");
-          var yesterday = vueScheduleList.list[0]["checkin"];
-          if(vueScheduleList.list[1]["checkin"]["GO_WORKTIME"]==""){
+          var yesterday = vueScheduleList.list[pointid].list[0]["checkin"];
+          if(vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"]==""){
             gowork.show();
             if(yesterday["GO_WORKTIME"]!="" && yesterday["OFF_WORKTIME"]=="" ){
               let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0,2));
