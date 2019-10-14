@@ -224,6 +224,8 @@
           loading.css("display","block");
           loading.addClass("rotateIn");
           exec("python scan.py" , function(err ,data ,c){
+            // data = 'K10207';
+            // err = null;
             if(err == null && data.length > 0){
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
@@ -350,7 +352,7 @@
                     alert("當日已在其他地方打卡了");
                   break;
                 }
-                request(config.apiHost + 'api/empCurrentSchedule/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
+                request(config.apiHost + 'api/empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                   var rows = JSON.parse(body);
                   if(error != null){
                     pointData = JSON.parse(fs.readFileSync(offlinePointFile));
