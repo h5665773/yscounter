@@ -24,9 +24,11 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="/js/bootstrap.min.js" ></script>
     <script src="/js/vue.js" ></script>
+    <script src="/js/face-api.min.js" ></script>
     <link rel="stylesheet" href="/css/main.css" >
     <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
     <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+
     <style>
       html{
         overflow: visible;
@@ -46,7 +48,19 @@
       thead th{
         background-color: #ccff;
       }
-      
+      canvas {
+        position: absolute;
+        top: 39px;
+        left: 15px;
+      }
+      #cameraArea{
+        position: relative;
+      }
+      #canvas{
+        z-index: -99;
+        top:-9999px;
+        left:-9999px;
+      }
     </style>
     <script type="text/javascript" src="/js/Common.js"></script>
   </head>
@@ -64,7 +78,6 @@
     <div class="container main" id="scheduleList">
       <div class="row">
           <div class="col-lg-3" style="position:relative">
-            
             <p>
               <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
             </p>
@@ -84,10 +97,10 @@
               <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
             </div>
           </div>
-          <div class="col-lg-3" align="center">
+          <div class="col-lg-3" id="cameraArea" align="center">
             <h4>攝影機畫面</h4>
             <video id="video" width="270" height="270" autoplay></video>
-            <canvas id="canvas" style="position: fixed;z-index:-999;left: 9999px;" width="270" height="270"></canvas>
+            <canvas id="canvas"  width="270" height="270"></canvas>
           </div>
           <div class="col-lg-6 point-schedule" align="center" >
             <table class="table table-bordered" v-for="(ps,pk) in list"> 
@@ -141,18 +154,6 @@
       const request = require("request");
       // import nodejs bindings to native tensorflow,
       // not required, but will speed up things drastically (python required)
-      import '@tensorflow/tfjs-node';
-
-      // implements nodejs wrappers for HTMLCanvasElement, HTMLImageElement, ImageData
-      import * as canvas from 'canvas';
-
-      import * as faceapi from 'face-api.js';
-
-      // patch nodejs environment, we need to provide an implementation of
-      // HTMLCanvasElement and HTMLImageElement, additionally an implementation
-      // of ImageData is required, in case you want to use the MTCNN
-      const { Canvas, Image, ImageData } = canvas
-      faceapi.env.monkeyPatch({ Canvas, Image, ImageData })
       var vueScheduleList = new Vue({
         el: '#scheduleList',
         data: {
@@ -180,34 +181,37 @@
         var errBack = function(e) {
           console.log('An error has occurred!', e)
         };
-        
-      // Put video listeners into place
-        if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia(mediaConfig).then(function(stream) {
-          //video.src = window.URL.createObjectURL(stream);
-          video.srcObject = stream;
-                    video.play();
-                });
-        } else if(navigator.getUserMedia) { // Standard
-          navigator.getUserMedia(mediaConfig, function(stream) {
-            video.src = stream;
-            video.play();
-          }, errBack);
-        } else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
-          navigator.webkitGetUserMedia(mediaConfig, function(stream){
-            video.src = window.webkitURL.createObjectURL(stream);
-            video.play();
-          }, errBack);
-        } else if(navigator.mozGetUserMedia) { // Mozilla-prefixed
-          navigator.mozGetUserMedia(mediaConfig, function(stream){
-            video.src = window.URL.createObjectURL(stream);
-            video.play();
-          }, errBack);
+        Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri('/js'),
+          faceapi.nets.faceLandmark68Net.loadFromUri('/js'),
+          faceapi.nets.faceRecognitionNet.loadFromUri('/js'),
+          faceapi.nets.faceExpressionNet.loadFromUri('/js')
+        ]).then(startVideo)
+        function startVideo() {
+          navigator.getUserMedia(
+            { video: {} },
+            stream => video.srcObject = stream,
+            err => console.error(err)
+          )
+          video.addEventListener('play', () => {
+            const canvasF = faceapi.createCanvasFromMedia(video)
+            $("#cameraArea").append(canvasF)
+            const displaySize = { width: video.width, height: video.height }
+            faceapi.matchDimensions(canvasF, displaySize)
+            setInterval(async () => {
+              //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+              //console.log(video);
+              const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions()
+              const resizedDetections = faceapi.resizeResults(detections, displaySize)
+              canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
+              faceapi.draw.drawDetections(canvasF, resizedDetections)
+              faceapi.draw.drawFaceExpressions(canvasF, resizedDetections)
+            }, 3000)
+          })
         }
+        
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
-        var video = document.getElementById('video');
-
         var options = {
           hostname: 'api.wyattst.com.tw',
           port: 80,
@@ -238,12 +242,13 @@
           loading.css("display","block");
           loading.addClass("rotateIn");
           exec("python scan.py" , function(err ,data ,c){
-            // data = 'K10207';
+            // data = 'K10197';
             // err = null;
             if(err == null && data.length > 0){
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
+              console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
                 if(error != null){
@@ -264,9 +269,6 @@
                     }
                   });
                 }
-                // console.log(config.apiHost + 'api/pointByCust/'+currentCust+'/000/'+scanEmpId);
-                // console.log(body);
-                // console.log(pointData);
               });
             }else{
               loadingMask.css("display","none");
@@ -306,14 +308,20 @@
             checkin("offWork");
           }
         });
-        var checkin = function(workType){
-          gowork.prop("disabled",true);
-          offwork.prop("disabled",true);
+        var checkin = async function(workType){
+          context.drawImage(video, 0, 0, 270, 270);
+          var imageData = canvas.toDataURL("image/png");
+          const detections = await faceapi.detectAllFaces("canvas", new faceapi.TinyFaceDetectorOptions()).withFaceExpressions()
+          console.log(detections);
+          if(detections.length == 0){
+            // alert("未偵測到員工人臉，請重新對準!");
+            // return false;
+          }
           var url ;
           if(scanEmpId != "" && choosePoint!=""&&currentCust!=""){
-            context.drawImage(video, 0, 0, 320, 270);
-            var imageData = canvas.toDataURL("image/png");
-            //console.log(imageData);
+            gowork.prop("disabled",true);
+            offwork.prop("disabled",true);  
+            
             var imageDir = `./public/coworkerImages`;
             if(!fs.existsSync(imageDir)){
               fs.mkdirSync(imageDir,0777);
@@ -360,22 +368,22 @@
                     alert("員工不存在或已離職");
                   break;
                   case("4"):
-                    alert("當日未排班");
+                    alert("未排班不得打卡");
                   break;
                   case("5"):
                     alert("當日已在其他地方打卡了");
                   break;
                 }
                 location.href="index.html";
-                request(config.apiHost + 'api/empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
-                  var rows = JSON.parse(body);
-                  if(error != null){
-                    pointData = JSON.parse(fs.readFileSync(offlinePointFile));
-                    showPoint(pointData,scanEmpId);
-                  }
-                  $("#pointDetail").hide();
-                  vueScheduleList.list = rows;
-                });
+                // request(config.apiHost + 'api/empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
+                //   var rows = JSON.parse(body);
+                //   if(error != null){
+                //     pointData = JSON.parse(fs.readFileSync(offlinePointFile));
+                //     showPoint(pointData,scanEmpId);
+                //   }
+                //   $("#pointDetail").hide();
+                //   vueScheduleList.list = rows;
+                // });
               }
             });
           }else{
