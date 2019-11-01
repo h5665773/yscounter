@@ -201,7 +201,7 @@
             setInterval(async () => {
               //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
               //console.log(video);
-              const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions()
+              const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
               const resizedDetections = faceapi.resizeResults(detections, displaySize)
               canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
               faceapi.draw.drawDetections(canvasF, resizedDetections)
@@ -242,13 +242,13 @@
           loading.css("display","block");
           loading.addClass("rotateIn");
           exec("python scan.py" , function(err ,data ,c){
-            // data = 'K10197';
-            // err = null;
+            data = 'T10386';
+            err = null;
             if(err == null && data.length > 0){
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
+
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
                 if(error != null){
@@ -311,7 +311,7 @@
         var checkin = async function(workType){
           context.drawImage(video, 0, 0, 270, 270);
           var imageData = canvas.toDataURL("image/png");
-          const detections = await faceapi.detectAllFaces("canvas", new faceapi.TinyFaceDetectorOptions()).withFaceExpressions()
+          const detections = await faceapi.detectAllFaces("canvas", new faceapi.TinyFaceDetectorOptions())
           console.log(detections);
           if(detections.length == 0){
             // alert("未偵測到員工人臉，請重新對準!");
@@ -368,7 +368,7 @@
                     alert("員工不存在或已離職");
                   break;
                   case("4"):
-                    alert("未排班不得打卡");
+                    alert("已經超過打卡時限");
                   break;
                   case("5"):
                     alert("當日已在其他地方打卡了");
