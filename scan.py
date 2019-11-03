@@ -3,7 +3,6 @@ import serial
 import pprint
 import re
 import os
-import pycurl
 import time
 comf = open('public/comport.txt', 'r');
 host = "http://api.wyattst.com.tw/";
