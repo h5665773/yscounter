@@ -28,6 +28,7 @@
     "lodash": "^4.17.15",
     "qrcode-reader": "^1.0.4",
     "request": "^2.88.0",
+    "serialport": "^8.0.5",
     "unzipper": "*",
     "url-download": "0.0.4"
   }
