@@ -11,14 +11,11 @@ var checkClose = function(){
 	//console.log(e.getTime() + "-" +startSec + " = " + (e.getTime()-startSec));
 	e = new Date()
 	if(returnStr !=""){
-		console.log(666);
 		console.log(returnStr);
 		startSec = 0;
 	}else{
 		
 		if(e.getTime()-startSec > 20000){
-			console.log(444);
-			console.log(port.closing);
 			if(port.closing == false){
 				console.log(port);
 				port.close();
