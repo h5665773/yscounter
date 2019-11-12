@@ -73,7 +73,6 @@
       </nav>  
     </header>
     
-
     <!-- Begin page content -->
     <div class="container main" id="scheduleList">
       <div class="row">
@@ -160,6 +159,7 @@
           list: {}
         }
       });
+      
       $(document).ready(function(){
         var empName= $("#empName");
         var loading = $("#loading");
@@ -178,6 +178,19 @@
         var d = new Date();
         var mediaConfig =  { video: true };
         var body = $("html");
+        var showMask = function(){
+          loading.text("載入中!");
+          loadingMask.css("display","block");
+          loading.removeClass("rotateOut");
+          loading.css("display","block");
+          loading.addClass("rotateIn");
+        }
+        var hideMask = function(){
+          loadingMask.css("display","none");
+          loading.css("display","none");
+          loading.removeClass("rotateIn");
+          loading.addClass("rotateOut");
+        }
         var errBack = function(e) {
           console.log('An error has occurred!', e)
         };
@@ -237,12 +250,15 @@
           if($(this).attr("disabled")==true){
             return false;
           }
+          loading.text("請在20秒內掃描員工識別證!");
           loadingMask.css("display","block");
           loading.removeClass("rotateOut");
           loading.css("display","block");
           loading.addClass("rotateIn");
+
           exec("node scan.js" , function(err ,data ,c){
-            console.log(data);
+            //data = 'T10883'
+            //err = null
             if(err == null && data.length > 0){
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
@@ -308,6 +324,7 @@
           }
         });
         var checkin = async function(workType){
+          showMask();
           context.drawImage(video, 0, 0, 270, 270);
           var imageData = canvas.toDataURL("image/png");
           const detections = await faceapi.detectAllFaces("canvas", new faceapi.TinyFaceDetectorOptions())
@@ -335,6 +352,7 @@
             };
             request.post({url: url, formData: formData}, function (error, httpResponse, body) {
               if( error !=null){
+                hideMask();
                 fs.stat(offlineCheckinFile,(err)=>{
                   
                   var n = d.toLocaleString();
@@ -356,6 +374,7 @@
                   });
                 });
               }else{
+                hideMask();
                 switch(String(body)){
                   case("3"):
                     alert("打卡完成");
@@ -391,7 +410,8 @@
         }
       });
     </script>
-    <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
+    <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
+      <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
     <script type="text/javascript" src="/js/main.js"></script>
   </body>
 </html>
