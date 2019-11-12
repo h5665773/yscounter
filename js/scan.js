@@ -4,7 +4,7 @@
           child;
 	module.exports = function (cb) {
 		var scanEmpId ="";
-		exec("python scan.py" , function(err ,data ,c){
+		exec("node scan.js" , function(err ,data ,c){
 	        if(err == null && data.length > 0){
 
 	          data = data.trim();
