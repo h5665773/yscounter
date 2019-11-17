@@ -260,11 +260,20 @@
                               </div>
                             </td>  
                           </tr> 
+                          <tr v-show="customForm.F_CF_UNIT_TYPE!='時'">
+                            <td  width="20%" class="success">數量</td> 
+                            <td  width="30%">
+                              <div class="input-group">
+                                <input  type="number" class="form-control" name='quantity' :value="customForm.F_QUANTITY">
+                              </div>
+                            </td>
+                          </tr>
                           <tr>
-                            <td colspan="2">
+                            <td colspan="4">
                               備註
                               <textarea name="cf-note" class="form-control" rows="3">{{customForm.F_CF_NOTE}}</textarea>
                             </td>
+                            
                           </tr>
                         </tbody> 
                       </table>

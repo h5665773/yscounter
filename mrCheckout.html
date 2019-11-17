@@ -114,7 +114,7 @@
 					</tr>
 					<tr> 
 						<th scope="row" width="40%" >住戶姓名</th> 
-						<td width="60%">{{info.F_LIVER_NAME}}</td> 
+						<td width="60%">{{hideName(info.F_LIVER_NAME)}}</td> 
 					</tr>
 					<tr> 
 						<th scope="row" width="40%">住戶戶號</th> 
@@ -124,7 +124,7 @@
 						<th scope="row" width="40%">{{info.F_ITEM1_TITLE}}</th> 
 						<td width="60%">{{info.F_ITEM1_VALUE}}</td> 
 					</tr>
-					<tr v-show="info.F_ITEM2_TITLE!=''"> 
+					<tr v-show="info.F_ITEM2_TITLE!='' && info.F_ITEM2_TITLE!='行動電話'"> 
 						<th scope="row" width="40%">{{info.F_ITEM2_TITLE}}</th> 
 						<td width="60%">{{info.F_ITEM2_VALUE}}</td> 
 					</tr>
@@ -193,8 +193,12 @@
 						<td width="60%" class="alert-warning">{{info.F_START_TIME}}</td> 
 					</tr>
 					<tr> 
+						<th scope="row" width="40%" class="alert-warning">離場時間</th> 
+						<td width="60%" class="alert-warning">{{info.F_END_TIME}}</td> 
+					</tr>
+					<tr> 
 						<th scope="row" width="40%" >住戶姓名</th> 
-						<td width="60%">{{info.F_LIVER_NAME}}</td> 
+						<td width="60%">{{hideName(info.F_LIVER_NAME)}}</td> 
 					</tr>
 					<tr> 
 						<th scope="row" width="40%">住戶戶號</th> 
@@ -204,7 +208,7 @@
 						<th scope="row" width="40%">{{info.F_ITEM1_TITLE}}</th> 
 						<td width="60%">{{info.F_ITEM1_VALUE}}</td> 
 					</tr>
-					<tr v-show="info.F_ITEM2_TITLE!=''"> 
+					<tr v-show="info.F_ITEM2_TITLE!='' && info.F_ITEM2_TITLE!='行動電話'"> 
 						<th scope="row" width="40%">{{info.F_ITEM2_TITLE}}</th> 
 						<td width="60%">{{info.F_ITEM2_VALUE}}</td> 
 					</tr>
@@ -270,6 +274,9 @@
 		          selectLiver: function(did,name){
 		            mrDetail.liverName = name;
 		            mrDetail.liverDid = did;
+		          },
+		          hideName: function(name){
+		          	return String(name).substr(0,1)+"**"
 		          }
 		        }
 		    });
