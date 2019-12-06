@@ -27,4 +27,10 @@ $(document).ready(function(){
   var footerJade = jade.compileFile("views/footer.jade");
   var footerHtml = footerJade({year: d.getFullYear()});
   $("footer").html(footerHtml);
+  var timerVar = setInterval(myTimer, 1000);
+
+  function myTimer() {
+    var d = new Date();
+    document.getElementById("globalTimer").innerHTML = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+" "+d.toLocaleTimeString();
+  }
 });
