@@ -315,7 +315,7 @@
             gowork.show();
             if(yesterday["GO_WORKTIME"]!="" && yesterday["OFF_WORKTIME"]=="" ){
               let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0,2));
-              if(startHour>15 && d.getHours()<8){
+              if(startHour>15 && d.getHours()<=9){
                 offwork.show();
                 gowork.hide();
               }
