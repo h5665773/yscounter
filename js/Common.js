@@ -4,6 +4,7 @@ var fs = require('fs');
 var jade = require("jade");
 var custFile = "public/custid.txt" ;
 var currentCust = fs.readFileSync(custFile , {encoding:'utf-8'});
+var currentCustName = ""
 var displayLogo = true;
 var d = new Date();
 $(document).ready(function(){
@@ -16,6 +17,7 @@ $(document).ready(function(){
       res.on('end',function(){
         var cust = JSON.parse(resContent);
         $("#companyName").html(cust[0].F_CU_NAME)
+        currentCustName = cust[0].F_CU_NAME
       });
       res.resume();
     });
@@ -34,3 +36,7 @@ $(document).ready(function(){
     document.getElementById("globalTimer").innerHTML = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+" "+d.toLocaleTimeString();
   }
 });
+function topFunction() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}

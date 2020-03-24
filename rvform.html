@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="icon/favicon-32x32.png">
+
+    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/colorbox.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.css" >
+    <script src="/js/jquery.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/js/bootstrap.min.js" ></script>
+    <script src="/js/vue.js" ></script>
+    <link rel="stylesheet" href="/css/main.css" >
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.css" >
+    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+    <script type="text/javascript" src="/js/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/Common.js"></script>
+    
+
+    <style type="text/css">
+      .input-group{
+        margin-bottom:15px;
+      }
+      #row-scan{
+        text-align: center;
+        height: 300px;
+        vertical-align: middle;
+        margin-bottom:20px;
+        padding-top: 15%;
+      }
+      .list-group-item{
+        border-top:0;
+        border-left:0;
+        border-right:0;
+        border-bottom:2px dotted #777777;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+    <header>
+      <nav class="navbar">
+      </nav>  
+    </header>
+    
+
+    <!-- Begin page content -->
+    <div class="container main" id="submitFormPanel" >
+      <div class="row" v-show="!scaned">
+        <div class="col-md-12" id="row-scan" >
+          <button type="button" @click="scanEmp()" class="btn btn-info" id="startScan">掃瞄員工條碼</button>
+        </div>
+      </div>
+      <div class="row" id="panelArea" style="display:none">
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">假別</span>
+            <select v-model="F_LEAVE_TYPE" id="F_LEAVE_TYPE" class="form-control">
+                <option value="">請選擇...</option>
+                <option value="A" :selected="tempData.F_LEAVE_TYPE=='A'">特休</option>
+                <option value="B" :selected="tempData.F_LEAVE_TYPE=='B'">病假</option>
+                <option value="C" :selected="tempData.F_LEAVE_TYPE=='C'">事假</option>
+                <option value="D" :selected="tempData.F_LEAVE_TYPE=='D'">公假</option>
+                <option value="E" :selected="tempData.F_LEAVE_TYPE=='E'">婚假</option>
+                <option value="F" :selected="tempData.F_LEAVE_TYPE=='F'">喪假</option>
+                <option value="G" :selected="tempData.F_LEAVE_TYPE=='G'">陪產假</option>
+                <option value="H" :selected="tempData.F_LEAVE_TYPE=='H'">補休</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">請假薪資</span>
+            <input type="number" class="form-control" v-model="F_LEAVE_PAY">
+          </div>
+          <h4 style="margin-top:31px;">開始</h4>
+          <div class="input-group" >
+            <span class="input-group-addon" id="dateStart">日期</span>
+            <input  type="text" required id="F_LEAVE_START_DATE" class="form-control" data-date-format="YYYY-MM-DD" >
+            <span class="input-group-addon" id="">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="dateStart">時間</span>
+            <input  required id="F_LEAVE_START_TIME" type="text" class="form-control" data-date-format="HH:mm" >
+            <span class="input-group-addon" id="">
+                <span class="glyphicon glyphicon-time"></span>
+            </span>
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">相關文件</span>
+            <input type="file" id="F_LEAVE_FILEPATH" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="input-group">
+            <label>請假事由</label>
+            <textarea class="form-control" v-model="F_LEAVE_NOTE" rows="3"></textarea>
+          </div>
+          <h4>結束</h4>
+          <div class="input-group">
+            <span class="input-group-addon" id="dateEnd">結束日期</span>
+            <input  type="text" id="F_LEAVE_END_DATE" required class="form-control" data-date-format="YYYY-MM-DD" >
+            <span class="input-group-addon" id="">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="dateEnd">結束時間</span>
+            <input type="text" id="F_LEAVE_END_TIME"  required class="form-control" data-date-format="HH:mm">
+            <span class="input-group-addon" id="">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+          <div class="input-group">
+            <button type="button" @click="submitLeave()" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+              提交請假
+            </button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <h4>攝影機畫面</h4>
+          <video id="video" width="320" height="270" autoplay=""></video>
+          <canvas id="canvas" style="position: fixed;z-index:-999;left: 9999px;" width="320" height="270"></canvas>
+        </div>
+        <div class="col-md-12">
+          <!-- //選擇假別  -->
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">請假紀錄</h3>
+            </div>
+            <div class="panel-body" style="padding-left:0;padding-right:0;">
+              <ul class="list-group">
+                <li class="list-group-item" v-for="(v,k) in leaveList">
+                {{v.F_SUBMIT_DATE}}
+                <a href="#">{{v.F_EMP_NAME}}</a> <span class="badge badge-secondary badge-pill"> {{v.F_TYPE_NAME}}</span> <span class="badge badge-info badge-pill float-right">{{v.F_REVIEW_STATUS}}</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>   
+    </div>
+    <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript">
+      var exec = require('child_process').exec,
+          child;
+      const scan = require("./js/scan.js");
+      const request = require("request");
+      const logs = console.log;
+      var loading = $("#loading");
+      var loadingMask = $(".loadingMask");
+      var video = document.getElementById('video');
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var mediaConfig =  { video: true };
+      logs(1)
+      var errBack = function(e) {
+
+        console.log('An error has occurred!', e)
+      };
+      logs(2)
+      
+      $(document).ready(function(){
+        var detectCamera = false
+        var submitFormPanel = new Vue({
+          el: "#submitFormPanel",
+          data: {
+            scaned: false,
+            editDisable: true,
+            F_EMP_ID: '',
+            F_CU_ID: currentCust,
+            F_LEAVE_TYPE: '',
+            F_LEAVE_NOTE: '',
+            F_LEAVE_START_DATE: '',
+            F_LEAVE_START_TIME: '',
+            F_LEAVE_PAY: '',
+            F_LEAVE_END_DATE: '',
+            F_LEAVE_END_TIME: '',
+            tempData: {
+              F_LEAVE_END_DATE: '',
+              F_LEAVE_START_DATE: ''
+            },
+            leaveList: []
+          },
+          methods: {
+            scanEmp: function(){
+              let self = this;
+              loadingMask.css("display", "block");
+              loading.removeClass("rotateOut");
+              loading.css("display", "block");
+              loading.addClass("rotateIn");
+              exec("node scan.js" , function(err ,data ,c){
+                data = 'K10227'
+                err = null
+                if(err == null && data.length > 0){
+                  data = data.trim();
+                  var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
+                  scanEmpId = parse[1];
+
+                  submitFormPanel.F_EMP_ID = scanEmpId
+                  request(config.apiHost + `api/empLeaveData/000/000/${scanEmpId}`, function (error, response, body) {
+                    const fetchObj = JSON.parse(body);
+                    self.scaned = true
+                    logs(fetchObj)
+                    loadingMask.css("display", "none");
+                    loading.css("display", "none");
+                    loading.removeClass("rotateIn");
+                    loading.addClass("rotateOut");
+                    $("#panelArea").show()
+                    self.leaveList = fetchObj
+                  });
+                }else{
+                  loadingMask.css("display","none");
+                  loading.css("display","none");
+                  loading.removeClass("rotateIn");
+                  loading.addClass("rotateOut");
+                  console.log(err);
+                }
+              });
+            },
+            submitLeave: function(){
+              //1111...檢查必填欄位
+              let self = this;
+              //檢查必填
+              if(this.checkRequired()!=true){
+                return
+              }
+              let postData = {
+                F_LEAVE_TYPE: self.F_LEAVE_TYPE,
+                F_LEAVE_NOTE: self.F_LEAVE_NOTE,
+                F_LEAVE_START_DATE: self.F_LEAVE_START_DATE,
+                F_LEAVE_END_DATE: self.F_LEAVE_END_DATE,
+                F_LEAVE_START_TIME: self.F_LEAVE_START_TIME,
+                F_LEAVE_END_TIME: self.F_LEAVE_END_TIME,
+                F_LEAVE_PAY: self.F_LEAVE_PAY,
+                F_LEAVE_FILEPATH: "",
+                F_EMP_ID: submitFormPanel.F_EMP_ID,
+                F_CU_ID: currentCust,
+                F_CU_SNAME: currentCustName,
+                F_EMP_NAME: '' 
+              }
+              let formdata = new FormData();
+              for(let i in postData){
+                let val = postData[i]
+                formdata.append(i, val)
+              }
+              if($("#F_LEAVE_FILEPATH").prop('files').length > 0)
+              {
+                  let file =$("#F_LEAVE_FILEPATH").prop('files')[0];
+                  formdata.append("F_LEAVE_FILEPATH", file);
+              }
+              loadingMask.css("display", "block");
+              loading.removeClass("rotateOut");
+              loading.css("display", "block");
+              loading.addClass("rotateIn");
+              logs(postData)
+              return
+              request.post(
+                {
+                  url: config.apiHost+ `api/empLeaveData/000/000/${empId}`, 
+                  form: formdata, 
+                  function(err,httpResponse,body){
+                    const fetchObj = JSON.parse(body);
+                    self.scaned = true
+                    logs(fetchObj)
+                    loadingMask.css("display", "none");
+                    loading.css("display", "none");
+                    loading.removeClass("rotateIn");
+                    loading.addClass("rotateOut");
+                    $("#panelArea").show()
+                    self.leaveList = fetchObj
+                  }
+                }
+              );
+            },
+            checkRequired: function(){
+              let self = this
+              if(self.F_LEAVE_TYPE == ""){
+                alert("請選擇假別")
+                return
+              }
+              if(self.F_LEAVE_NOTE == ""){
+                alert("請填寫事由")
+                return
+              }
+              if(self.F_LEAVE_START_DATE == ""){
+                alert("請選擇開始日期")
+                return
+              }
+              if(self.F_LEAVE_END_DATE == ""){
+                alert("請選擇結束日期")
+                return
+              }
+              if(self.F_LEAVE_END_TIME == ""){
+                alert("請選擇結束時間")
+                return
+              }
+              if(self.F_LEAVE_START_TIME == ""){
+                alert("請選擇開始時間")
+                return
+              }
+              let ds = new Date(self.F_LEAVE_START_DATE + " " +self.F_LEAVE_START_TIME)
+              let de = new Date(self.F_LEAVE_END_DATE + " " +self.F_LEAVE_END_TIME)
+              let dsTime = ds.getTime()
+              let deTime = de.getTime()
+              if(deTime - dsTime < 3600){
+                alert("結束時間必須大於開始時間!")
+                return
+              }
+
+              return true
+            }
+          },
+          mounted: function () {
+            let self = this
+            $('#F_LEAVE_START_TIME').datetimepicker().on("dp.hide",function(e){
+              self.F_LEAVE_START_TIME = e.target.value
+            })
+            $('#F_LEAVE_END_TIME').datetimepicker().on("dp.hide",function(e){
+              self.F_LEAVE_END_TIME = e.target.value
+            })
+            $('#F_LEAVE_START_DATE').datetimepicker().on("dp.hide",function(e){
+              self.F_LEAVE_START_DATE = e.target.value
+            })
+            $('#F_LEAVE_END_DATE').datetimepicker().on("dp.hide",function(e){
+              self.F_LEAVE_END_DATE = e.target.value
+            })
+            if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+              navigator.mediaDevices.getUserMedia(mediaConfig).then(function(stream) {
+                logs(3)
+                video.srcObject = stream;
+                detectCamera = true
+                video.play();
+              }).then(function(){
+                logs("detect")
+                if(detectCamera == false){
+                  alert("找不到相機!")
+                  location.href="index.html"
+                }
+              })
+            } 
+            // else if(navigator.getUserMedia) { // Standard
+            //   navigator.getUserMedia(mediaConfig, function(stream) {
+            //     video.src = stream;
+            //     detectCamera = true
+            //     video.play();
+            //   }, errBack);
+            // } else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
+            //   navigator.webkitGetUserMedia(mediaConfig, function(stream){
+            //     logs("c")
+            //     video.src = window.webkitURL.createObjectURL(stream);
+            //     detectCamera = true
+            //     video.play();
+            //   }, errBack);
+            // } else if(navigator.mozGetUserMedia) { // Mozilla-prefixed
+            //   navigator.mozGetUserMedia(mediaConfig, function(stream){
+            //     logs("d")
+            //     video.src = window.URL.createObjectURL(stream);
+            //     detectCamera = true
+            //     video.play();
+            //   }, errBack);
+            // }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+

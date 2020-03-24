@@ -268,13 +268,13 @@
           loading.addClass("rotateIn");
 
           exec("node scan.js" , function(err ,data ,c){
-            //data = 'T10883'
-            //err = null
+            // data = 'K10216'
+            // err = null
             if(err == null && data.length > 0){
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-
+              console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
                 if(error != null){
@@ -315,7 +315,7 @@
             gowork.show();
             if(yesterday["GO_WORKTIME"]!="" && yesterday["OFF_WORKTIME"]=="" ){
               let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0,2));
-              if(startHour>15 && d.getHours()<8){
+              if(startHour>15 && d.getHours()<=9){
                 offwork.show();
                 gowork.hide();
               }

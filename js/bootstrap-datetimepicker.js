@@ -888,7 +888,6 @@
                 });
 
                 input.blur();
-
                 return picker;
             },
 
