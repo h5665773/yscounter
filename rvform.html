@@ -105,7 +105,12 @@
           </div>
           <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">相關文件</span>
-            <input type="file" id="F_LEAVE_FILEPATH" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+            <input type="file" id="F_LEAVE_FILEPATH" class="form-control"  aria-describedby="basic-addon1">
+          </div>
+          <div class="input-group">
+            <button type="button" @click="submitLeave()" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+              提交請假
+            </button>
           </div>
         </div>
         <div class="col-md-4">
@@ -129,10 +134,10 @@
             </span>
           </div>
           <div class="input-group">
-            <button type="button" @click="submitLeave()" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-              提交請假
-            </button>
+            <span class="input-group-addon" id="basic-addon1">總時數</span>
+            <input type="number" id="F_LEAVE_HOURS" class="form-control" aria-describedby="basic-addon1">
           </div>
+          
         </div>
         <div class="col-md-4">
           <h4>攝影機畫面</h4>
@@ -270,11 +275,9 @@
               loading.removeClass("rotateOut");
               loading.css("display", "block");
               loading.addClass("rotateIn");
-              logs(postData)
-              return
               request.post(
                 {
-                  url: config.apiHost+ `api/empLeaveData/000/000/${empId}`, 
+                  url: config.apiHost+ `postdata/leaveRequest`, 
                   form: formdata, 
                   function(err,httpResponse,body){
                     const fetchObj = JSON.parse(body);
