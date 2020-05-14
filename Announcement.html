@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>悅盛保全 - 櫃台服務系統</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.css" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.css" crossorigin="anonymous">
+
+    <script src="/js/jquery.js"></script>
+    <script src="/js/vue.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="text/javascript" src="/js/Common.js"></script>
+    <style>
+        body {
+            font-family: "Roboto", "微軟正黑體", Monaco, "Microsoft JhengHei";
+        }
+        .tb1, .tb1 td {
+            border: 1px solid gray;
+        }
+        table {
+            width: 100%;
+        }
+        .tb1 thead tr td {
+            background-color: #336699;
+            text-align: center;
+            color: white;
+        }
+
+        .tb1 tbody tr td {
+            padding-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+
+        </nav>
+    </header>
+    <div class="jumbotron">
+        <div class="container">
+            <form>
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">資源分享</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <ul class="nav nav-pills nav-stacked">
+                                    <li id="SOP" name="listbtn" class="active"><a href="#">SOP作業流程</a></li>
+                                    <li id="EducationTraining" name="listbtn"><a href="#">教育訓練</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-9">
+                                <div id="ListPage">
+                                    <table class="tb1">
+                                        <thead>
+                                            <tr>
+                                                <td>適用客戶</td>
+                                                <td>主旨</td>
+                                                <td>適用勤別</td>
+                                                <td>發布類別</td>
+                                                <td>編輯人員</td>
+                                                <td>最後編輯</td>
+                                                <td>附檔</td>
+                                                <td>詳細資料</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="data in AnnouncementList">
+                                                <td v-if="data.F_CU_ID == 'ALL'">全部</td>
+                                                <td v-else>{{data.F_CU_NAME}}</td>
+                                                <td>{{data.F_ANNOUNCEMENT_TITLE}}</td>
+                                                <td>{{data.F_EMP_INOUT_NAME}}</td>
+                                                <td>{{data.F_ANNOUNCEMENT_TYPE_NAME}}</td>
+                                                <td>{{data.F_EDIT_UNAME}}</td>
+                                                <td>{{data.F_EDIT_DT_}}</td>
+                                                <td>
+                                                    <a :href="'http://admin.wyattst.com.tw/YSWEB/WEBFORM/DropBoxShareLink.aspx?folder=IFC0001&amp;file='+data.F_FILE_NAME" target="_blank" v-if="data.F_FILE_NAME != null"><img src="icon/dropbox_icon.jpg" class="imageLink" style="width:20px;height:20px;"></a>
+                                                    <span v-else>-</span>
+                                                </td>
+                                                <td><a href="#" @click="Detail(data.F_ANNOUNCEMENT_NO);"><span class="glyphicon glyphicon-search"></span></a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div id="DetailPage" style="display:none;">
+                                    <div v-for="data in AnnouncementDetail">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">適用客戶</span>
+                                                    <input type="text" class="form-control" v-if="data.F_CU_ID == 'ALL'" value="全部" readonly />
+                                                    <input type="text" class="form-control" v-else :value="data.data.F_CU_NAME" readonly />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">發布類別</span>
+                                                    <input type="text" class="form-control" :value="data.F_ANNOUNCEMENT_TYPE_NAME" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">適用勤別</span>
+                                                    <input type="text" class="form-control" :value="data.F_EMP_INOUT_NAME" readonly />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6"></div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">主旨</span>
+                                                    <input type="text" class="form-control" :value="data.F_ANNOUNCEMENT_TITLE" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">內容</span>
+                                                    <textarea class="form-control" rows="10" readonly>{{data.F_ANNOUNCEMENT_DESC}}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>附檔</label>
+                                                    <div class="form-control">
+                                                        <a v-if="data.F_FILE_NAME != null" :href="'http://admin.wyattst.com.tw/YSWEB/WEBFORM/DropBoxShareLink.aspx?folder=IFC0001&amp;file='+data.F_FILE_NAME" target="_blank">
+                                                            <img src="icon/dropbox_icon.jpg" class="imageLink" style="width: 20px; height: 20px;">
+                                                            {{data.F_FILE_NAME}}
+                                                        </a>
+                                                        <span v-else>-</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">編輯人員</span>
+                                                    <input type="text" class="form-control" :value="data.F_EDIT_UNAME" readonly />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">最後編輯</span>
+                                                    <input type="text" class="form-control" :value="data.F_EDIT_DT_" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="col-md-12 text-right">
+                                            <input id="btnBack" type="button" class="btn btn-primary" value="返回" @click="Back();" />
+                                        </div>
+                                        </div>
+                                    </div>
+                            </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        var app = new Vue({
+                            el: '#ListPage',
+                            data: {
+                                AnnouncementList: {}
+                            },
+                            methods: {
+                                Detail: function (F_ANNOUNCEMENT_NO_str) {
+                                    Get_AnnouncementDetail(F_ANNOUNCEMENT_NO_str);
+                                    ShowDetail();
+                                }
+                            }
+                        });
+                        var app2 = new Vue({
+                            el: '#DetailPage',
+                            data: {
+                                AnnouncementDetail: {}
+                            },
+                            methods: {
+                                Back: function () {
+                                    ShowList();
+                                }
+                            }
+                        });
+
+                        Get_Announcement('A');
+
+                        $('#EducationTraining').click(function () {
+                            ListButtonClickEvent($(this));
+                            Get_Announcement('B');
+                            ShowList();
+
+                        });
+                        $('#SOP').click(function () {
+                            ListButtonClickEvent($(this));
+                            Get_Announcement('A');
+                            ShowList();
+                        });
+
+                        function ListButtonClickEvent(List_obj) {
+                            List_obj.parent().find('li[name=listbtn]').attr("class", "");
+                            List_obj.attr("class", "active");
+                        }
+
+                        function Get_Announcement(F_ANNOUNCEMENT_TYPE_str) {
+                            let F_CU_ID_str = currentCust;
+
+                            $.ajax({
+                                type: 'POST',
+                                url: `http://admin.wyattst.com.tw/YSWEB/XMLFORM/AjaxOrder.aspx`,
+                                data: {
+                                    Order: 'Get_Announcement',
+                                    F_CU_ID: F_CU_ID_str,
+                                    F_ANNOUNCEMENT_TYPE: F_ANNOUNCEMENT_TYPE_str
+                                },
+                                success: function (data) {
+                                    var JsonData = JSON.parse(data);
+                                    app.AnnouncementList = JsonData;
+                                }
+                            });
+                        }
+
+                        function Get_AnnouncementDetail(F_ANNOUNCEMENT_NO_str) {
+                            $.ajax({
+                                type: 'POST',
+                                url: `http://admin.wyattst.com.tw/YSWEB/XMLFORM/AjaxOrder.aspx`,
+                                data: {
+                                    Order: 'Get_Announcement',
+                                    F_ANNOUNCEMENT_NO: F_ANNOUNCEMENT_NO_str
+                                },
+                                success: function (data) {
+                                    var JsonData = JSON.parse(data);
+                                    app2.AnnouncementDetail = JsonData;
+                                }
+                            });
+                        }
+
+                        function ShowDetail() {
+                            $('#DetailPage').css('display', '');
+                            $('#ListPage').css('display', 'none');
+                        }
+
+                        function ShowList() {
+                            $('#DetailPage').css('display', 'none');
+                            $('#ListPage').css('display', '');
+                        }
+                    });
+
+
+                </script>
+</body>
+</html>
