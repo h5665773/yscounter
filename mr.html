@@ -115,7 +115,7 @@
             </a>
           </div>
           <div class="list-group" style="height:400px;overflow-y: scroll">
-            <a href="#" v-on:click="selectLiver(liver.F_CU_DID,liver.F_OWNER_NAME)" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-show="liver.hide == false" v-for="liver in liverList">{{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
+            <a href="#" v-on:click="selectLiver(liver.F_CU_DID,liver.F_OWNER_NAME,liver.F_LIVER_ID)" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-show="liver.hide == false" v-for="liver in liverList">{{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
           </div>
         </div>
         <div class="col-md-9" >
@@ -137,15 +137,15 @@
                 
                   <div id="formDetail" v-show="displayDetail">
                     <form id="myform" action="" method="post">
-                      <input type="hidden" name="cf-id" :value="customForm.F_CF_ID">
-                      <input type="hidden" name="record-id" :value="customForm.F_RECORD_ID">
+                      <input type="hidden" name="cf-id" v-model="customForm.F_CF_ID">
+                      <input type="hidden" name="record-id" v-model="customForm.F_RECORD_ID">
                       <table class="table table-hover table-bordered"> 
                         <tbody> 
                           <tr> 
                             <th class="success" width="20%">進場時間</th> 
                             <td  width="30%">
                               <div class='input-group date' id='datetimepicker1'>
-                                <input type="text" name="start-time"  class="form-control" placeholder=""  readonly="readonly" :value="customForm.F_START_TIME">
+                                <input type="text" name="start-time"  class="form-control" placeholder=""  readonly="readonly" v-model="customForm.F_START_TIME">
                                 <!-- <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span> -->
@@ -154,7 +154,7 @@
                             <td  width="20%" class="success">離場時間</td> 
                             <td  width="30%">
                               <div class='input-group date' id='datetimepicker2'>
-                                <input type="text" class="form-control" readonly="readonly" name="end-time"  :value="customForm.F_END_TIME">
+                                <input type="text" class="form-control" readonly="readonly" name="end-time"  v-model="customForm.F_END_TIME">
                                 <!-- <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span> -->
@@ -165,13 +165,14 @@
                             <th class="success" width="20%">姓名</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" :value="liverName" name="user-name" placeholder="" >
+                                <input type="text" class="form-control" v-model="liverName" name="user-name" placeholder="" >
                               </div>
                             </td> 
                             <td  width="20%" class="success">戶號</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" :value="liverDid" placeholder="" name="liver-id" >
+                                <input type="text" class="form-control" v-model="liverId" placeholder="" name="liver-id" >
+                                <input type="text" class="form-control" v-model="liverDid" placeholder="" name="liver-did" >
                               </div>
                             </td>  
                           </tr> 
@@ -179,13 +180,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM1_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input name="name-item1" @focus="scan(customForm.F_ITEM1_TITLE,$event)" type="text" class="form-control" placeholder=""  :value="customForm.F_ITEM1_VALUE">
+                                <input name="name-item1" @focus="scan(customForm.F_ITEM1_TITLE,$event)" type="text" class="form-control" placeholder=""  v-model="customForm.F_ITEM1_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM2_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item2" class="form-control" placeholder=""  :value="customForm.F_ITEM2_VALUE">
+                                <input type="text" name="name-item2" class="form-control" placeholder=""  v-model="customForm.F_ITEM2_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -193,13 +194,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM3_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item3" class="form-control" placeholder=""  :value="customForm.F_ITEM3_VALUE">
+                                <input type="text" name="name-item3" class="form-control" placeholder=""  v-model="customForm.F_ITEM3_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM4_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item4" class="form-control" placeholder=""  :value="customForm.F_ITEM4_VALUE">
+                                <input type="text" name="name-item4" class="form-control" placeholder=""  v-model="customForm.F_ITEM4_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -207,13 +208,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM5_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" name="name-item5" placeholder=""  :value="customForm.F_ITEM5_VALUE">
+                                <input type="text" class="form-control" name="name-item5" placeholder=""  v-model="customForm.F_ITEM5_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM6_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item6"  :value="customForm.F_ITEM6_VALUE">
+                                <input type="text" class="form-control" placeholder="" name="name-item6"  v-model="customForm.F_ITEM6_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -221,13 +222,13 @@
                             <th class="success" width="20%">{{customForm.F_ITEM7_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item7"  :value="customForm.F_ITEM7_VALUE">
+                                <input type="text" class="form-control" placeholder="" name="name-item7"  v-model="customForm.F_ITEM7_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM8_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item8"  :value="customForm.F_ITEM8_VALUE">
+                                <input type="text" class="form-control" placeholder="" name="name-item8"  v-model="customForm.F_ITEM8_VALUE">
                               </div>
                             </td>  
                           </tr> 
@@ -235,28 +236,28 @@
                             <th class="success" width="20%">{{customForm.F_ITEM9_TITLE}}</th> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" class="form-control" placeholder=""  name="name-item9"  :value="customForm.F_ITEM9_VALUE">
+                                <input type="text" class="form-control" placeholder=""  name="name-item9"  v-model="customForm.F_ITEM9_VALUE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">{{customForm.F_ITEM10_TITLE}}</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input type="text" name="name-item10" class="form-control" placeholder=""  :value="customForm.F_ITEM10_VALUE">
+                                <input type="text" name="name-item10" class="form-control" placeholder=""  v-model="customForm.F_ITEM10_VALUE">
                               </div>
                             </td>  
                           </tr> 
                           <tr> 
                             <th class="success" width="20%">計費單位</th> 
                             <td  width="30%">
-                              <input type="hidden" name="billing-method" :value="customForm.F_B_METHOD">
+                              <input type="hidden" name="billing-method" v-model="customForm.F_B_METHOD">
                               <div class="input-group">
-                                <input type="text" class="form-control" name='unit-type' readonly :value="customForm.F_CF_UNIT_TYPE">
+                                <input type="text" class="form-control" name='unit-type' readonly v-model="customForm.F_CF_UNIT_TYPE">
                               </div>
                             </td> 
                             <td  width="20%" class="success">單位金額</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input  type="text" class="form-control" name='unit-price' :value="customForm.F_UNIT_PRICE">
+                                <input  type="text" class="form-control" name='unit-price' v-model="customForm.F_UNIT_PRICE">
                               </div>
                             </td>  
                           </tr> 
@@ -264,7 +265,7 @@
                             <td  width="20%" class="success">數量</td> 
                             <td  width="30%">
                               <div class="input-group">
-                                <input  type="number" class="form-control" name='quantity' :value="customForm.F_QUANTITY">
+                                <input  type="number" class="form-control" name='quantity' v-model="customForm.F_QUANTITY">
                               </div>
                             </td>
                           </tr>
@@ -437,6 +438,7 @@
           customForms: [],
           customForm: {},
           liverName: "",
+          liverId: "",
           liverDid: "",
           currentTab: 1,
           displaySubClass: true,
@@ -454,9 +456,10 @@
           checkoutMaxPage: 1
         },
         methods: {
-          selectLiver: function(did,name){
+          selectLiver: function(did,name,liverid){
             this.liverName = name;
             this.liverDid = did;
+            this.liverId = liverid;
           },
           switchTab: function (key) {
             // `this` inside methods points to the Vue instance
@@ -466,11 +469,13 @@
             this.displayDetail = false;
             this.chooseClass = key;
             this.liverName = "";
+            this.liverId = "";
             this.liverDid = "";
           },
           selectForm: function(key){
             var d = new Date();
             this.liverName = "";
+            this.liverId = "";
             this.liverDid = "";
             this.displayCFList = false;
             this.displayDetail = true;
@@ -499,6 +504,7 @@
             recordRow.F_ITEM10_TITLE = customForm.F_ITEM10_TITLE;
             this.liverName = recordRow.F_LIVER_NAME;
             this.liverDid = recordRow.F_DID;
+            this.liverId = recordRow.F_LIVER_ID;
             console.log(recordRow);
             this.customForm = recordRow;
           },
@@ -521,6 +527,7 @@
             recordRow.F_ITEM10_TITLE = customForm.F_ITEM10_TITLE;
             this.liverName = recordRow.F_LIVER_NAME;
             this.liverDid = recordRow.F_DID;
+            this.liverId = recordRow.F_LIVER_ID;
             console.log(recordRow);
             this.customForm = recordRow;
           },
