@@ -95,9 +95,17 @@ $(document).ready(function(){
 	      }
 	      self.dateOptions.push(dateStr);
 	    }
+	    loadingMask.css("display","block");
+      	loading.removeClass("rotateOut");
+      	loading.css("display","block");
+      	loading.addClass("rotateIn");
       	scan((empId,err) => {
       		//err = false;
       		//empId = "T10668";
+      		loadingMask.css("display","none");
+            loading.css("display","none");
+            loading.removeClass("rotateIn");
+            loading.addClass("rotateOut");
       		if(err == true){
       			alert("員工編號錯誤");
       			location.href="index.html";
@@ -112,7 +120,7 @@ $(document).ready(function(){
 		      self.currentPointid = pointList[0].F_POINT_ID;
 		      self.currentEmpName = pointList[0].F_EMP_NAME;
 		      loadAllData(null);
-		    });    
+		    });
 	    });
 	    
       }
