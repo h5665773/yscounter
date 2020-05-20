@@ -23,12 +23,16 @@
     
     <link rel="stylesheet" href="/css/main.css">
     <script type="text/javascript" src="/js/Common.js"></script>
+    <script src="/js/vue.js" ></script>    
     <style type="text/css">
       textarea {
         resize: none;
         overflow: hidden;
         min-height: 50px;
         max-height: 100px;
+      }
+      input[readonly],textarea[readonly] {
+        color: #1121dc;
       }
     </style>
   </head>
@@ -45,23 +49,126 @@
           <input type="hidden" name="action" value="addWorkRecord">
           <input type="hidden" name="F_EMP_ID" value="">
           <input type="hidden" name="F_POINT_ID" value="">
-          <div class="panel panel-warning"> 
+          <div class="panel panel-warning" id="pointPanel"> 
             <div class="panel-heading"> 
               <h3 class="panel-title">
-                <select style="margin-right:10px;padding:3px;" name="selectDate" id="selectDate"></select>
-                現場工作紀錄
+                <select style="margin-right:10px;padding:3px;" v-model="currentDate" @change="dateChage">
+                  <option :value="v" v-for="(v,k) in dateOptions">{{v}}</option>
+                </select>
+                {{currentEmpName}}-現場工作紀錄
               </h3> 
-
             </div> 
             <div class="panel-body ">
-              <div id="pointTabs"></div>
-              <div class="pointSop">
-                
+              <div class="text-danger">注意事項</div>
+              <textarea class="form-control" @blur="savePrecautions" v-model="precautions"></textarea  >
+              <hr>
+              <div id="pointTabs">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" :class="{ active: k==currentTabKey }" v-for="(v,k) in tabs">
+                      <a class="pointTab pointer" @click="clickTab(k,v.F_POINT_ID)">
+                        {{v.F_POINT_NAME}}({{v.F_EMP_NAME}})
+                      </a>
+                    </li>
+                  </ul>
               </div>
-              
+              <div class="pointSop">
+                <table class="table table-bordered todoTable" >
+                  <thead>
+                    <tr>
+                      <th colspan="4">
+                        {{sopData.typeName}}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th width="80">
+                        狀態
+                      </th>
+                      <th width="170">
+                        時間
+                      </th>
+                      <th>
+                        項目名稱
+                      </th>
+                      <th>
+                        備註
+                      </th>
+                    </tr>
+                    <tr v-for="(sopList,slk) in sopData.list">
+                      <td>
+                        <span v-show="sopList.done">{{sopList.name}}</span>
+                        <input v-show="!sopList.done" type="checkbox" :name="'workItem_'+slk" v-model="sopList.F_D2_SEQ">
+                      </td>
+                      <td>
+                        <div class="input-group">
+                          <input type="text" class="form-control " :name="'OT_TIME_'+slk" readonly aria-describedby="sizing-addon2" v-model="sopList.F_OT_TIME">
+                        </div>
+                      </td>
+                      <td>
+                        <div class="input-group">
+                          <textarea class="form-control" :name="'OT_ATTINFO_'+slk" readonly aria-describedby="sizing-addon2" onkeyup="auto_grow(this)">{{sopList.F_OT_ATTINFO}}</textarea>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="input-group">
+                          <input type="text" class="form-control" :readonly="sopList.done?true:false" aria-describedby="sizing-addon2" v-model="sopList.comment">
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table class="table table-bordered todoTable otherJob"> 
+                  <thead>
+                    <tr>
+                      <th colspan="5">其它</th>
+                    </tr>
+                    <tr>
+                      <th width="100">狀態</th>
+                      <th width="200">類型</th>
+                      <th width="150">時間</th>
+                      <th width="250">內容說明</th>
+                      <th>備註</th>
+                    </tr>
+                    <tr v-for="(rec,k) in otherRecord">
+                      <td>
+                        <input type="hidden" name="workOtherSeq[]" v-model="rec.F_D2_SEQ">
+                        {{rec.F_EMP_NAME}}
+                      </td>
+                      <td>
+                        <select name="workOtherType[]" class="form-control" v-model="otherOption.F_TID">
+                          <option  v-for="(otherOption,ook) in data.otherType" :selected="rec.F_TID==otherOption.F_TID">{{otherOption.F_TNAME}}
+                          </option>
+                        </select>
+                      </td>
+                      <td>
+                        <div class="input-group">
+                          <input type="text" name="OT_OTHER_TIME[]" aria-describedby="sizing-addon2" v-model="rec.F_OT_TIME" class="form-control ">
+                        </div>
+                      </td>
+                      <td>
+                        <input v-show="rec.F_OT_ATTINFO!=''" type="text" class="form-control" name="OT_OTHER_ATTINFO[]" disabled=true  aria-describedby="sizing-addon2" v-model="rec.F_OT_ATTINFO">
+                        <select v-show="rec.F_OT_ATTINFO==''" name="OT_OTHER_ATTINFO[]" class="form-control" v-model="rec.F_OT_ATTINFO">
+                          <option value="1">機電維修</option>
+                          <option value="2">電梯維修</option>
+                          <option value="3">消防維修</option>
+                          <option value="4">弱電維修</option>
+                          <option value="5">園藝修剪</option>
+                        </select>
+                      </td>
+                      <td>
+                        <div class="input-group">
+                          <textarea cols="30" rows="1" name="OT_OTHER_COMMENT[]" aria-describedby="sizing-addon2" value="" class="form-control" style="height: 48px;"></textarea>
+                        </div>
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+                <button type="button" @click="addOtherJob" id="addOtherJob">新增</button>
+              </div>
             </div>
             <div class="panel-footer">
-              <a id="sopSaveButton" role="button" class="btn btn-default">掃瞄並儲存» </a>
+              <a id="sopSaveButton" @click="saveWork" role="button" class="btn btn-default">儲存» </a>
               <!-- <canvas id="canvas2" width="100" height="100"></canvas> -->
             </div> 
           </div>
@@ -83,228 +190,7 @@
       </footer>
     </div> <!-- /container -->
 
-    <script type="text/javascript">
-      const d1 = new Date();
-      var d1Ym = d1.getFullYear() + "-" + ("0" + (d1.getMonth() + 1)).slice(-2);
-      var navJade = jade.compileFile("views/nav.jade");
-      const _ = require("lodash");
-      //const QrCode = require('qrcode-reader');
-      const exec = require('child_process').exec;
-      const scan = require("./js/scan.js");
-      const request = require('request');
-      const async = require("async");
-      //const qr = new QrCode();
-      const postUrl = config.apiHost + 'postdata/pointInfo';
-      var otTypeList;
-      $(document).ready(function(){
-        var sopWorkJade = jade.compileFile("views/sopWorkList.jade");
-        var sopOtherJade = jade.compileFile("views/sopOtherList.jade");
-        var sopPointsJade = jade.compileFile("views/sopPointList.jade");
-        var pointListHtml;
-        var sopWorkHtml;
-        var sopOtherHtml;
-        var newOtherTrHtml = "";
-        var otherTypeList = [];
-        var selectDate = $("#selectDate");
-        const inputPointId = $("input[name='F_POINT_ID']");
-        const loading = $("#loading");
-        const loadingMask = $(".loadingMask");
-        const sopSaveButton = $("#sopSaveButton");
-        const d1 = new Date();
-        for(let i =0;i>-7;i--){
-          let sd = new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+i);
-          let dateStr = sd.getFullYear() + "-" +_.padStart((sd.getMonth() + 1), 2, "0")+ "-" +_.padStart(sd.getDate(), 2, "0");
-          selectDate.append("<option>"+dateStr+"</option");
-        }
-        var pointSop = $(".pointSop");
-        var inputEmpId = $("input[name='F_EMP_ID']");
-        const scanCancel = $("#scanCancel");
-        var intvalWorker ;
-        // Get access to the camera!
-        selectDate.change(function(){
-          loadAllData(null);
-        });
-        var loadAllData = function(callbackLoad){
-          async.parallel({
-            pointSop: function(callback){
-              console.log(config.apiHost + 'api/pointSop/'+currentCust+'/'+inputPointId.val()+'/0?selectdate='+selectDate.val());
-              request(config.apiHost + 'api/pointSop/'+currentCust+'/'+inputPointId.val()+'/0?selectdate='+selectDate.val(), function (error, response, body) {
-                if(error == null){
-                  callback(null,JSON.parse(body));  
-                }else{
-                  callback(null,[]);
-                }
-              });
-            }
-          }, function(err, results) {
-            //console.log(results);
-            var otherType = [];
-            var workRecord = [];
-            otherTypeList = results.pointSop.otherTypeList;
-            //梳理1
-            //results.otherType.map(function(v){
-            //  otherType[v.F_CID] = v.F_DESC;
-            //});
-            //梳理2 設定上班紀錄
-            results.pointSop.sopRecord.map(function(v){
-              workRecord[v['F_D2_SEQ']] = v;
-            });
-            //梳理3
-            _.forEach(results.pointSop.sopData, function(sopList,sopListKey) {
-              sopList.list.map(function(sop,sopk){
-                results.pointSop.sopData[sopListKey].list[sopk].done = false;
-                if(typeof(workRecord[sop['F_D2_SEQ']])!="undefined"){
-                  results.pointSop.sopData[sopListKey].list[sopk].done = true;
-                  results.pointSop.sopData[sopListKey].list[sopk].name = workRecord[sop['F_D2_SEQ']]["F_EMP_NAME"];
-                  results.pointSop.sopData[sopListKey].list[sopk].comment = workRecord[sop['F_D2_SEQ']]["F_OT_COMMENT"];
-                }
-              });
-            });
-            sopWorkHtml = sopWorkJade({data: results.pointSop});
-            //sopOtherHtml = "";
-            sopOtherHtml = sopOtherJade({data: results.pointSop});
-            //pointSop.html(sopWorkHtml);
-            pointSop.html(sopWorkHtml+sopOtherHtml);
-            
-            $(".otherJob tr:last input[name='workOtherSeq[]']").val($(".otherJob tr").length-2);
-            if(callbackLoad != null){
-              callbackLoad(otherTypeList);
-            }
-          });
-        }
-        var eventSetting = function(otherTypeList){
-          newOtherTrHtml = $(".otherJob tr:last").html();
-          $("#addOtherJob").click(function(){
-            
-            $(".otherJob tr:last").after(`<tr>${newOtherTrHtml}</tr>`);
-            $(".otherJob tr:last input[name='workOtherSeq[]']").val($(".otherJob tr").length-2)
-          });
-          $(".otherJob").delegate("select[name='workOtherType[]']","change",function(){
-            let target = $(this).parent().parent().find("select[name='OT_OTHER_ATTINFO[]']");
-            target.empty();
-            otherTypeList[$(this).val()].map((v,k)=>{
-              target.append($("<option></option>").attr("value",v.F_CID).text(v.F_DESC));
-            });
-          });
-          $("select[name='workOtherType[]']").trigger("change");
-          $(".otherJob").delegate("textarea[name='OT_OTHER_COMMENT[]']","focus",function(){
-            $(this).css({
-              position: "absolute",
-              width: "400px",
-              height: "300px",
-              top: "-150px"
-            });
-          });
-          $(".otherJob").delegate("textarea[name='OT_OTHER_COMMENT[]']","blur",function(){
-            $(this).css({
-              position: "relative",
-              width: "auto",
-              height: "auto",
-              top: "auto"
-            });
-          });
-          $("textarea").each(function(){
-            auto_grow(this);
-          });
-        }
-        request(config.apiHost + 'api/pointByCust/'+currentCust+'/000/000',(error, response, body)=>{
-          const pointList = JSON.parse(body);
-          pointListHtml = sopPointsJade({data: pointList});
-          $("#pointTabs").html(pointListHtml);
-          inputPointId.val($("li.active a").attr("data-value"));
-          loadAllData(eventSetting);
-          $("a.pointTab").click(function(){
-            let currentTab = $(this);
-            console.log(currentTab);
-            if(currentTab.length <1){
-              return false;
-            }
-            let currentActive = $("#pointTabs li.active");
-            let targetActive = currentTab.parent();
-            //console.log(currentTab.attr("data-value"));
-            inputPointId.val(currentTab.attr("data-value"));
-            currentActive.removeClass("active");
-            targetActive.addClass("active");
-            loadAllData(eventSetting);
-          });
-          /*
-          todo list
-          bind tabs click event
-          */
-        });
-        
-        var checkCheckbox = function(){
-          var checkedCount = 0;
-          var boxs = pointSop.find("input:checkbox");
-          boxs.each(function(){
-            if($(this).prop("checked") == true){
-              checkedCount++;
-            }
-          });
-          if(checkedCount>0)
-            return false;
-          else
-            return true;
-        }
-
-        sopSaveButton.click(function(){
-          var otherSubmitCheck = false;
-          $("input[name='OT_OTHER_TIME[]']").each(function(){
-            if($(this).val() !=""){
-              otherSubmitCheck = true;
-            }
-          });
-          $("textarea[name='OT_OTHER_COMMENT[]']").each(function(){
-            if($(this).val() !=""){
-              otherSubmitCheck = true;
-            }
-          });
-          if($("input[name*='workItem_']:checked").length <1 && otherSubmitCheck == false ){
-            alert("請選擇至少一個工作項目!!");
-            return false;
-          }
-          loadingMask.css("display","block");
-          loading.removeClass("rotateOut");
-          loading.css("display","block");
-          loading.addClass("rotateIn");
-          scan(empId => {
-            //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
-            if(empId.match(/^[A-Z]{1}[0-9]{5}/) == false){
-              loadingMask.css("display","none");
-              loading.css("display","none");
-              loading.removeClass("rotateIn");
-              loading.addClass("rotateOut");
-            }else{
-              inputEmpId.val(empId);
-              submitWorkData();
-            }
-          });
-        });
-        scanCancel.click(function(){
-          scanArea.css({top: '100%',transition: 'top 2s'});
-          video.pause();
-          clearInterval(intvalWorker);
-        });
-        const submitWorkData = function(){
-          const postData = $("form[name='sopForm']").serialize();
-          console.log(postData);
-          $.ajax(config.apiHost + 'postdata/pointInfo' , {
-            type: "POST",
-            data: postData+"&cuid="+currentCust,
-            dataType: 'json',
-            complete: function(data,status){
-              //console.log(data);
-              alert("儲存完成!");
-              location.reload();
-            }
-          });
-        }
-        const auto_grow = function(element) {
-            element.style.height = "5px";
-            element.style.height = (element.scrollHeight)+"px";
-        }
-      });
-    </script>
+    <script type="text/javascript" src="js/handover.js"></script>
     <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
   </body>
 </html>
