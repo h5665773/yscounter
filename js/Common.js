@@ -6,6 +6,7 @@ var custFile = "public/custid.txt" ;
 var currentCust = fs.readFileSync(custFile , {encoding:'utf-8'});
 var currentCustName = ""
 var displayLogo = true;
+var logs = console.log;
 var d = new Date();
 $(document).ready(function(){
 	http.get(config.apiHost + 'api/custName/'+currentCust+'/0/0', (res) => {

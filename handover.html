@@ -34,6 +34,12 @@
       input[readonly],textarea[readonly] {
         color: #1121dc;
       }
+      .editMode{
+        float:right !important;
+      }
+      .pointer{
+        cursor:pointer;
+      }
     </style>
   </head>
   <body> 
@@ -51,18 +57,30 @@
           <input type="hidden" name="F_POINT_ID" value="">
           <div class="panel panel-warning" id="pointPanel"> 
             <div class="panel-heading"> 
-              <h3 class="panel-title">
+              <h3 class="panel-title" style="float:left">
                 <select style="margin-right:10px;padding:3px;" v-model="currentDate" @change="dateChage">
                   <option :value="v" v-for="(v,k) in dateOptions">{{v}}</option>
                 </select>
                 {{currentEmpName}}-現場工作紀錄
               </h3> 
+              <ul class="nav nav-tabs">
+                <li class="active pointer editMode">
+                  <a class="pointTab pointer" :class="{'alert-info': editMode=='a'}" @click="changeMode('a')">
+                    標準值勤
+                  </a>
+                </li>
+                <li class="active pointer editMode" >
+                  <a class="pointTab pointer":class="{'alert-info': editMode=='b'}" @click="changeMode('b')">
+                    其他項目
+                  </a>
+                </li>
+              </ul>
             </div> 
             <div class="panel-body ">
               <div class="text-danger">注意事項</div>
               <textarea class="form-control" @blur="savePrecautions" v-model="precautions"></textarea  >
               <hr>
-              <div id="pointTabs">
+              <div id="pointTabs" v-show="editMode=='a'">
                 <ul class="nav nav-tabs">
                     <li role="presentation" :class="{ active: k==currentTabKey }" v-for="(v,k) in tabs">
                       <a class="pointTab pointer" @click="clickTab(k,v.F_POINT_ID)">
@@ -71,12 +89,13 @@
                     </li>
                   </ul>
               </div>
-              <div class="pointSop">
-                <table class="table table-bordered todoTable" >
+              <div class="pointSop" v-show="editMode=='a'">
+                <table class="table table-bordered todoTable">
                   <thead>
                     <tr>
                       <th colspan="4">
                         {{sopData.typeName}}
+                        <button @click="saveWork" type="button" class="btn alert-secondary text-warning" style="float:right">存檔</button>
                       </th>
                     </tr>
                   </thead>
@@ -96,13 +115,13 @@
                       </th>
                     </tr>
                     <tr v-for="(sopList,slk) in sopData.list">
-                      <td>
-                        <span v-show="sopList.done">{{sopList.name}}</span>
-                        <input v-show="!sopList.done" type="checkbox" :name="'workItem_'+slk" v-model="sopList.F_D2_SEQ">
+                      <td :class="{'alert-success': sopList.done}">
+                        <span v-show="sopList.done" class="text-danger">已填</span>
+                        <span v-show="!sopList.done" class="text-dark">未填</span>
                       </td>
                       <td>
                         <div class="input-group">
-                          <input type="text" class="form-control " :name="'OT_TIME_'+slk" readonly aria-describedby="sizing-addon2" v-model="sopList.F_OT_TIME">
+                          <input type="text" class="form-control " readonly aria-describedby="sizing-addon2" v-model="sopList.F_OT_TIME">
                         </div>
                       </td>
                       <td>
@@ -112,60 +131,65 @@
                       </td>
                       <td>
                         <div class="input-group">
-                          <input type="text" class="form-control" :readonly="sopList.done?true:false" aria-describedby="sizing-addon2" v-model="sopList.comment">
+                          <input type="text" class="form-control" :readonly="sopList.done?true:false" placeholder="尚未填寫" v-model="sopList.comment">
                         </div>
                       </td>
                     </tr>
                   </tbody>
                 </table>
-                <!-- <table class="table table-bordered todoTable otherJob"> 
-                  <thead>
-                    <tr>
-                      <th colspan="5">其它</th>
-                    </tr>
-                    <tr>
-                      <th width="100">狀態</th>
-                      <th width="200">類型</th>
-                      <th width="150">時間</th>
-                      <th width="250">內容說明</th>
-                      <th>備註</th>
-                    </tr>
-                    <tr v-for="(rec,k) in otherRecord">
-                      <td>
-                        <input type="hidden" name="workOtherSeq[]" v-model="rec.F_D2_SEQ">
-                        {{rec.F_EMP_NAME}}
-                      </td>
-                      <td>
-                        <select name="workOtherType[]" class="form-control" v-model="otherOption.F_TID">
-                          <option  v-for="(otherOption,ook) in data.otherType" :selected="rec.F_TID==otherOption.F_TID">{{otherOption.F_TNAME}}
-                          </option>
-                        </select>
-                      </td>
-                      <td>
-                        <div class="input-group">
-                          <input type="text" name="OT_OTHER_TIME[]" aria-describedby="sizing-addon2" v-model="rec.F_OT_TIME" class="form-control ">
-                        </div>
-                      </td>
-                      <td>
-                        <input v-show="rec.F_OT_ATTINFO!=''" type="text" class="form-control" name="OT_OTHER_ATTINFO[]" disabled=true  aria-describedby="sizing-addon2" v-model="rec.F_OT_ATTINFO">
-                        <select v-show="rec.F_OT_ATTINFO==''" name="OT_OTHER_ATTINFO[]" class="form-control" v-model="rec.F_OT_ATTINFO">
-                          <option value="1">機電維修</option>
-                          <option value="2">電梯維修</option>
-                          <option value="3">消防維修</option>
-                          <option value="4">弱電維修</option>
-                          <option value="5">園藝修剪</option>
-                        </select>
-                      </td>
-                      <td>
-                        <div class="input-group">
-                          <textarea cols="30" rows="1" name="OT_OTHER_COMMENT[]" aria-describedby="sizing-addon2" value="" class="form-control" style="height: 48px;"></textarea>
-                        </div>
-                      </td>
-                    </tr>
-                  </thead>
-                </table> -->
-                <button type="button" @click="addOtherJob" id="addOtherJob">新增</button>
+                
+                
               </div>
+              <table class="table table-bordered todoTable otherJob"  v-show="editMode=='b'"> 
+                <thead>
+                  <tr>
+                    <th colspan="5">
+                      <span> 其它</span>
+                      <div style="float: right">
+                        <button type="button" @click="addOtherJob" id="addOtherJob">新增</button>
+                      </div>
+                    </th>
+                  </tr>
+                  <tr>
+                    <th width="100">狀態</th>
+                    <th width="200">類型</th>
+                    <th width="150">時間</th>
+                    <th width="250">內容說明</th>
+                    <th>備註</th>
+                  </tr>
+                  <tr v-for="(rec,recKey) in otherRecord">
+                    <td>
+                      <span v-show="rec.done" class="text-danger">已存檔</span>
+                      <span v-show="!rec.done" class="text-dark">未存檔</span>
+                    </td>
+                    <td>
+                      <select class="form-control" v-model="rec.F_TID" @change="changeOtherType(recKey,rec.F_TID)">
+                        <option :value="otherOption.F_TID" v-for="(otherOption,ook) in otherTypes" >{{otherOption.F_TNAME}}
+                        </option>
+                      </select>
+                    </td>
+                    <td>
+                      <div class="input-group">
+                        <select class="form-control" v-model="rec.F_OT_TIME" >
+                          <option :value="tv" v-for="(tv,tk) in times">{{tv}}</option>
+                        </select>
+                      </div>
+                    </td>
+                    <td>
+                      <select :disabled="rec.done"  class="form-control" v-model="rec.F_CID" @change="changeCid(recKey)">
+                        <option :value="v.F_CID" v-for="(v,k) in rec.typeList">
+                          {{v.F_DESC}}
+                        </option>
+                      </select>
+                    </td>
+                    <td>
+                      <div class="input-group">
+                        <textarea :readonly="rec.done" cols="30" rows="1" v-model="rec.comment" class="form-control" style="height: 48px;"></textarea>
+                      </div>
+                    </td>
+                  </tr>
+                </thead>
+              </table>
             </div>
             <div class="panel-footer">
               <a id="sopSaveButton" @click="saveWork" role="button" class="btn btn-default">儲存» </a>

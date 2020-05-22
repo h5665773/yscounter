@@ -10,25 +10,32 @@ const async = require("async");
 //const qr = new QrCode();
 const postUrl = config.apiHost + 'postdata/pointInfo';
 var otTypeList;
-
+var dNow = new Date();
+var times = [
+	'00:00','00:30','01:00','01:30','02:00','02:30','03:00','03:30','04:00','04:30','05:00','05:30','06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30'
+];
 $(document).ready(function(){
 	const loading = $("#loading");
 	const loadingMask = $(".loadingMask");
     var pointPanel = new Vue({
       el: '#pointPanel',
       data: {
+      	editMode: 'a',
       	dateOptions: [],
       	precautions: '',
       	currentEmpId: '',
       	currentEmpName: '',
       	currentPointid: "",
       	currentTabKey: 0,
+      	currentTime: '',
       	currentDate: '',
       	sopData: [],
         otherRecord: [],
-        otherType: [],
+        otherTypes: [],
+        otherTypeList: [],
         selectDate: "",
-        tabs: []
+        tabs: [],
+        times: []
       },
       methods: {
       	clickTab: function(tabKey,pointid){
@@ -36,31 +43,60 @@ $(document).ready(function(){
       		this.currentTabKey = tabKey;
 	        loadAllData(null);
       	},
+      	changeMode: function(m){
+      		this.editMode = m;
+      	},
+      	changeOtherType: function(k,F_TID){
+      		this.otherRecord[k].typeList = [];
+      		this.otherRecord[k].typeList = this.otherTypeList[F_TID];
+      	},
+      	changeCid: function(k){
+      		let cid = parseInt(this.otherRecord[k].F_CID)-1;
+
+      		this.otherRecord[k].F_OT_ATTINFO = this.otherRecord[k].typeList[cid]["F_DESC"];
+      		//logs(this.otherRecord[k]);
+      	},
       	addOtherJob: function(){
       		this.otherRecord.push({
+      			done: false,
       			F_D2_SEQ: '',
       			F_EMP_NAME: '',
-      			F_TID: '',
-      			F_OT_TIME: '',
-      			F_OT_ATTINFO: ''
-      		})
+      			F_TID: this.otherTypes[0].F_TID,
+      			F_CID: '1',
+      			F_OT_TIME: this.currentTime,
+      			F_OT_ATTINFO: '',
+      			typeList: this.otherTypeList[this.otherTypes[0].F_TID],
+      			comment: ''
+      		});
       	},
       	savePrecautions: function(){
       		let self = this;
       		console.log(config.apiHost + 'postdata/updatePrecaution')
       		request.post({url: config.apiHost + 'postdata/updatePrecaution', formData: {cuid: currentCust,note: self.precautions}},(error, response, body)=>{
-		      console.log(body);
+		      //console.log(body);
 		    }); 
       	},
       	saveWork: function(){
+      		let submitLength = 0;
+      		if(!confirm("確定要存檔嗎?")){
+      			return;
+      		}
       		let postData = {};
       		let postList = [];
+      		let otherPostList = [];
       		this.sopData.list.map(function(v,k){
-      			if(v.comment.trim()!=''){
+      			if(v.comment.trim()!='' && v.done!=true){
       				postList.push(v);
+      				submitLength++;
       			}
       		});
-      		if(postList.length<1){
+      		this.otherRecord.map(function(v,k){
+      			if(v.comment.trim()!='' && v.done!=true){
+      				otherPostList.push(v);
+      				submitLength++;
+      			}
+      		});
+      		if(submitLength<1){
       			alert("目前沒有任何資料需要存檔!");
       			return;
       		}
@@ -69,8 +105,9 @@ $(document).ready(function(){
       		postData["F_EMP_ID"] = this.currentEmpId;
       		postData["F_EMP_NAME"] = this.currentEmpName;
       		postData["listJson"] = JSON.stringify(postList);
-      		console.log(postData);
+      		postData["otherListJson"] = JSON.stringify(otherPostList);
       		request.post({url: config.apiHost + 'postdata/pointInfo',formData: postData},(error, response, body)=>{
+      			console.log(body);
       			let row = JSON.parse(body);
       			if(row["result"]=="done"){
       				loadAllData(null);
@@ -86,6 +123,14 @@ $(document).ready(function(){
       },
       mounted: function(){
       	let self = this;
+      	this.times = times;
+      	this.currentTime = String(dNow.getHours()).padStart(2,"0")+":";
+      	if(dNow.getMinutes() <30){
+      		this.currentTime = this.currentTime+"00";
+      	}else{
+      		this.currentTime = this.currentTime+"30";
+      	}
+      	console.log(this.currentTime);
       	const d1 = new Date();
 	    for(let i =0;i>-7;i--){
 	      let sd = new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+i);
@@ -100,8 +145,8 @@ $(document).ready(function(){
       	loading.css("display","block");
       	loading.addClass("rotateIn");
       	scan((empId,err) => {
-      		//err = false;
-      		//empId = "T10668";
+      		err = false;
+      		empId = "T10668";
       		loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");
@@ -138,6 +183,7 @@ $(document).ready(function(){
             if(error == null){
               callback(null,JSON.parse(body));  
             }else{
+
               callback(null,[]);
             }
           });
@@ -146,7 +192,9 @@ $(document).ready(function(){
         //console.log(results);
         var otherType = [];
         var workRecord = [];
-        otherTypeList = results.pointSop.otherTypeList;
+        let otl = results.pointSop.otherTypeList;
+        pointPanel.otherTypeList = otl;
+        
         //梳理1
         //results.otherType.map(function(v){
         //  otherType[v.F_CID] = v.F_DESC;
@@ -155,9 +203,10 @@ $(document).ready(function(){
         results.pointSop.sopRecord.map(function(v){
           workRecord[v['F_D2_SEQ']] = v;
         });
+        
         //梳理3
         let sopData = results.pointSop.sopData;
-          sopData.list.map(function(sop,sopk){
+        sopData.list.map(function(sop,sopk){
             results.pointSop.sopData.list[sopk].done = false;
             results.pointSop.sopData.list[sopk].comment = '';
             if(typeof(workRecord[sop['F_D2_SEQ']])!="undefined"){
@@ -165,13 +214,15 @@ $(document).ready(function(){
               results.pointSop.sopData.list[sopk].name = workRecord[sop['F_D2_SEQ']]["F_EMP_NAME"];
               results.pointSop.sopData.list[sopk].comment = workRecord[sop['F_D2_SEQ']]["F_OT_COMMENT"];
             }
-          });
-        //console.log(results);
+        });
+        let orec = results.pointSop.otherRecord;
+        orec.map(function(v,k){
+        	orec[k].typeList = otl[v.F_TID];
+        });
+        console.log(results);
+        pointPanel.otherTypes = results.pointSop.otherType;
         pointPanel.sopData = results.pointSop.sopData;
-        $(".otherJob tr:last input[name='workOtherSeq[]']").val($(".otherJob tr").length-2);
-        if(callbackLoad != null){
-          callbackLoad(otherTypeList);
-        }
+        pointPanel.otherRecord = results.pointSop.otherRecord;
       });
     }
     
