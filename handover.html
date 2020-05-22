@@ -131,7 +131,7 @@
                       </td>
                       <td>
                         <div class="input-group">
-                          <input type="text" class="form-control" :readonly="sopList.done?true:false" placeholder="尚未填寫" v-model="sopList.comment">
+                          <input type="text" class="form-control" :readonly="sopList.done?true:false" placeholder="需填寫備註才能存檔" v-model="sopList.comment">
                         </div>
                       </td>
                     </tr>
@@ -184,7 +184,7 @@
                     </td>
                     <td>
                       <div class="input-group">
-                        <textarea :readonly="rec.done" cols="30" rows="1" v-model="rec.comment" class="form-control" style="height: 48px;"></textarea>
+                        <textarea :readonly="rec.done" placeholder="需填寫備註才能存檔" cols="30" rows="1" v-model="rec.comment" class="form-control" style="height: 48px;"></textarea>
                       </div>
                     </td>
                   </tr>
