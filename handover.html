@@ -108,6 +108,9 @@
                 <div v-show="editMode!='c'" class="col-md-12" style="padding-left: 0;">
                   <h4 class="text-primary">注意事項</h4>
                   <hr>
+                  <div class="col-md-3 text-warning" style="border-radius: 5px;border:1px solid #555555;padding: 5px;margin-bottom: 10px;margin-right: 10px;" v-show="precautionList.length == 0" >
+                    暫無資料
+                  </div>
                   <div class="col-md-3" style="border-radius: 5px;border:1px solid #555555;padding: 5px;margin-bottom: 10px;margin-right: 10px;" v-show="!v.hide" v-for="(v,k) in precautionList">
                     <h5 class="text-info"><b>{{v.did}} | {{v.owner}}</b></h5>
                     {{v.comment}}
