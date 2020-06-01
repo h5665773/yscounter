@@ -9,6 +9,7 @@ const request = require('request');
 const async = require("async");
 //const qr = new QrCode();
 const postUrl = config.apiHost + 'postdata/pointInfo';
+const precautionFile = "precaution.json";
 var otTypeList;
 var dNow = new Date();
 var times = [
@@ -20,9 +21,13 @@ $(document).ready(function(){
     var pointPanel = new Vue({
       el: '#pointPanel',
       data: {
-      	editMode: 'a',
+        filterDidStr: '',
+        filterAreaStr: '',
+        filterOwnerStr: '',
+        liverList: [],
+      	editMode: 'b',
       	dateOptions: [],
-      	precautions: '',
+        precautionList: [],
       	currentEmpId: '',
       	currentEmpName: '',
       	currentPointid: "",
@@ -56,6 +61,13 @@ $(document).ready(function(){
       		this.otherRecord[k].F_OT_ATTINFO = this.otherRecord[k].typeList[cid]["F_DESC"];
       		//logs(this.otherRecord[k]);
       	},
+        changePrecautionLiver: function(pKey,liverKey){
+          let liverRow = this.liverList[ this.precautionList[pKey]['liverKey']];
+          this.precautionList[pKey]['liverId']=liverRow['F_LIVER_ID']
+          this.precautionList[pKey]['did']=liverRow['F_CU_DID']
+          this.precautionList[pKey]['area']=liverRow['F_CU_AREA']
+          this.precautionList[pKey]['owner']=liverRow['F_OWNER_NAME']
+        },
       	addOtherJob: function(){
       		this.otherRecord.push({
       			done: false,
@@ -69,44 +81,101 @@ $(document).ready(function(){
       			comment: ''
       		});
       	},
-      	savePrecautions: function(){
-      		let self = this;
-      		console.log(config.apiHost + 'postdata/updatePrecaution')
-      		request.post({url: config.apiHost + 'postdata/updatePrecaution', formData: {cuid: currentCust,note: self.precautions}},(error, response, body)=>{
-		      //console.log(body);
-		    }); 
+        addPrecaution: function(){
+          logs(this.liverList[0]);
+          logs(this.liverList[0]["F_LIVER_ID"]);
+          this.precautionList.push({
+            liverKey: 0,
+            liverId: this.liverList[0]["F_LIVER_ID"],
+            did: this.liverList[0]["F_CU_DID"],
+            area: this.liverList[0]["F_CU_AREA"],
+            owner: this.liverList[0]["F_OWNER_NAME"],
+            hide: false,
+            comment: ''
+          });
+        },
+        deletePrecaution: function(k){
+          this.precautionList.splice(k,1);
+          this.savePrecaution();
+        },
+        prFilterArea: function(){
+          let self = this;
+          this.precautionList.map(function(v,k){
+            if(v.area.indexOf(self.filterAreaStr)<0){
+              self.precautionList[k].hide = true;
+            }else{
+              self.precautionList[k].hide = false;
+            }  
+          });
+        },
+        prFilterDid: function(){
+          let self = this;
+          this.precautionList.map(function(v,k){
+            if(v.did.indexOf(self.filterDidStr)<0){
+              self.precautionList[k].hide = true;
+            }else{
+              self.precautionList[k].hide = false;
+            }  
+          });
+        },
+        prFilterOwner: function(){
+          let self = this;
+          this.precautionList.map(function(v,k){
+            if(v.owner.indexOf(self.filterOwnerStr)<0){
+              self.precautionList[k].hide = true;
+            }else{
+              self.precautionList[k].hide = false;
+            }  
+          });
+        },
+      	savePrecaution: function(){
+          let newPrecaution = [];
+          if(this.precautionList.length <1){
+            return;
+          }
+          this.precautionList.map(function(v,k){
+            if(v.comment == ""){
+              this.precautionList.slice(k,1);
+            }else{
+              newPrecaution.push({
+                liverId: v.liverId,
+                liverKey: v["liverKey"],
+                did: v["did"],
+                area: v["area"],
+                owner: v["owner"],
+                hide: false,
+                comment: v.comment
+              });
+            }
+          });
+          logs(newPrecaution)
+          if(newPrecaution.length >0){
+            fs.writeFileSync("precaution.json", JSON.stringify(newPrecaution));
+          }
+          alert("存檔完成");
       	},
-      	saveWork: function(){
+      	saveWork: function(type,key,status){
+          let workData = {};
+          if(type== "other"){
+            workData = this.otherRecord[key];
+          }else{
+            workData = this.sopData.list[key];
+          }
+
       		let submitLength = 0;
       		if(!confirm("確定要存檔嗎?")){
       			return;
       		}
       		let postData = {};
-      		let postList = [];
-      		let otherPostList = [];
-      		this.sopData.list.map(function(v,k){
-      			if(v.comment.trim()!='' && v.done!=true){
-      				postList.push(v);
-      				submitLength++;
-      			}
-      		});
-      		this.otherRecord.map(function(v,k){
-      			if(v.comment.trim()!='' && v.done!=true){
-      				otherPostList.push(v);
-      				submitLength++;
-      			}
-      		});
-      		if(submitLength<1){
-      			alert("目前沒有任何資料需要存檔!");
-      			return;
-      		}
+      		
       		postData["cuid"] = currentCust;
       		postData["selectDate"] = this.currentDate;
       		postData["F_EMP_ID"] = this.currentEmpId;
       		postData["F_EMP_NAME"] = this.currentEmpName;
-      		postData["listJson"] = JSON.stringify(postList);
-      		postData["otherListJson"] = JSON.stringify(otherPostList);
-      		request.post({url: config.apiHost + 'postdata/pointInfo',formData: postData},(error, response, body)=>{
+      		postData["workType"] = type;
+          postData["workStatus"] = status;
+          postData["workData"] = JSON.stringify(workData);
+      		request.post({url: config.apiHost + 'postdata/addHandoverWork',formData: postData},(error, response, body)=>{
       			console.log(body);
       			let row = JSON.parse(body);
       			if(row["result"]=="done"){
@@ -130,17 +199,20 @@ $(document).ready(function(){
       	}else{
       		this.currentTime = this.currentTime+"30";
       	}
-      	console.log(this.currentTime);
+        if(fs.existsSync(precautionFile)){
+          this.precautionList = JSON.parse(fs.readFileSync(precautionFile));
+        }
+        console.log(this.precautionList)
       	const d1 = new Date();
-	    for(let i =0;i>-7;i--){
-	      let sd = new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+i);
-	      let dateStr = sd.getFullYear() + "-" +_.padStart((sd.getMonth() + 1), 2, "0")+ "-" +_.padStart(sd.getDate(), 2, "0");
-	      if(i == 0){
-	      	self.currentDate = dateStr;
-	      }
-	      self.dateOptions.push(dateStr);
-	    }
-	    loadingMask.css("display","block");
+  	    for(let i =0;i>-7;i--){
+  	      let sd = new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()+i);
+  	      let dateStr = sd.getFullYear() + "-" +_.padStart((sd.getMonth() + 1), 2, "0")+ "-" +_.padStart(sd.getDate(), 2, "0");
+  	      if(i == 0){
+  	      	self.currentDate = dateStr;
+  	      }
+  	      self.dateOptions.push(dateStr);
+  	    }
+  	    loadingMask.css("display","block");
       	loading.removeClass("rotateOut");
       	loading.css("display","block");
       	loading.addClass("rotateIn");
@@ -156,11 +228,12 @@ $(document).ready(function(){
       			location.href="index.html";
       		}
       		this.currentEmpId = empId;
-	    	request(config.apiHost + 'api/pointByCust&custName/'+currentCust+'/000/'+empId,(error, response, body)=>{
+	    	request(config.apiHost + 'api/pointByCust&liverList/'+currentCust+'/000/'+empId,(error, response, body)=>{
 	    	  let rows = JSON.parse(body);
 		      let pointList = rows['data1'];
-		      let cust = rows["data2"];
-		      self.precautions = cust[0].F_CU_Precautions;
+		      let liverList = rows["data2"];
+          self.liverList = liverList;
+          //console.log(liverList);
 		      self.tabs = pointList;
 		      self.currentPointid = pointList[0].F_POINT_ID;
 		      self.currentEmpName = pointList[0].F_EMP_NAME;
@@ -194,7 +267,6 @@ $(document).ready(function(){
         var workRecord = [];
         let otl = results.pointSop.otherTypeList;
         pointPanel.otherTypeList = otl;
-        
         //梳理1
         //results.otherType.map(function(v){
         //  otherType[v.F_CID] = v.F_DESC;
@@ -211,6 +283,7 @@ $(document).ready(function(){
             results.pointSop.sopData.list[sopk].comment = '';
             if(typeof(workRecord[sop['F_D2_SEQ']])!="undefined"){
               results.pointSop.sopData.list[sopk].done = true;
+              results.pointSop.sopData.list[sopk].F_WORK_STATUS = workRecord[sop['F_D2_SEQ']]["F_WORK_STATUS"];
               results.pointSop.sopData.list[sopk].name = workRecord[sop['F_D2_SEQ']]["F_EMP_NAME"];
               results.pointSop.sopData.list[sopk].comment = workRecord[sop['F_D2_SEQ']]["F_OT_COMMENT"];
             }
@@ -219,7 +292,7 @@ $(document).ready(function(){
         orec.map(function(v,k){
         	orec[k].typeList = otl[v.F_TID];
         });
-        console.log(results);
+        //console.log(results);
         pointPanel.otherTypes = results.pointSop.otherType;
         pointPanel.sopData = results.pointSop.sopData;
         pointPanel.otherRecord = results.pointSop.otherRecord;

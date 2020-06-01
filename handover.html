@@ -40,6 +40,9 @@
       .pointer{
         cursor:pointer;
       }
+      .input-group{
+        margin-bottom:10px;
+      }
     </style>
   </head>
   <body> 
@@ -51,10 +54,7 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
-        <form name="sopForm" method="POST" action="">
-          <input type="hidden" name="action" value="addWorkRecord">
-          <input type="hidden" name="F_EMP_ID" value="">
-          <input type="hidden" name="F_POINT_ID" value="">
+        <div class="row">
           <div class="panel panel-warning" id="pointPanel"> 
             <div class="panel-heading"> 
               <h3 class="panel-title" style="float:left">
@@ -74,129 +74,209 @@
                     其他項目
                   </a>
                 </li>
+                <li class="active pointer editMode" >
+                  <a class="pointTab pointer":class="{'alert-info': editMode=='c'}" @click="changeMode('c')">
+                    注意事項
+                  </a>
+                </li>
               </ul>
             </div> 
             <div class="panel-body ">
-              <div class="text-danger">注意事項</div>
-              <textarea class="form-control" @blur="savePrecautions" v-model="precautions"></textarea  >
-              <hr>
-              <div id="pointTabs" v-show="editMode=='a'">
-                <ul class="nav nav-tabs">
-                    <li role="presentation" :class="{ active: k==currentTabKey }" v-for="(v,k) in tabs">
-                      <a class="pointTab pointer" @click="clickTab(k,v.F_POINT_ID)">
-                        {{v.F_POINT_NAME}}({{v.F_EMP_NAME}})
-                      </a>
-                    </li>
-                  </ul>
+              <div class="col-md-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" v-model="filterAreaStr" @keyup="prFilterArea()">
+                  <span class="input-group-addon">搜尋棟別</span>
+                </div>
+                <div class="input-group">
+                  <input type="text" class="form-control" v-model="filterDidStr" @keyup="prFilterDid()">
+                  <span class="input-group-addon" >搜尋戶號</span>
+                </div>
+                <div class="input-group">
+                  <input type="text" class="form-control" v-model="filterOwnerStr" @keyup="prFilterOwner()">
+                  <span class="input-group-addon">搜尋姓名</span>
+                </div>
+                <div class="list-group" style="margin-bottom:0">
+                  <a href="#" class="list-group-item active">
+                    住戶名單
+                  </a>
+                </div>
+                <div class="list-group" style="height:400px;overflow-y: scroll">
+                  <a href="#" v-on:click="selectLiver(liver.F_CU_DID,liver.F_OWNER_NAME,liver.F_LIVER_ID)" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-show="liver.hide == false" v-for="liver in liverList">{{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
+                </div>
               </div>
-              <div class="pointSop" v-show="editMode=='a'">
-                <table class="table table-bordered todoTable">
+              <div class="col-md-9">
+                <div v-show="editMode!='c'" class="col-md-12" style="padding-left: 0;">
+                  <h4 class="text-primary">注意事項</h4>
+                  <hr>
+                  <div class="col-md-3" style="border-radius: 5px;border:1px solid #555555;padding: 5px;margin-bottom: 10px;margin-right: 10px;" v-show="!v.hide" v-for="(v,k) in precautionList">
+                    <h5 class="text-info"><b>{{v.did}} | {{v.owner}}</b></h5>
+                    {{v.comment}}
+                  </div>
+                </div>
+                <div id="pointTabs" v-show="editMode=='a'">
+                  <ul class="nav nav-tabs">
+                      <li role="presentation" :class="{ active: k==currentTabKey }" v-for="(v,k) in tabs">
+                        <a class="pointTab pointer" @click="clickTab(k,v.F_POINT_ID)">
+                          {{v.F_POINT_NAME}}({{v.F_EMP_NAME}})
+                        </a>
+                      </li>
+                    </ul>
+                </div>
+                <div class="pointSop" v-show="editMode=='a'">
+                  <table class="table table-bordered todoTable table-striped">
+                    <thead>
+                      <tr>
+                        <th colspan="5">
+                          {{sopData.typeName}}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th align="center" width="50">
+                          狀態
+                        </th>
+                        <th align="center" width="60">
+                          時間
+                        </th>
+                        <th align="center" width="200">
+                          項目名稱
+                        </th>
+                        <th align="center" width="100">
+                          狀態
+                        </th>
+                        <th align="center" width="160">
+                          備註
+                        </th>
+                      </tr>
+                      <tr v-for="(sopList,slk) in sopData.list">
+                        <td :class="{'alert-success': sopList.done}">
+                          <span v-show="sopList.done" class="text-danger">已填</span>
+                          <span v-show="!sopList.done" class="text-dark">未填</span>
+                        </td>
+                        <td>
+                          <div class="input-group">
+                            {{sopList.F_OT_TIME}}
+                          </div>
+                        </td>
+                        <td>
+                          <div class="input-group">
+                            {{sopList.F_OT_ATTINFO}}
+                          </div>
+                        </td>
+                        <td>
+                          <button class="btn btn-default" :disabled="sopList.F_WORK_STATUS!=null" :class="{'btn-success': sopList.F_WORK_STATUS=='done'}" @click="saveWork('normal',slk,'done')"  type="button">完成</button>
+                          <button class="btn btn-default" :disabled="sopList.F_WORK_STATUS!=null" :class="{'btn-danger': sopList.F_WORK_STATUS=='fail'}" @click="saveWork('normal',slk,'fail')" type="button">異常</button>
+                        </td>
+                        <td>
+                          <div class="input-group">
+                            <input type="text" class="form-control" :readonly="sopList.done?true:false" placeholder="需填寫備註才能存檔" v-model="sopList.comment">
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  
+                  
+                </div>
+                <table class="table table-bordered todoTable otherJob"  v-show="editMode=='b'"> 
                   <thead>
                     <tr>
-                      <th colspan="4">
-                        {{sopData.typeName}}
-                        <button @click="saveWork" type="button" class="btn alert-secondary text-warning" style="float:right">存檔</button>
+                      <th colspan="6">
+                        <span> 其它</span>
+                        <div style="float: right">
+                          <button type="button" @click="addOtherJob" id="addOtherJob">新增</button>
+                        </div>
                       </th>
+                    </tr>
+                    <tr>
+                      <th width="60">狀態</th>
+                      <th width="150">類型</th>
+                      <th width="80">時間</th>
+                      
+                      <th width="250">內容說明</th>
+                      <th width="150">狀態</th>
+                      <th>備註</th>
+                    </tr>
+                    <tr v-for="(rec,recKey) in otherRecord">
+                      <td>
+                        <span v-show="rec.done" class="text-danger">已存檔</span>
+                        <span v-show="!rec.done" class="text-dark">未存檔</span>
+                      </td>
+                      <td>
+                        <select class="form-control" :disabled="rec.done" v-model="rec.F_TID" @change="changeOtherType(recKey,rec.F_TID)">
+                          <option :value="otherOption.F_TID" v-for="(otherOption,ook) in otherTypes" >{{otherOption.F_TNAME}}
+                          </option>
+                        </select>
+                      </td>
+                      <td>
+                        <div class="input-group">
+                          <select class="form-control" :disabled="rec.done" v-model="rec.F_OT_TIME" >
+                            <option :value="tv" v-for="(tv,tk) in times">{{tv}}</option>
+                          </select>
+                        </div>
+                      </td>
+                      <td>
+                        <select :disabled="rec.done"  class="form-control" v-model="rec.F_CID" @change="changeCid(recKey)">
+                          <option :value="v.F_CID" v-for="(v,k) in rec.typeList">
+                            {{v.F_DESC}}
+                          </option>
+                        </select>
+                      </td>
+                      <td>
+                          <button class="btn btn-default" :disabled="rec.F_WORK_STATUS!=null" :class="{'btn-success': rec.F_WORK_STATUS=='done'}" @click="saveWork('other',recKey,'done')"  type="button">完成</button>
+                          <button class="btn btn-default" :disabled="rec.F_WORK_STATUS!=null" :class="{'btn-danger': rec.F_WORK_STATUS=='fail'}" @click="saveWork('other',recKey,'fail')" type="button">異常</button>
+                        </td>
+                      <td>
+                        <div class="input-group">
+                          <textarea :readonly="rec.done" placeholder="需填寫備註才能存檔" cols="30" rows="1" v-model="rec.comment" class="form-control" style="height: 48px;"></textarea>
+                        </div>
+                      </td>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <th width="80">
-                        狀態
-                      </th>
-                      <th width="170">
-                        時間
-                      </th>
-                      <th>
-                        項目名稱
-                      </th>
-                      <th>
-                        備註
-                      </th>
-                    </tr>
-                    <tr v-for="(sopList,slk) in sopData.list">
-                      <td :class="{'alert-success': sopList.done}">
-                        <span v-show="sopList.done" class="text-danger">已填</span>
-                        <span v-show="!sopList.done" class="text-dark">未填</span>
-                      </td>
-                      <td>
-                        <div class="input-group">
-                          <input type="text" class="form-control " readonly aria-describedby="sizing-addon2" v-model="sopList.F_OT_TIME">
-                        </div>
-                      </td>
-                      <td>
-                        <div class="input-group">
-                          <textarea class="form-control" :name="'OT_ATTINFO_'+slk" readonly aria-describedby="sizing-addon2" onkeyup="auto_grow(this)">{{sopList.F_OT_ATTINFO}}</textarea>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="input-group">
-                          <input type="text" class="form-control" :readonly="sopList.done?true:false" placeholder="需填寫備註才能存檔" v-model="sopList.comment">
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
                 </table>
-                
-                
-              </div>
-              <table class="table table-bordered todoTable otherJob"  v-show="editMode=='b'"> 
-                <thead>
-                  <tr>
-                    <th colspan="5">
-                      <span> 其它</span>
-                      <div style="float: right">
-                        <button type="button" @click="addOtherJob" id="addOtherJob">新增</button>
-                      </div>
-                    </th>
-                  </tr>
-                  <tr>
-                    <th width="100">狀態</th>
-                    <th width="200">類型</th>
-                    <th width="150">時間</th>
-                    <th width="250">內容說明</th>
-                    <th>備註</th>
-                  </tr>
-                  <tr v-for="(rec,recKey) in otherRecord">
-                    <td>
-                      <span v-show="rec.done" class="text-danger">已存檔</span>
-                      <span v-show="!rec.done" class="text-dark">未存檔</span>
-                    </td>
-                    <td>
-                      <select class="form-control" v-model="rec.F_TID" @change="changeOtherType(recKey,rec.F_TID)">
-                        <option :value="otherOption.F_TID" v-for="(otherOption,ook) in otherTypes" >{{otherOption.F_TNAME}}
-                        </option>
-                      </select>
-                    </td>
-                    <td>
-                      <div class="input-group">
-                        <select class="form-control" v-model="rec.F_OT_TIME" >
-                          <option :value="tv" v-for="(tv,tk) in times">{{tv}}</option>
+                <table class="table table-bordered todoTable otherJob"  v-show="editMode=='c'"> 
+                  <thead>
+                    <tr>
+                      <th colspan="6">
+                        <span> 注意事項</span>
+                        <div style="float: right">
+                          <button type="button" @click="addPrecaution">新增</button>
+                        </div>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th width="60">住戶</th>
+                      <th width="150">內容</th>
+                      <th width="80">功能</th>
+                    </tr>
+                    <tr v-for="(pv,pk) in precautionList">
+                      <td>
+                        <select class="form-control" v-model="pv.liverKey" @change="changePrecautionLiver(pk,$event)">
+                          <option :value="lk" v-for="(lv,lk) in liverList" >
+                            {{ lv.F_CU_DID }} |{{ lv.F_OWNER_NAME }}
+                          </option>
                         </select>
-                      </div>
-                    </td>
-                    <td>
-                      <select :disabled="rec.done"  class="form-control" v-model="rec.F_CID" @change="changeCid(recKey)">
-                        <option :value="v.F_CID" v-for="(v,k) in rec.typeList">
-                          {{v.F_DESC}}
-                        </option>
-                      </select>
-                    </td>
-                    <td>
-                      <div class="input-group">
-                        <textarea :readonly="rec.done" placeholder="需填寫備註才能存檔" cols="30" rows="1" v-model="rec.comment" class="form-control" style="height: 48px;"></textarea>
-                      </div>
-                    </td>
-                  </tr>
-                </thead>
-              </table>
+                      </td>
+                      <td>
+                        <div class="input-group">
+                          <textarea placeholder="需填寫備註才能存檔" cols="30" rows="1" v-model="pv.comment" class="form-control" style="height: 48px;"></textarea>
+                        </div>
+                      </td>
+                      <td>
+                          <button class="btn btn-primary" @click="savePrecaution(pk)" type="button">存檔</button>
+                          <button class="btn btn-danger" @click="deletePrecaution(pk)" type="button">刪除</button>
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              
             </div>
             <div class="panel-footer">
-              <a id="sopSaveButton" @click="saveWork" role="button" class="btn btn-default">儲存» </a>
-              <!-- <canvas id="canvas2" width="100" height="100"></canvas> -->
             </div> 
           </div>
-        </form>
+        </div>
         <!-- <video id="cameraPreview"></video> -->
         <div id="scanArea">
           <video id="video" width="300"></video>  
