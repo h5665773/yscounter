@@ -84,15 +84,18 @@
             <div class="panel-body ">
               <div class="col-md-3">
                 <div class="input-group">
-                  <input type="text" class="form-control" v-model="filterAreaStr" @keyup="prFilterArea()">
+                  <!-- <input type="text" class="form-control" v-model="filterAreaStr" @keyup="prFilterArea()"> -->
+                  <input type="text" class="form-control" v-model="filterAreaStr" @keyup="liverFilter()">
                   <span class="input-group-addon">搜尋棟別</span>
                 </div>
                 <div class="input-group">
-                  <input type="text" class="form-control" v-model="filterDidStr" @keyup="prFilterDid()">
+                  <!-- <input type="text" class="form-control" v-model="filterDidStr" @keyup="prFilterDid()"> -->
+                  <input type="text" class="form-control" v-model="filterDidStr" @keyup="liverFilter()">
                   <span class="input-group-addon" >搜尋戶號</span>
                 </div>
                 <div class="input-group">
-                  <input type="text" class="form-control" v-model="filterOwnerStr" @keyup="prFilterOwner()">
+                  <!-- <input type="text" class="form-control" v-model="filterOwnerStr" @keyup="prFilterOwner()"> -->
+                  <input type="text" class="form-control" v-model="filterOwnerStr" @keyup="liverFilter()">
                   <span class="input-group-addon">搜尋姓名</span>
                 </div>
                 <div class="list-group" style="margin-bottom:0">

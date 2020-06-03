@@ -39,6 +39,7 @@ $(document).ready(function(){
         otherTypes: [],
         otherTypeList: [],
         selectDate: "",
+        selectedLiver: "",
         tabs: [],
         times: []
       },
@@ -57,7 +58,6 @@ $(document).ready(function(){
       	},
       	changeCid: function(k){
       		let cid = parseInt(this.otherRecord[k].F_CID)-1;
-
       		this.otherRecord[k].F_OT_ATTINFO = this.otherRecord[k].typeList[cid]["F_DESC"];
       		//logs(this.otherRecord[k]);
       	},
@@ -69,6 +69,7 @@ $(document).ready(function(){
           this.precautionList[pKey]['owner']=liverRow['F_OWNER_NAME']
         },
       	addOtherJob: function(){
+          logs(this.otherTypes);
       		this.otherRecord.push({
       			done: false,
       			F_D2_SEQ: '',
@@ -82,8 +83,6 @@ $(document).ready(function(){
       		});
       	},
         addPrecaution: function(){
-          logs(this.liverList[0]);
-          logs(this.liverList[0]["F_LIVER_ID"]);
           this.precautionList.push({
             liverKey: 0,
             liverId: this.liverList[0]["F_LIVER_ID"],
@@ -97,6 +96,23 @@ $(document).ready(function(){
         deletePrecaution: function(k){
           this.precautionList.splice(k,1);
           this.savePrecaution();
+        },
+        liverFilter: function(){
+          let self =this;
+          this.liverList.map(function(v,k){
+            if(self.filterDidStr == "" && self.filterOwnerStr == "" && self.filterAreaStr == ""){
+              self.liverList[k].hide = false;
+            }else{
+              let testDid = v.F_CU_DID.indexOf(self.filterDidStr)
+              let testOwner = v.F_CU_DID.indexOf(self.filterOwnerStr)
+              let testArea = v.F_CU_DID.indexOf(self.filterAreaStr)
+              if(testDid<1 && testOwner<1 && testArea<1){
+                self.liverList[k].hide = true;
+              }else{
+                self.liverList[k].hide = false;
+              }  
+            }
+          });
         },
         prFilterArea: function(){
           let self = this;
@@ -186,6 +202,16 @@ $(document).ready(function(){
       			}
       		});
       	},
+        selectLiver: function(did,owner,liverId){
+          let self = this;
+          this.precautionList.map(function(v,k){
+            if(v.liverId.indexOf(liverId)<0){
+              self.precautionList[k].hide = true;
+            }else{
+              self.precautionList[k].hide = false;
+            }  
+          });
+        },
       	dateChage: function(){
 	      	loadAllData(null);
 	    }
@@ -218,7 +244,7 @@ $(document).ready(function(){
       	loading.addClass("rotateIn");
       	scan((empId,err) => {
       		// err = false;
-      		// empId = "T10668";
+      		// empId = "T10220";
       		loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");
@@ -262,7 +288,7 @@ $(document).ready(function(){
           });
         }
       }, function(err, results) {
-        //console.log(results);
+        console.log(results);
         var otherType = [];
         var workRecord = [];
         let otl = results.pointSop.otherTypeList;
@@ -275,9 +301,13 @@ $(document).ready(function(){
         results.pointSop.sopRecord.map(function(v){
           workRecord[v['F_D2_SEQ']] = v;
         });
-        
         //梳理3
         let sopData = results.pointSop.sopData;
+        if(sopData.length <1){
+          alert("請先設定相關哨點'駐點須知'!如有疑問請洽課長!");
+          location.href="index.html";
+          return;
+        }
         sopData.list.map(function(sop,sopk){
             results.pointSop.sopData.list[sopk].done = false;
             results.pointSop.sopData.list[sopk].comment = '';
@@ -292,7 +322,7 @@ $(document).ready(function(){
         orec.map(function(v,k){
         	orec[k].typeList = otl[v.F_TID];
         });
-        //console.log(results);
+        console.log(results);
         pointPanel.otherTypes = results.pointSop.otherType;
         pointPanel.sopData = results.pointSop.sopData;
         pointPanel.otherRecord = results.pointSop.otherRecord;

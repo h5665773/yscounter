@@ -268,13 +268,13 @@
           loading.addClass("rotateIn");
 
           exec("node scan.js" , function(err ,data ,c){
-            // data = 'K10216'
-            // err = null
+            // data = 'T10220';
+            // err = null;
             if(err == null && data.length > 0){
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
+              //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
                 if(error != null){
@@ -330,9 +330,22 @@
           }
         });
         offwork.click(function(){
-          if($(this).attr("disabled") != true){
-            checkin("offWork");
-          }
+          let self = this;
+          //檢查當天是否有填寫過值勤交接 check if T_SB_CUST_D2_WORK
+          request(config.apiHost + 'api/workRecord/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
+            var rows = JSON.parse(body);
+            if(error == null){
+              if(rows.length <1){
+                alert("需先填寫值勤交接才能打卡!!");
+                return;
+              }else{
+                if($(self).attr("disabled") != true){
+                  checkin("offWork");
+                }
+              }
+            }
+          });
+          
         });
         var checkin = async function(workType){
           showMask();
