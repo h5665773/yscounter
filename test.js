@@ -1,1 +1,2 @@
-import TableToExcel from "@linways/table-to-excel";
+const screenshot = require('screenshot-desktop')
+screenshot({ filename: './screen.png' })
