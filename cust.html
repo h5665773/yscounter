@@ -301,7 +301,7 @@
               loading.css("display","none");
               loading.removeClass("rotateIn");
               loading.addClass("rotateOut");
-              console.log(err);
+              //console.log(err);
             }
           });
         });
@@ -336,7 +336,7 @@
             var rows = JSON.parse(body);
             if(error == null){
               if(rows.length <1){
-                alert("需先填寫值勤交接才能打卡!!");
+                $(".alert_msg").show();
                 return;
               }else{
                 if($(self).attr("disabled") != true){
@@ -434,8 +434,13 @@
         }
       });
     </script>
+    <div class="alert alert-danger alert-dismissible alert_msg" style="display:none;" role="alert">
+      <button type="button" class="close" onclick="$('.alert_msg').hide()"><span aria-hidden="true">&times;</span></button>
+      <strong>需先填寫值勤交接才能打卡!!</strong> 
+    </div>
     <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
-      <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span id="loadingText"> 請在20秒內掃描員工識別證</span></button>
+      <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span id="loadingText"> 請在20秒內掃描員工識別證</span>
+    </button>
     <script type="text/javascript" src="/js/main.js"></script>
   </body>
 </html>

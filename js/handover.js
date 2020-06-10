@@ -243,8 +243,8 @@ $(document).ready(function(){
       	loading.css("display","block");
       	loading.addClass("rotateIn");
       	scan((empId,err) => {
-      		// err = false;
-      		// empId = "T10220";
+      		err = false;
+      		empId = "T10220";
       		loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");
@@ -254,7 +254,8 @@ $(document).ready(function(){
       			location.href="index.html";
       		}
       		this.currentEmpId = empId;
-	    	request(config.apiHost + 'api/pointByCust&liverList/'+currentCust+'/000/'+empId,(error, response, body)=>{
+	    	//request(config.apiHost + 'api/pointByCust&liverList/'+currentCust+'/000/'+empId,(error, response, body)=>{
+        request(config.apiHost + 'api/pointByCust&liverList/'+currentCust+'/000/000',(error, response, body)=>{
 	    	  let rows = JSON.parse(body);
 		      let pointList = rows['data1'];
 		      let liverList = rows["data2"];
@@ -305,7 +306,7 @@ $(document).ready(function(){
         let sopData = results.pointSop.sopData;
         if(sopData.length <1){
           alert("請先設定相關哨點'駐點須知'!如有疑問請洽課長!");
-          location.href="index.html";
+          //location.href="index.html";
           return;
         }
         sopData.list.map(function(sop,sopk){
