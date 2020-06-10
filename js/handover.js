@@ -103,10 +103,17 @@ $(document).ready(function(){
             if(self.filterDidStr == "" && self.filterOwnerStr == "" && self.filterAreaStr == ""){
               self.liverList[k].hide = false;
             }else{
-              let testDid = v.F_CU_DID.indexOf(self.filterDidStr)
-              let testOwner = v.F_CU_DID.indexOf(self.filterOwnerStr)
-              let testArea = v.F_CU_DID.indexOf(self.filterAreaStr)
-              if(testDid<1 && testOwner<1 && testArea<1){
+              let testDid = -1
+              let testOwner = -1
+              let testArea = -1
+              if(self.filterDidStr!='')
+                testDid = v.F_CU_DID.indexOf(self.filterDidStr)
+              if(self.filterOwnerStr!='')
+                testOwner = v.F_OWNER_NAME.indexOf(self.filterOwnerStr)
+              if(self.filterAreaStr!='')
+                testArea = v.F_CU_AREA.indexOf(self.filterAreaStr)
+
+              if(testDid<0 && testOwner<0 && testArea<0){
                 self.liverList[k].hide = true;
               }else{
                 self.liverList[k].hide = false;
@@ -244,7 +251,7 @@ $(document).ready(function(){
       	loading.addClass("rotateIn");
       	scan((empId,err) => {
       		//err = false;
-      		//empId = "T10220";
+      		//empId = "T10172";
       		loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");

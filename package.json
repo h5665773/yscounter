@@ -26,6 +26,7 @@
     "html-to-xlsx": "^1.1.1",
     "jade": "1.11.0",
     "lodash": "^4.17.15",
+    "qrcode": "^1.4.4",
     "qrcode-reader": "^1.0.4",
     "request": "^2.88.0",
     "screenshot-desktop": "^1.12.1",

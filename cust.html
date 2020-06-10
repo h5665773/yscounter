@@ -140,14 +140,17 @@
           
       </div>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
           <img src="images/scan1.png" alt="..." align="center" >
           <p style="color:#999999">(如果識別證掃不出來請刷完員工打卡專用條碼後再試試)</p>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <img src="images/scan3.png" alt="..."   align="center">
         </div>
-        
+        <div class="col-md-4">
+          <img id="qrcodeImage" src=""></img>
+          <p style="color:#999999">社區QR code</p>
+        </div>
       </div>
     </div>
 
@@ -157,12 +160,22 @@
       </div>
     </footer>
     <script type="text/javascript">
+
       const screenshot = require('screenshot-desktop')
+      var QRCode = require('qrcode')
       var exec = require('child_process').exec,
           child;
       const request = require("request");
-      // import nodejs bindings to native tensorflow,
-      // not required, but will speed up things drastically (python required)
+
+      // With promises
+      QRCode.toDataURL(currentCust)
+        .then(url => {
+          console.log(url)
+          $("#qrcodeImage").attr("src",url);
+        })
+        .catch(err => {
+          console.error(err)
+        })
       var vueScheduleList = new Vue({
         el: '#scheduleList',
         data: {
