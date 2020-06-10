@@ -28,7 +28,6 @@
     <link rel="stylesheet" href="/css/main.css" >
     <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
     <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
-
     <style>
       html{
         overflow: visible;
@@ -158,6 +157,7 @@
       </div>
     </footer>
     <script type="text/javascript">
+      const screenshot = require('screenshot-desktop')
       var exec = require('child_process').exec,
           child;
       const request = require("request");
@@ -222,15 +222,15 @@
            $("#cameraArea").append(canvasF)
            const displaySize = { width: video.width, height: video.height }
            faceapi.matchDimensions(canvasF, displaySize)
-           // setInterval(async () => {
-           //    const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
-           //    console.log(video);
-           //   const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-           //   const resizedDetections = faceapi.resizeResults(detections, displaySize)
-           //   canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
-           //   faceapi.draw.drawDetections(canvasF, resizedDetections)
-           //   faceapi.draw.drawFaceExpressions(canvasF, resizedDetections)
-           // }, 3000)
+           setInterval(async () => {
+              //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+              const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+              //console.log(detections);
+              const resizedDetections = faceapi.resizeResults(detections, displaySize)
+              canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
+              faceapi.draw.drawDetections(canvasF, resizedDetections)
+              //faceapi.draw.drawFaceExpressions(canvasF, resizedDetections)
+           }, 500)
          })
         }
         
@@ -268,8 +268,8 @@
           loading.addClass("rotateIn");
 
           exec("node scan.js" , function(err ,data ,c){
-            // data = 'T10220';
-            // err = null;
+            //data = 'T10220';
+            //err = null;
             if(err == null && data.length > 0){
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
@@ -349,13 +349,14 @@
         });
         var checkin = async function(workType){
           showMask();
+          screenshot({ filename: './screen.png' })
           context.drawImage(video, 0, 0, 270, 270);
           var imageData = canvas.toDataURL("image/png");
           const detections = await faceapi.detectAllFaces("canvas", new faceapi.TinyFaceDetectorOptions())
-          console.log(detections);
           if(detections.length == 0){
-            // alert("未偵測到員工人臉，請重新對準!");
-            // return false;
+            alert("未偵測到員工人臉，請重新對準!");
+            hideMask();
+            return false;
           }
           var url ;
           if(scanEmpId != "" && choosePoint!=""&&currentCust!=""){
@@ -372,9 +373,11 @@
             fs.appendFileSync(imageLocation, buf,{flag: 'w'});
             url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId;
             var formData = {
-              checkin_image: fs.createReadStream(imageLocation)
+              checkin_image: fs.createReadStream(imageLocation),
+              screen: fs.createReadStream('./screen.png')
             };
             request.post({url: url, formData: formData}, function (error, httpResponse, body) {
+              //console.log(body);
               if( error !=null){
                 hideMask();
                 fs.stat(offlineCheckinFile,(err)=>{
