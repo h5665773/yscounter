@@ -251,7 +251,7 @@ $(document).ready(function(){
       	loading.addClass("rotateIn");
       	scan((empId,err) => {
       		//err = false;
-      		//empId = "T10172";
+      		//empId = "T10220";
       		loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");
@@ -269,8 +269,14 @@ $(document).ready(function(){
           self.liverList = liverList;
           //console.log(liverList);
 		      self.tabs = pointList;
-		      self.currentPointid = pointList[0].F_POINT_ID;
-		      self.currentEmpName = pointList[0].F_EMP_NAME;
+		      
+          pointList.map(function(v,k){
+            if(v.F_EMP_ID == empId){
+              self.currentTabKey = k;
+              self.currentPointid = v.F_POINT_ID;
+              self.currentEmpName = v.F_EMP_NAME;
+            }
+          });
 		      loadAllData(null);
 		    });
 	    });
