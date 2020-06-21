@@ -220,6 +220,7 @@
       
       $(document).ready(function(){
         var empName= $("#empName");
+        var faceDetections = [];
         var loading = $("#loading");
         var loadingText = $("#loadingText");
         var loadingMask = $(".loadingMask");
@@ -272,13 +273,13 @@
            faceapi.matchDimensions(canvasF, displaySize)
            setInterval(async () => {
               //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
-              const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+              faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.72}))
               //console.log(detections);
-              const resizedDetections = faceapi.resizeResults(detections, displaySize)
+              const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
               canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
               faceapi.draw.drawDetections(canvasF, resizedDetections)
               //faceapi.draw.drawFaceExpressions(canvasF, resizedDetections)
-           }, 1200)
+           }, 200)
          })
         }
         
@@ -406,8 +407,7 @@
           var imageData = canvas.toDataURL("image/png");
           //logs(new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.72}))
           //return;
-          const detections = await faceapi.detectAllFaces("canvas", new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.72}))
-          if(detections.length == 0){
+          if(faceDetections.length == 0){
             alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
             hideMask();
             return false;
