@@ -25,7 +25,7 @@ $(document).ready(function(){
         filterAreaStr: '',
         filterOwnerStr: '',
         liverList: [],
-      	editMode: 'b',
+      	editMode: 'a',
       	dateOptions: [],
         precautionList: [],
       	currentEmpId: '',
@@ -40,13 +40,15 @@ $(document).ready(function(){
         otherTypeList: [],
         selectDate: "",
         selectedLiver: "",
+        pointEmpid: '',
         tabs: [],
         times: []
       },
       methods: {
-      	clickTab: function(tabKey,pointid){
+      	clickTab: function(tabKey,pointid,empid){
       		this.currentPointid = pointid;
       		this.currentTabKey = tabKey;
+          this.pointEmpid = empid
 	        loadAllData(null);
       	},
       	changeMode: function(m){
@@ -216,12 +218,12 @@ $(document).ready(function(){
               self.precautionList[k].hide = true;
             }else{
               self.precautionList[k].hide = false;
-            }  
+            }
           });
         },
       	dateChage: function(){
 	      	loadAllData(null);
-	    }
+	      }
       },
       mounted: function(){
       	let self = this;
@@ -251,7 +253,7 @@ $(document).ready(function(){
       	loading.addClass("rotateIn");
       	scan((empId,err) => {
       		//err = false;
-      		//empId = "T10220";
+      		//empId = "T10584";
       		loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");
@@ -261,13 +263,12 @@ $(document).ready(function(){
       			location.href="index.html";
       		}
       		this.currentEmpId = empId;
-	    	//request(config.apiHost + 'api/pointByCust&liverList/'+currentCust+'/000/'+empId,(error, response, body)=>{
+          this.pointEmpid = empId;
         request(config.apiHost + 'api/pointByCust&liverList/'+currentCust+'/000/000',(error, response, body)=>{
 	    	  let rows = JSON.parse(body);
 		      let pointList = rows['data1'];
 		      let liverList = rows["data2"];
           self.liverList = liverList;
-          //console.log(liverList);
 		      self.tabs = pointList;
 		      
           pointList.map(function(v,k){
@@ -291,12 +292,11 @@ $(document).ready(function(){
     var loadAllData = function(callbackLoad){
       async.parallel({
         pointSop: function(callback){
-          console.log(config.apiHost + 'api/pointSop/'+currentCust+'/'+pointPanel.currentPointid+'/0?selectdate='+pointPanel.currentDate);
-          request(config.apiHost + 'api/pointSop/'+currentCust+'/'+pointPanel.currentPointid+'/0?selectdate='+pointPanel.currentDate, function (error, response, body) {
+          console.log(config.apiHost + 'api/pointSop/'+currentCust+'/'+pointPanel.currentPointid+'/'+pointPanel.pointEmpid+'?selectdate='+pointPanel.currentDate);
+          request(config.apiHost + 'api/pointSop/'+currentCust+'/'+pointPanel.currentPointid+'/'+pointPanel.pointEmpid+'?selectdate='+pointPanel.currentDate, function (error, response, body) {
             if(error == null){
               callback(null,JSON.parse(body));  
             }else{
-
               callback(null,[]);
             }
           });

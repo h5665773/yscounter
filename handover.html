@@ -58,9 +58,6 @@
           <div class="panel panel-warning" id="pointPanel"> 
             <div class="panel-heading"> 
               <h3 class="panel-title" style="float:left">
-                <select style="margin-right:10px;padding:3px;" v-model="currentDate" @change="dateChage">
-                  <option :value="v" v-for="(v,k) in dateOptions">{{v}}</option>
-                </select>
                 {{currentEmpName}}-現場工作紀錄
               </h3> 
               <ul class="nav nav-tabs">
@@ -78,6 +75,12 @@
                   <a class="pointTab pointer":class="{'alert-info': editMode=='c'}" @click="changeMode('c')">
                     注意事項
                   </a>
+                </li>
+                <li style="float: right;margin-top: 7px;">
+                  選擇日期
+                  <select style="margin-right:10px;padding:3px;" v-model="currentDate" @change="dateChage">
+                    <option :value="v" v-for="(v,k) in dateOptions">{{v}}</option>
+                  </select>
                 </li>
               </ul>
             </div> 
@@ -116,13 +119,13 @@
                   </div>
                   <div class="col-md-3" style="border-radius: 5px;border:1px solid #555555;padding: 5px;margin-bottom: 10px;margin-right: 10px;" v-show="!v.hide" v-for="(v,k) in precautionList">
                     <h5 class="text-info"><b>{{v.did}} | {{v.owner}}</b></h5>
-                    {{v.comment}}
+                    {{v.comment}} 
                   </div>
                 </div>
                 <div id="pointTabs" v-show="editMode=='a'">
                   <ul class="nav nav-tabs">
                       <li role="presentation" :class="{ active: k==currentTabKey }" v-for="(v,k) in tabs">
-                        <a class="pointTab pointer" @click="clickTab(k,v.F_POINT_ID)">
+                        <a class="pointTab pointer" @click="clickTab(k,v.F_POINT_ID,v.F_EMP_ID)">
                           {{v.F_POINT_NAME}}({{v.F_EMP_NAME}})
                         </a>
                       </li>
