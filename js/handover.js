@@ -253,7 +253,7 @@ $(document).ready(function(){
       	loading.addClass("rotateIn");
       	scan((empId,err) => {
       		//err = false;
-      		//empId = "T10584";
+      		//empId = "T10220";
       		loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");
