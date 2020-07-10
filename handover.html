@@ -77,7 +77,10 @@
                   </a>
                 </li>
                 <li style="float: right;margin-top: 7px;">
-                  <button type="button" class="btn btn-default" v-for="(v,k) in dateOptions" @click="dateChage(v)">{{v}}</button>
+                  選擇日期
+                  <select style="margin-right:10px;padding:3px;" v-model="currentDate" @change="dateChage">
+                    <option :value="v" v-for="(v,k) in dateOptions">{{v}}</option>
+                  </select>
                 </li>
               </ul>
             </div> 

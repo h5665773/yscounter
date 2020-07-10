@@ -135,37 +135,7 @@
             <div class="shotLine leftBottom"></div>
             <div class="shotLine rightBottom"></div>
           </div>
-          <div class="col-lg-6" style="padding:0 15px 0 30px" align="center" >
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>內容</th>
-                  <th>功能</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    以下班表經本人核對後沒有疑慮。
-                  </td>
-                  <td align="center">
-                    <button type="button" class="btn btn-success">正確無誤，確認</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>下列班表有誤
-                    <textarea class="form-control" cols="30" rows="9"></textarea>
-                  </td>
-                  <td style="vertical-align: middle;" align="center">
-                    <button type="button" class="btn btn-danger">錯誤回報</button>
-                  </td>
-                </tr>
-                
-              </tbody>
-            </table>
-            <h4 class="text-danger">※錯誤回報送出後，勤務幹部經釐清後修正班表。</h4>
-          </div>
-          <div class="col-lg-12 point-schedule" align="center" >
+          <div class="col-lg-6 point-schedule" align="center" >
             <table class="table table-bordered" v-for="(ps,pk) in list"> 
               <thead>
                 <tr><th colspan="8">{{ps.F_POINT_NAME}}</tr>
