@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/bootstrap-theme.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
     
     <script src="/js/jquery.js"></script>
     <!-- Latest compiled and minified JavaScript -->
@@ -78,9 +78,7 @@
                 </li>
                 <li style="float: right;margin-top: 7px;">
                   選擇日期
-                  <select style="margin-right:10px;padding:3px;" v-model="currentDate" @change="dateChage">
-                    <option :value="v" v-for="(v,k) in dateOptions">{{v}}</option>
-                  </select>
+                   <button type="button" class="btn btn-default" v-for="(v,k) in dateOptions" @click="dateChage(v)">{{v}}</button>
                 </li>
               </ul>
             </div> 

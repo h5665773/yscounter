@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/colorbox.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.css" >
+    
+    <script src="/js/jquery.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/js/bootstrap.min.js" ></script>
+    <script src="/js/vue.js" ></script>
+    <script src="/js/face-api.min.js" ></script>
+    <link rel="stylesheet" href="/css/main.css" >
+    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+    <style>
+      html{
+        overflow: visible;
+      }
+      h2{
+        font-size: 24px;
+      }
+      tr >td:nth-child(3){
+        background-color: #41a6ee
+      }
+      .point-schedule td, .point-schedule th {
+          font-size: 12px;
+      }
+      .point-schedule th {
+        padding:3px;
+      }
+      thead th{
+        background-color: #ccff;
+      }
+      canvas {
+        position: absolute;
+        top: 39px;
+        left: 15px;
+      }
+      #cameraArea{
+        position: relative;
+      }
+      #canvas{
+        z-index: -99;
+        top:-9999px;
+        left:-9999px;
+      }
+      .shotLine{
+        position: absolute;
+        display:block;
+        width:80px;
+        height:50px;
+      }
+      
+      .shotLine.leftTop{
+        border-right: 1px dotted #0000ff; 
+        border-bottom: 1px dotted #0000ff;
+        top:65px;
+        left:0; 
+      }
+      .shotLine.rightTop{
+        border-left: 1px dotted #0000ff; 
+        border-bottom: 1px dotted #0000ff;
+        top:65px;
+        right:0; 
+      }
+      .shotLine.leftBottom{
+        border-right: 1px dotted #0000ff; 
+        border-top: 1px dotted #0000ff;
+        bottom:35px;
+        left:0; 
+      }
+      .shotLine.rightBottom{
+        border-left: 1px dotted #0000ff; 
+        border-top: 1px dotted #0000ff;
+        bottom:35px;
+        right:0; 
+      }
+    </style>
+    <script type="text/javascript" src="/js/Common.js"></script>
+  </head>
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+    <header>
+      <nav class="navbar">
+      </nav>  
+    </header>
+    
+    <!-- Begin page content -->
+    <div class="container main" id="scheduleList">
+      <div class="row">
+          <div class="col-lg-3" style="position:relative">
+            <p>
+              <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
+            </p>
+            <div  style="display:none" id="pointDetail">
+              <div class="alert alert-success" style="width:200px" role="alert">
+                您好 
+                <strong id="empName">
+                  
+                </strong>
+              </div>
+              <strong >請選擇駐點清單</strong>
+              <div class="list-group pointList">
+              </div>
+            </div>
+            <div  align="center">
+              <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
+              <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
+            </div>
+          </div>
+          <div class="col-lg-9" id="cameraArea" align="center">
+            <canvas id="canvas"  width="270" height="270"></canvas>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>內容</th>
+                  <th>功能</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    以下班表經本人核對後沒有疑慮。
+                  </td>
+                  <td align="center">
+                    <button type="button" @click="sendConfirm('correct')" class="btn btn-success">正確無誤，確認</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>下列班表有誤
+                    <textarea class="form-control" v-model="reason" cols="30" rows="9"></textarea>
+                  </td>
+                  <td style="vertical-align: middle;" align="center">
+                    <button type="button" @click="sendConfirm('error')" class="btn btn-danger">錯誤回報</button>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+            <h4 class="text-danger">※錯誤回報送出後，勤務幹部經釐清後修正班表。</h4>
+          </div>
+          <div class="col-lg-12 point-schedule" align="center" >
+            <table class="table table-bordered" v-for="(ps,pk) in list"> 
+              <thead>
+                <tr><th colspan="8">{{ps.F_POINT_NAME}}</tr>
+              </thead>
+              <tbody> 
+                <tr> 
+                  <th>日期</th> 
+                  <td v-for="(v,k) in ps.list" v-html="v.date"></td> 
+                </tr> 
+                <tr> 
+                  <th scope="row">班別</th> 
+                  <td v-for="(v,k) in ps.list">{{v.classType}}</td> 
+                </tr> 
+                <tr> 
+                  <th scope="row">應上班</th> 
+                  <td v-for="(v,k) in ps.list">{{v.sdt}}</td> 
+                </tr> 
+                <tr> 
+                  <th scope="row">上班打卡</th> 
+                  <td v-for="(v,k) in ps.list">{{v.checkin['GO_WORKTIME']}}</td> 
+                </tr> 
+                <tr> 
+                  <th scope="row">應下班</th> 
+                  <td v-for="(v,k) in ps.list">{{v.edt}}</td> 
+                </tr> 
+                <tr> 
+                  <th scope="row">下班打卡</th> 
+                  <td v-for="(v,k) in ps.list">{{v.checkin['OFF_WORKTIME']}}</td> 
+                </tr> 
+                
+              </tbody> 
+            </table>            
+          </div>
+          
+          <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px" >
+          </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+      </div>
+    </footer>
+    <script type="text/javascript" src="js/scheduleConfirm.js">
+
+    </script>
+    
+    <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
+      <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span id="loadingText"> 請在20秒內掃描員工識別證</span>
+    </button>
+    <script type="text/javascript" src="/js/main.js"></script>
+  </body>
+</html>
