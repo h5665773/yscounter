@@ -127,6 +127,9 @@
             </div>
           </div>
           <div class="col-lg-9" id="cameraArea" align="center">
+            <div class="alert alert-warning" role="alert" v-show="confirmed=='yes'">
+              本區段時間已經核對過
+            </div>
             <canvas id="canvas"  width="270" height="270"></canvas>
             <table class="table table-bordered">
               <thead>
@@ -141,15 +144,15 @@
                     以下班表經本人核對後沒有疑慮。
                   </td>
                   <td align="center">
-                    <button type="button" @click="sendConfirm('correct')" class="btn btn-success">正確無誤，確認</button>
+                    <button :disabled="confirmed=='yes'" type="button" @click="sendConfirm('correct')" class="btn btn-success">正確無誤，確認</button>
                   </td>
                 </tr>
                 <tr>
                   <td>下列班表有誤
-                    <textarea class="form-control" v-model="reason" cols="30" rows="9"></textarea>
+                    <textarea :disabled="confirmed=='yes'" class="form-control" v-model="reason" cols="30" rows="9"></textarea>
                   </td>
                   <td style="vertical-align: middle;" align="center">
-                    <button type="button" @click="sendConfirm('error')" class="btn btn-danger">錯誤回報</button>
+                    <button type="button" @click="sendConfirm('error')" :disabled="confirmed=='yes'" class="btn btn-danger">錯誤回報</button>
                   </td>
                 </tr>
 

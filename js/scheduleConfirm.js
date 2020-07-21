@@ -2,30 +2,11 @@ const screenshot = require('screenshot-desktop')
 var exec = require('child_process').exec,
     child;
 const request = require("request");
-var vueScheduleList = new Vue({
-  el: '#scheduleList',
-  data: {
-    reason: '',
-    list: {}
-  },
-  methods: {
-    sendConfirm: function(status){
-      if(!confirm("確認送出?")){
-        return
-      }
-      let reason = ''
-      if(status == "correct"){
-
-      }else{
-        
-      }
-      let submitData = {
-        reason: this.reason,
-        status: 
-      }
-    }
-  }
-});
+var d = new Date();
+var range = "first"
+if(d.getDate()>15){
+  range = "second"
+}
 
 $(document).ready(function(){
   var empName= $("#empName");
@@ -44,7 +25,7 @@ $(document).ready(function(){
   var offlineCheckinFile = "offlineCheckin.json";
   var pointData = {};
   var video = document.getElementById('video');
-  var d = new Date();
+  
   var mediaConfig =  { video: true };
   var body = $("html");
   var showMask = function(){
@@ -71,7 +52,54 @@ $(document).ready(function(){
     port: 80,
     path: ''
   };
+  var vueScheduleList = new Vue({
+    el: '#scheduleList',
+    data: {
+      reason: '',
+      list: {},
+      confirmed: 'no'
+    },
+    methods: {
+      sendConfirm: async function(status){
+        if(!confirm("確認送出?")){
+          return
+        }
+        await screenshot({ filename: './screen.png' })
+        showMask();
+        let reason = ''
+        if(status != "correct"){
+          status = "incorrect"
+        }
+        let submitData = {
+          reason: this.reason,
+          status: status,
+          screen: fs.createReadStream('./screen.png')
+        }
+        url = config.apiHost + 'barcode/scheduleConfirm/'+currentCust+"/"+scanEmpId+"/"+range;
+        request.post({url: url, formData: submitData}, function (error, httpResponse, body) {
+          logs(body)
+          hideMask();
+          switch(String(body)){
+            case("1"):
+              alert("已完成確認");
+            break;
+            case("2"):
+              alert("已完成確認，並記錄原因");
+            break;
+            case("4"):
+              alert("提交失敗");
+            break;
+          }
+          //location.href="index.html";
+        });
+      },
+      mounted: function(){
+        
+      }
+    }
+  });
   $("#scanEmp").click(function(){
+    console.log(123)
     var pointData={};
     if($(this).attr("disabled")==true){
       return false;
@@ -90,10 +118,6 @@ $(document).ready(function(){
         var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
         scanEmpId = parse[1];
         var ym = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
-        var range = "first"
-        if(d.getDate()>15){
-          range = "second"
-        }
         console.log(config.apiHost + `api/getConfirmSchedule/${ym}/${currentCust}/${scanEmpId}/${range}`);
         request(config.apiHost + 'api/empName/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
           var row = JSON.parse(body);
@@ -103,7 +127,8 @@ $(document).ready(function(){
           var rows = JSON.parse(body);
           //設定vue data
           if(typeof(rows) !='undefined'){
-            vueScheduleList.list = rows;
+            vueScheduleList.list = rows.schedule;
+            vueScheduleList.confirmed = rows.confirmed;
             loadingMask.css("display","none");
             loading.css("display","none");
             loading.removeClass("rotateIn");
@@ -119,48 +144,5 @@ $(document).ready(function(){
       }
     });
   });
-  var checkin = async function(workType){
-    await screenshot({ filename: './screen.png' })
-    showMask();
-    context.drawImage(video, 0, 0, 270, 270);
-    var imageData = canvas.toDataURL("image/png");
-    var url ;
-    if(scanEmpId != "" && choosePoint!=""&&currentCust!=""){
-      gowork.prop("disabled",true);
-      offwork.prop("disabled",true);  
-      
-      var imageDir = `./public/coworkerImages`;
-      if(!fs.existsSync(imageDir)){
-        fs.mkdirSync(imageDir,0777);
-      }
-      
-      url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId;
-      var formData = {
-        screen: fs.createReadStream('./screen.png')
-      };
-      request.post({url: url, formData: formData}, function (error, httpResponse, body) {
-        hideMask();
-        switch(String(body)){
-          case("3"):
-            alert("打卡完成");
-          break;
-          case("1"):
-            alert("當日未排班");
-          break;
-          case("2"):
-            alert("員工不存在或已離職");
-          break;
-          case("4"):
-            alert("已經超過打卡時限");
-          break;
-          case("5"):
-            alert("當日已在其他地方打卡了");
-          break;
-        }
-        location.href="index.html";
-      });
-    }else{
-      alert("資料有錯誤");
-    }
-  }
+  
 });
