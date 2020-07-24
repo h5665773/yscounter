@@ -125,6 +125,15 @@
               <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
               <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
             </div>
+            <h4 v-show="warnings.length >0">警告注意!</h4>
+
+            <ul class="list-group">
+              <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+                <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME" target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a> 
+                <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}</h5>
+                <span>{{v.F_DESCRIPTION}}</span>
+              </li>
+            </ul>
           </div>
           <div class="col-lg-3" id="cameraArea" align="center">
             <h4>攝影機畫面</h4>
@@ -136,10 +145,6 @@
             <div class="shotLine rightBottom"></div>
           </div>
           <div class="col-lg-6 point-schedule" align="center" >
-            <div class="alert-warning" style="text-align: left;margin-bottom:10px;padding:10px" v-show="warningTitle!=''">
-              <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+warningFile" target="_blank" v-show="warningFile!=''"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a> {{warningTitle}}:<br>
-              {{warningDesc}}
-            </div>
             <table class="table table-bordered" v-for="(ps,pk) in list"> 
               <thead>
                 <tr><th colspan="8">{{ps.F_POINT_NAME}}</tr>
@@ -218,9 +223,7 @@
       var vueScheduleList = new Vue({
         el: '#scheduleList',
         data: {
-          warningTitle: '',
-          warningDesc: '',
-          warningFile: '',
+          warnings : [],
           list: {}
         }
       });
@@ -330,21 +333,13 @@
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              //console.log(config.apiHost + 'api/empName/'+currentCust+'/000/'+scanEmpId);
+              console.log(config.apiHost + 'api/empName/'+currentCust+'/000/'+scanEmpId);
               //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
               request(config.apiHost + 'api/empName/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var row = JSON.parse(body);
                 empName.html(row[0]['F_EMP_NAME']);
                 logs(row)
-                if(row[0]['F_SUMMAR']!=''){
-                  vueScheduleList.warningTitle = row[0]['F_SUMMAR']
-                  vueScheduleList.warningDesc = row[0]['F_DESCRIPTION']
-                  vueScheduleList.warningFile = row[0]['PICTURE_NAME']
-                }else{
-                  vueScheduleList.warningTitle = ''
-                  vueScheduleList.warningDesc = ''
-                  vueScheduleList.warningFile = ''
-                }
+                vueScheduleList.warnings = row[0]['warnings']
               });
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
