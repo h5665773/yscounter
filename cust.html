@@ -136,6 +136,10 @@
             <div class="shotLine rightBottom"></div>
           </div>
           <div class="col-lg-6 point-schedule" align="center" >
+            <div class="alert-warning" style="text-align: left;margin-bottom:10px;padding:10px" v-show="warningTitle!=''">
+              <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+warningFile" target="_blank" v-show="warningFile!=''"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a> {{warningTitle}}:<br>
+              {{warningDesc}}
+            </div>
             <table class="table table-bordered" v-for="(ps,pk) in list"> 
               <thead>
                 <tr><th colspan="8">{{ps.F_POINT_NAME}}</tr>
@@ -214,6 +218,9 @@
       var vueScheduleList = new Vue({
         el: '#scheduleList',
         data: {
+          warningTitle: '',
+          warningDesc: '',
+          warningFile: '',
           list: {}
         }
       });
@@ -317,16 +324,27 @@
           loading.addClass("rotateIn");
 
           exec("node scan.js" , function(err ,data ,c){
-            //data = 'K10271';
+            //data = 'T10220';
             //err = null;
             if(err == null && data.length > 0){
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
+              //console.log(config.apiHost + 'api/empName/'+currentCust+'/000/'+scanEmpId);
+              //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
               request(config.apiHost + 'api/empName/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var row = JSON.parse(body);
                 empName.html(row[0]['F_EMP_NAME']);
+                logs(row)
+                if(row[0]['F_SUMMAR']!=''){
+                  vueScheduleList.warningTitle = row[0]['F_SUMMAR']
+                  vueScheduleList.warningDesc = row[0]['F_DESCRIPTION']
+                  vueScheduleList.warningFile = row[0]['PICTURE_NAME']
+                }else{
+                  vueScheduleList.warningTitle = ''
+                  vueScheduleList.warningDesc = ''
+                  vueScheduleList.warningFile = ''
+                }
               });
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
