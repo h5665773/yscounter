@@ -333,13 +333,13 @@
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
               scanEmpId = parse[1];
-              console.log(config.apiHost + 'api/empName/'+currentCust+'/000/'+scanEmpId);
+              console.log(config.apiHost + 'api/empName&empWarnings/'+currentCust+'/000/'+scanEmpId);
               //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
-              request(config.apiHost + 'api/empName/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
+              request(config.apiHost + 'api/empName&empWarnings/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var row = JSON.parse(body);
-                empName.html(row[0]['F_EMP_NAME']);
+                empName.html(row['data1'][0]['F_EMP_NAME']);
                 logs(row)
-                vueScheduleList.warnings = row[0]['warnings']
+                vueScheduleList.warnings = row['data2']
               });
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
@@ -487,15 +487,7 @@
                   break;
                 }
                 location.href="index.html";
-                // request(config.apiHost + 'api/empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
-                //   var rows = JSON.parse(body);
-                //   if(error != null){
-                //     pointData = JSON.parse(fs.readFileSync(offlinePointFile));
-                //     showPoint(pointData,scanEmpId);
-                //   }
-                //   $("#pointDetail").hide();
-                //   vueScheduleList.list = rows;
-                // });
+
               }
             });
           }else{
