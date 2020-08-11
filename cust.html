@@ -125,15 +125,7 @@
               <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
               <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
             </div>
-            <h4 v-show="warnings.length >0">警告注意!</h4>
-
-            <ul class="list-group">
-              <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
-                <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME" target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a> 
-                <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}</h5>
-                <span>{{v.F_DESCRIPTION}}</span>
-              </li>
-            </ul>
+            
           </div>
           <div class="col-lg-3" id="cameraArea" align="center">
             <h4>攝影機畫面</h4>
@@ -203,6 +195,19 @@
         <p class="text-muted">Place sticky footer content here.</p>
       </div>
     </footer>
+    <div id="loading-mask" v-show="warnings.length >0" style="position:fixed;width: 100%;height:100%;background-color: rgba(0,0,0,0.5);z-index: 999;display: none;top:0;left:0;overflow:scroll">
+        <div style="padding: 15px;background: rgb(255, 255, 255);width: 500px;position: relative;left: 30%;top: 10%;">
+          <h4>警告注意!</h4>
+          <ul class="list-group">
+            <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+              <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME" target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a> 
+              <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}</h5>
+              <span>{{v.F_DESCRIPTION}}</span>
+            </li>
+          </ul>
+          <button type="button" onclick="$('#loading-mask').hide()">關閉</button>
+        </div>
+    </div>
     <script type="text/javascript">
 
       const screenshot = require('screenshot-desktop')
@@ -223,8 +228,13 @@
       var vueScheduleList = new Vue({
         el: '#scheduleList',
         data: {
-          warnings : [],
           list: {}
+        }
+      });
+      var vueLoadingMask = new Vue({
+        el: '#loading-mask',
+        data: {
+          warnings : []
         }
       });
       
@@ -339,7 +349,7 @@
                 var row = JSON.parse(body);
                 empName.html(row['data1'][0]['F_EMP_NAME']);
                 logs(row)
-                vueScheduleList.warnings = row['data2']
+                vueLoadingMask.warnings = row['data2']
               });
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
@@ -496,6 +506,7 @@
         }
       });
     </script>
+
     <div class="alert alert-danger alert-dismissible alert_msg" style="display:none;" role="alert">
       <button type="button" class="close" onclick="$('.alert_msg').hide()"><span aria-hidden="true">&times;</span></button>
       <strong>需先填寫值勤交接才能打卡!!</strong> 

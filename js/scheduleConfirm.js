@@ -111,8 +111,8 @@ $(document).ready(function(){
     loading.addClass("rotateIn");
 
     exec("node scan.js" , function(err ,data ,c){
-      // data = 'T10220';
-      // err = null;
+      //data = 'T10220';
+      //err = null;
       if(err == null && data.length > 0){
         data = data.trim();
         var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);

@@ -336,6 +336,10 @@ $(document).ready(function(){
         let orec = results.pointSop.otherRecord;
         orec.map(function(v,k){
         	orec[k].typeList = otl[v.F_TID];
+          if(pointPanel.currentPointid == 'all'){
+            orec[k].F_WORK_STATUS = 'done'
+            results.pointSop.sopData.list.push(orec[k])
+          }
         });
         console.log(results);
         pointPanel.otherTypes = results.pointSop.otherType;
