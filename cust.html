@@ -125,7 +125,15 @@
               <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
               <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
             </div>
-            
+            <h4 v-show="warnings.length >0">警告注意!</h4>
+
+            <ul class="list-group">
+              <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+                <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME" target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a> 
+                <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}</h5>
+                <span>{{v.F_DESCRIPTION}}</span>
+              </li>
+            </ul>
           </div>
           <div class="col-lg-3" id="cameraArea" align="center">
             <h4>攝影機畫面</h4>
@@ -228,7 +236,8 @@
       var vueScheduleList = new Vue({
         el: '#scheduleList',
         data: {
-          list: {}
+          list: {},
+          warnings: []
         }
       });
       var vueLoadingMask = new Vue({
@@ -348,8 +357,8 @@
               request(config.apiHost + 'api/empName&empWarnings/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var row = JSON.parse(body);
                 empName.html(row['data1'][0]['F_EMP_NAME']);
-                logs(row)
                 vueLoadingMask.warnings = row['data2']
+                vueScheduleList.warnings = row['data2']
               });
               request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
                 var rows = JSON.parse(body);
