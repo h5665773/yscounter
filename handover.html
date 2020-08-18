@@ -43,6 +43,10 @@
       .input-group{
         margin-bottom:10px;
       }
+      .li-info a{
+        background-color:#d9edf7 !important;
+        color:#31708f !important;
+      }
     </style>
   </head>
   <body> 
@@ -126,7 +130,7 @@
                           全部
                         </a>
                       </li>
-                      <li role="presentation" :class="{ active: k==currentTabKey }" v-for="(v,k) in tabs">
+                      <li role="presentation" :class="{ active: k==currentTabKey,'li-info': k==currentTabKey }" v-for="(v,k) in tabs">
                         <a class="pointTab pointer" @click="clickTab(k,v.F_POINT_ID,v.F_EMP_ID)">
                           {{v.F_POINT_NAME}}({{v.F_EMP_NAME}})
                         </a>
