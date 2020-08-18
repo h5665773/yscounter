@@ -52,7 +52,7 @@ header{
 nav{
     height:100px;
     margin:auto;
-    max-width: 1170px;
+    max-width: 100%;
 }
 .jumbotron{
     padding-top:10px;
@@ -197,3 +197,8 @@ nav .logo{
 #backTopBtn:hover {
     background-color: #555; /* Add a dark-grey background on hover */
   }
+@media (min-width: 1200px){
+    .container {
+        width: 100%;
+    }    
+}

@@ -1,3 +1,4 @@
+require('nw.gui').Window.get().maximize()
 var http = require('http');
 var config = require("./config.js");
 var fs = require('fs');
