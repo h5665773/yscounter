@@ -1,528 +1,560 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
 
-    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
-    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/colorbox.css" />
-    <link rel="stylesheet" href="/css/main.css" />
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="../../favicon.ico">
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+  <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/colorbox.css" />
+  <link rel="stylesheet" href="/css/main.css" />
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="/css/bootstrap-theme.css" >
-    
-    <script src="/js/jquery.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="/js/bootstrap.min.js" ></script>
-    <script src="/js/vue.js" ></script>
-    <script src="/js/face-api.min.js" ></script>
-    <link rel="stylesheet" href="/css/main.css" >
-    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
-    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
-    <style>
-      html{
-        overflow: visible;
-      }
-      h2{
-        font-size: 24px;
-      }
-      tr >td:nth-child(3){
-        background-color: #41a6ee
-      }
-      .point-schedule td, .point-schedule th {
-          font-size: 12px;
-      }
-      .point-schedule th {
-        padding:3px;
-      }
-      thead th{
-        background-color: #ccff;
-      }
-      canvas {
-        position: absolute;
-        top: 39px;
-        left: 15px;
-      }
-      #cameraArea{
-        position: relative;
-      }
-      #canvas{
-        z-index: -99;
-        top:-9999px;
-        left:-9999px;
-      }
-      .shotLine{
-        position: absolute;
-        display:block;
-        width:80px;
-        height:50px;
-      }
-      
-      .shotLine.leftTop{
-        border-right: 1px dotted #0000ff; 
-        border-bottom: 1px dotted #0000ff;
-        top:65px;
-        left:0; 
-      }
-      .shotLine.rightTop{
-        border-left: 1px dotted #0000ff; 
-        border-bottom: 1px dotted #0000ff;
-        top:65px;
-        right:0; 
-      }
-      .shotLine.leftBottom{
-        border-right: 1px dotted #0000ff; 
-        border-top: 1px dotted #0000ff;
-        bottom:35px;
-        left:0; 
-      }
-      .shotLine.rightBottom{
-        border-left: 1px dotted #0000ff; 
-        border-top: 1px dotted #0000ff;
-        bottom:35px;
-        right:0; 
-      }
-    </style>
-    <script type="text/javascript" src="/js/Common.js"></script>
-  </head>
-  <body>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
 
-    <!-- Fixed navbar -->
-    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
-    <header>
-      <nav class="navbar">
-      </nav>  
-    </header>
-    
-    <!-- Begin page content -->
-    <div class="container main" id="scheduleList">
-      <div class="row">
-          <div class="col-lg-3" style="position:relative">
-            <p>
-              <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
-            </p>
-            <div  style="display:none" id="pointDetail">
-              <div class="alert alert-success" style="width:200px" role="alert">
-                您好 
-                <strong id="empName">
-                  
-                </strong>
-              </div>
-              <strong >請選擇駐點清單</strong>
-              <div class="list-group pointList">
-              </div>
-            </div>
-            <div  align="center">
-              <button type="button" class="btn btn-success" id="goWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
-              <button type="button" class="btn btn-warning" id="offWork" style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none" aria-haspopup="true" aria-expanded="false">下班打卡</button>
-            </div>
-            <h4 v-show="warnings.length >0">警告注意!</h4>
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="/css/bootstrap-theme.css">
 
-            <ul class="list-group">
-              <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
-                <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME" target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a> 
-                <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}</h5>
-                <span>{{v.F_DESCRIPTION}}</span>
-              </li>
-            </ul>
+  <script src="/js/jquery.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/vue.js"></script>
+  <script src="/js/face-api.min.js"></script>
+  <link rel="stylesheet" href="/css/main.css">
+  <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+  <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+  <style>
+    html {
+      overflow: visible;
+    }
+
+    h2 {
+      font-size: 24px;
+    }
+
+    tr>td:nth-child(3) {
+      background-color: #41a6ee
+    }
+
+    .point-schedule td,
+    .point-schedule th {
+      font-size: 12px;
+    }
+
+    .point-schedule th {
+      padding: 3px;
+    }
+
+    thead th {
+      background-color: #ccff;
+    }
+
+    canvas {
+      position: absolute;
+      top: 39px;
+      left: 15px;
+    }
+
+    #cameraArea {
+      position: relative;
+    }
+
+    #canvas {
+      z-index: -99;
+      top: -9999px;
+      left: -9999px;
+    }
+
+    .shotLine {
+      position: absolute;
+      display: block;
+      width: 80px;
+      height: 50px;
+    }
+
+    .shotLine.leftTop {
+      border-right: 1px dotted #0000ff;
+      border-bottom: 1px dotted #0000ff;
+      top: 65px;
+      left: 0;
+    }
+
+    .shotLine.rightTop {
+      border-left: 1px dotted #0000ff;
+      border-bottom: 1px dotted #0000ff;
+      top: 65px;
+      right: 0;
+    }
+
+    .shotLine.leftBottom {
+      border-right: 1px dotted #0000ff;
+      border-top: 1px dotted #0000ff;
+      bottom: 35px;
+      left: 0;
+    }
+
+    .shotLine.rightBottom {
+      border-left: 1px dotted #0000ff;
+      border-top: 1px dotted #0000ff;
+      bottom: 35px;
+      right: 0;
+    }
+  </style>
+  <script type="text/javascript" src="/js/Common.js"></script>
+</head>
+
+<body>
+
+  <!-- Fixed navbar -->
+  <div class="loadingMask"
+    style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+  <header>
+    <nav class="navbar">
+    </nav>
+  </header>
+
+  <!-- Begin page content -->
+  <div class="container main" id="scheduleList">
+    <div class="row">
+      <div class="col-lg-3" style="position:relative">
+        <p>
+          <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
+        </p>
+        <div style="display:none" id="pointDetail">
+          <div class="alert alert-success" style="width:200px" role="alert">
+            您好
+            <strong id="empName">
+
+            </strong>
           </div>
-          <div class="col-lg-3" id="cameraArea" align="center">
-            <h4>攝影機畫面</h4>
-            <video id="video" width="270" height="270" autoplay></video>
-            <canvas id="canvas"  width="270" height="270"></canvas>
-            <div class="shotLine leftTop"></div>
-            <div class="shotLine rightTop"></div>
-            <div class="shotLine leftBottom"></div>
-            <div class="shotLine rightBottom"></div>
+          <strong>請選擇駐點清單</strong>
+          <div class="list-group pointList">
           </div>
-          <div class="col-lg-6 point-schedule" align="center" >
-            <table class="table table-bordered" v-for="(ps,pk) in list"> 
-              <thead>
-                <tr><th colspan="8">{{ps.F_POINT_NAME}} <span class="label label-warning">國 = 國定假日,特 = 特休</span></tr>
-              </thead>
-              <tbody> 
-                <tr> 
-                  <th>日期</th> 
-                  <td v-for="(v,k) in ps.list" v-html="v.date"></td> 
-                </tr> 
-                <tr> 
-                  <th scope="row">班別</th> 
-                  <td v-for="(v,k) in ps.list">{{v.classType}}</td> 
-                </tr> 
-                <tr> 
-                  <th scope="row">應上班</th> 
-                  <td v-for="(v,k) in ps.list">{{v.sdt}}</td> 
-                </tr> 
-                <tr> 
-                  <th scope="row">上班打卡</th> 
-                  <td v-for="(v,k) in ps.list">{{v.checkin['GO_WORKTIME']}}</td> 
-                </tr> 
-                <tr> 
-                  <th scope="row">應下班</th> 
-                  <td v-for="(v,k) in ps.list">{{v.edt}}</td> 
-                </tr> 
-                <tr> 
-                  <th scope="row">下班打卡</th> 
-                  <td v-for="(v,k) in ps.list">{{v.checkin['OFF_WORKTIME']}}</td> 
-                </tr> 
-                
-              </tbody> 
-            </table>            
-          </div>
-          
-          <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px" >
-          </div>
-          
+        </div>
+        <div align="center">
+          <button type="button" class="btn btn-success" id="goWork"
+            style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none"
+            aria-haspopup="true" id="offWork" aria-expanded="false">上班打卡</button>
+          <button type="button" class="btn btn-warning" id="offWork"
+            style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none"
+            aria-haspopup="true" aria-expanded="false">下班打卡</button>
+        </div>
+        <h4 v-show="warnings.length >0">警告注意!</h4>
+
+        <ul class="list-group">
+          <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+            <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME"
+              target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file"
+                aria-hidden="true"></span></a>
+            <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}
+            </h5>
+            <span>{{v.F_DESCRIPTION}}</span>
+          </li>
+        </ul>
       </div>
-      <div class="row">
-        <div class="col-md-4">
-          <img src="images/scan1.png" alt="..." align="center" >
-          <p style="color:#999999">(如果識別證掃不出來請刷完員工打卡專用條碼後再試試)</p>
-        </div>
-        <div class="col-md-4">
-          <img src="images/scan3.png" alt="..."   align="center">
-        </div>
-        <div class="col-md-4">
-          <img id="qrcodeImage" src=""></img>
-          <p style="color:#999999">社區QR code</p>
-        </div>
+      <div class="col-lg-3" id="cameraArea" align="center">
+        <h4>攝影機畫面</h4>
+        <video id="video" width="270" height="270" autoplay></video>
+        <canvas id="canvas" width="270" height="270"></canvas>
+        <div class="shotLine leftTop"></div>
+        <div class="shotLine rightTop"></div>
+        <div class="shotLine leftBottom"></div>
+        <div class="shotLine rightBottom"></div>
+      </div>
+      <div class="col-lg-6 point-schedule" align="center">
+        <table class="table table-bordered" v-for="(ps,pk) in list">
+          <thead>
+            <tr>
+              <th colspan="8">{{ps.F_POINT_NAME}} <span class="label label-warning">國 = 國定假日,特 = 特休</span>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>日期</th>
+              <td v-for="(v,k) in ps.list" v-html="v.date"></td>
+            </tr>
+            <tr>
+              <th scope="row">班別</th>
+              <td v-for="(v,k) in ps.list">{{v.classType}}</td>
+            </tr>
+            <tr>
+              <th scope="row">應上班</th>
+              <td v-for="(v,k) in ps.list">{{v.sdt}}</td>
+            </tr>
+            <tr>
+              <th scope="row">上班打卡</th>
+              <td v-for="(v,k) in ps.list">{{v.checkin['GO_WORKTIME']}}</td>
+            </tr>
+            <tr>
+              <th scope="row">應下班</th>
+              <td v-for="(v,k) in ps.list">{{v.edt}}</td>
+            </tr>
+            <tr>
+              <th scope="row">下班打卡</th>
+              <td v-for="(v,k) in ps.list">{{v.checkin['OFF_WORKTIME']}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <span class="list-group-item alert-warning">繼續工作四小時，依勞基法規定時間休息；但實行輪班制或其工作有連續性或緊急性者，得在工作時間內，另行調配其休息時間。</span>
+      </div>
+
+      <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px">
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <img src="images/scan1.png" alt="..." align="center">
+        <p style="color:#999999">(如果識別證掃不出來請刷完員工打卡專用條碼後再試試)</p>
+      </div>
+      <div class="col-md-4">
+        <img src="images/scan3.png" alt="..." align="center">
+      </div>
+      <div class="col-md-4">
+        <img id="qrcodeImage" src=""></img>
+        <p style="color:#999999">社區QR code</p>
       </div>
     </div>
+  </div>
 
-    <footer class="footer">
-      <div class="container">
-        <p class="text-muted">Place sticky footer content here.</p>
-      </div>
-    </footer>
-    <div id="loading-mask" v-show="warnings.length >0" style="position:fixed;width: 100%;height:100%;background-color: rgba(0,0,0,0.5);z-index: 999;display: none;top:0;left:0;overflow:scroll">
-        <div style="padding: 15px;background: rgb(255, 255, 255);width: 500px;position: relative;left: 30%;top: 10%;">
-          <h4>警告注意!</h4>
-          <ul class="list-group">
-            <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
-              <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME" target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a> 
-              <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}</h5>
-              <span>{{v.F_DESCRIPTION}}</span>
-            </li>
-          </ul>
-          <button type="button" onclick="$('#loading-mask').hide()">關閉</button>
-        </div>
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted">Place sticky footer content here.</p>
     </div>
-    <script type="text/javascript">
+  </footer>
+  <div id="loading-mask" v-show="warnings.length >0"
+    style="position:fixed;width: 100%;height:100%;background-color: rgba(0,0,0,0.5);z-index: 999;display: none;top:0;left:0;overflow:scroll">
+    <div style="padding: 15px;background: rgb(255, 255, 255);width: 500px;position: relative;left: 30%;top: 10%;">
+      <h4>警告注意!</h4>
+      <ul class="list-group">
+        <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+          <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME"
+            target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file"
+              aria-hidden="true"></span></a>
+          <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}
+          </h5>
+          <span>{{v.F_DESCRIPTION}}</span>
+        </li>
+      </ul>
+      <button type="button" onclick="$('#loading-mask').hide()">關閉</button>
+    </div>
+  </div>
+  <script type="text/javascript">
 
-      const screenshot = require('screenshot-desktop')
-      var QRCode = require('qrcode')
-      var exec = require('child_process').exec,
-          child;
-      const request = require("request");
+    const screenshot = require('screenshot-desktop')
+    var QRCode = require('qrcode')
+    var exec = require('child_process').exec,
+      child;
+    const request = require("request");
 
-      // With promises
-      QRCode.toDataURL(currentCust)
-        .then(url => {
-          console.log(url)
-          $("#qrcodeImage").attr("src",url);
+    // With promises
+    QRCode.toDataURL(currentCust)
+      .then(url => {
+        console.log(url)
+        $("#qrcodeImage").attr("src", url);
+      })
+      .catch(err => {
+        console.error(err)
+      })
+    var vueScheduleList = new Vue({
+      el: '#scheduleList',
+      data: {
+        list: {},
+        warnings: []
+      }
+    });
+    var vueLoadingMask = new Vue({
+      el: '#loading-mask',
+      data: {
+        warnings: []
+      }
+    });
+
+    $(document).ready(function () {
+      var empName = $("#empName");
+      var faceDetections = [];
+      var loading = $("#loading");
+      var loadingText = $("#loadingText");
+      var loadingMask = $(".loadingMask");
+      var pointList = $(".pointList");
+      //$(".viewDetail").colorbox({inline:true, width:"50%"});
+      var scanEmpId = "";
+      var chooseCust = "";
+      var choosePoint = "";
+      var gowork = $("#goWork");
+      var offwork = $("#offWork");
+      var offlinePointFile = "offlinePoint.json";
+      var offlineCheckinFile = "offlineCheckin.json";
+      var pointData = {};
+      var video = document.getElementById('video');
+      var d = new Date();
+      var mediaConfig = { video: true };
+      var body = $("html");
+      var showMask = function () {
+        loadingText.text("載入中!");
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+      }
+      var hideMask = function () {
+        loadingMask.css("display", "none");
+        loading.css("display", "none");
+        loading.removeClass("rotateIn");
+        loading.addClass("rotateOut");
+      }
+      var errBack = function (e) {
+        console.log('An error has occurred!', e)
+      };
+      Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri('/js'),
+        faceapi.nets.faceLandmark68Net.loadFromUri('/js'),
+        faceapi.nets.faceRecognitionNet.loadFromUri('/js'),
+        faceapi.nets.faceExpressionNet.loadFromUri('/js')
+      ]).then(startVideo)
+      function startVideo() {
+        navigator.getUserMedia(
+          { video: {} },
+          stream => video.srcObject = stream,
+          err => console.error(err)
+        )
+        video.addEventListener('play', () => {
+          const canvasF = faceapi.createCanvasFromMedia(video)
+          $("#cameraArea").append(canvasF)
+          const displaySize = { width: video.width, height: video.height }
+          faceapi.matchDimensions(canvasF, displaySize)
+          setInterval(async () => {
+            //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+            faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
+            //console.log(detections);
+            const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
+            canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
+            faceapi.draw.drawDetections(canvasF, resizedDetections)
+            //faceapi.draw.drawFaceExpressions(canvasF, resizedDetections)
+          }, 200)
         })
-        .catch(err => {
-          console.error(err)
-        })
-      var vueScheduleList = new Vue({
-        el: '#scheduleList',
-        data: {
-          list: {},
-          warnings: []
+      }
+
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var options = {
+        hostname: 'api.wyattst.com.tw',
+        port: 80,
+        path: ''
+      };
+      var showPoint = function (pointData, empId) {
+        loadingMask.css("display", "none");
+        loading.css("display", "none");
+        loading.removeClass("rotateIn");
+        loading.addClass("rotateOut");
+        pointList.empty();
+        var resEmpName = "";
+
+        for (var i in pointData) {
+          pointList.append('<a href="#" pointid="' + pointData[i].F_POINT_ID + '" class="list-group-item list-group-item-danger">' + pointData[i].F_POINT_NAME + '<span>(點選以打卡)</span></a>');
         }
-      });
-      var vueLoadingMask = new Vue({
-        el: '#loading-mask',
-        data: {
-          warnings : []
-        }
-      });
-      
-      $(document).ready(function(){
-        var empName= $("#empName");
-        var faceDetections = [];
-        var loading = $("#loading");
-        var loadingText = $("#loadingText");
-        var loadingMask = $(".loadingMask");
-        var pointList = $(".pointList");
-        //$(".viewDetail").colorbox({inline:true, width:"50%"});
-        var scanEmpId = "";
-        var chooseCust = "";
-        var choosePoint = "";
-        var gowork = $("#goWork");
-        var offwork = $("#offWork");
-        var offlinePointFile = "offlinePoint.json";
-        var offlineCheckinFile = "offlineCheckin.json";
+        $("#pointDetail").show();
+        gowork.css("display", "none");
+        offwork.css("display", "none");
+      }
+      $("#scanEmp").click(function () {
         var pointData = {};
-        var video = document.getElementById('video');
-        var d = new Date();
-        var mediaConfig =  { video: true };
-        var body = $("html");
-        var showMask = function(){
-          loadingText.text("載入中!");
-          loadingMask.css("display","block");
-          loading.removeClass("rotateOut");
-          loading.css("display","block");
-          loading.addClass("rotateIn");
+        if ($(this).attr("disabled") == true) {
+          return false;
         }
-        var hideMask = function(){
-          loadingMask.css("display","none");
-          loading.css("display","none");
-          loading.removeClass("rotateIn");
-          loading.addClass("rotateOut");
-        }
-        var errBack = function(e) {
-          console.log('An error has occurred!', e)
-        };
-        Promise.all([
-         faceapi.nets.tinyFaceDetector.loadFromUri('/js'),
-         faceapi.nets.faceLandmark68Net.loadFromUri('/js'),
-         faceapi.nets.faceRecognitionNet.loadFromUri('/js'),
-         faceapi.nets.faceExpressionNet.loadFromUri('/js')
-        ]).then(startVideo)
-        function startVideo() {
-         navigator.getUserMedia(
-           { video: {} },
-           stream => video.srcObject = stream,
-           err => console.error(err)
-         )
-         video.addEventListener('play', () => {
-           const canvasF = faceapi.createCanvasFromMedia(video)
-           $("#cameraArea").append(canvasF)
-           const displaySize = { width: video.width, height: video.height }
-           faceapi.matchDimensions(canvasF, displaySize)
-           setInterval(async () => {
-              //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
-              faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.90}))
-              //console.log(detections);
-              const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
-              canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
-              faceapi.draw.drawDetections(canvasF, resizedDetections)
-              //faceapi.draw.drawFaceExpressions(canvasF, resizedDetections)
-           }, 200)
-         })
-        }
-        
-        var canvas = document.getElementById('canvas');
-        var context = canvas.getContext('2d');
-        var options = {
-          hostname: 'api.wyattst.com.tw',
-          port: 80,
-          path: ''
-        };
-        var showPoint = function(pointData,empId){
-          loadingMask.css("display","none");
-          loading.css("display","none");
-          loading.removeClass("rotateIn");
-          loading.addClass("rotateOut");
-          pointList.empty();
-          var resEmpName="";
-          
-          for(var i in pointData){
-            pointList.append('<a href="#" pointid="'+pointData[i].F_POINT_ID+'" class="list-group-item list-group-item-danger">'+pointData[i].F_POINT_NAME+'<span>(點選以打卡)</span></a>');
-          }
-          $("#pointDetail").show();
-          gowork.css("display","none");
-          offwork.css("display","none");
-        }
-        $("#scanEmp").click(function(){
-          var pointData={};
-          if($(this).attr("disabled")==true){
-            return false;
-          }
-          loadingText.text("請在20秒內掃描員工識別證!");
-          loadingMask.css("display","block");
-          loading.removeClass("rotateOut");
-          loading.css("display","block");
-          loading.addClass("rotateIn");
+        loadingText.text("請在20秒內掃描員工識別證!");
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
 
-          exec("node scan.js" , function(err ,data ,c){
-            //data = 'T10220';
-            //err = null;
-            if(err == null && data.length > 0){
-              data = data.trim();
-              var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
-              scanEmpId = parse[1];
-              console.log(config.apiHost + 'api/empName&empWarnings/'+currentCust+'/000/'+scanEmpId);
-              //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
-              request(config.apiHost + 'api/empName&empWarnings/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
-                var row = JSON.parse(body);
-                empName.html(row['data1'][0]['F_EMP_NAME']);
-                vueLoadingMask.warnings = row['data2']
-                vueScheduleList.warnings = row['data2']
-              });
-              request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
-                var rows = JSON.parse(body);
-                if(error != null){
-                  pointData = JSON.parse(fs.readFileSync(offlinePointFile));
-                  showPoint(pointData,scanEmpId);
-                }else{
-                  pointData = rows['data1'];
-                  showPoint(pointData,scanEmpId);  
-                }
-                //設定vue data
-                if(typeof(rows['data2']) !='undefined'){
-                  console.log(rows['data2']);
-                  vueScheduleList.list = rows['data2']  ;
-                  var html = $("html");
-                  $(window).scroll(function(){
-                    if($(this).scrollTop()){
-                        html.css("overflow","visible");
-                    }
-                  });
-                }
-              });
-            }else{
-              loadingMask.css("display","none");
-              loading.css("display","none");
-              loading.removeClass("rotateIn");
-              loading.addClass("rotateOut");
-              //console.log(err);
-            }
-          });
-        });
-        pointList.delegate(".list-group-item","click",function(){
-          var pointid=$(this).attr("pointid");
-          choosePoint = pointid;
-          $("a.current").removeClass("current");
-          $(this).addClass("current");
-          var yesterday = vueScheduleList.list[pointid].list[0]["checkin"];
-          if(vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"]==""){
-            gowork.show();
-            if(yesterday["GO_WORKTIME"]!="" && yesterday["OFF_WORKTIME"]=="" ){
-              let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0,2));
-              if(startHour>15 && d.getHours()<=9){
-                offwork.show();
-                gowork.hide();
+        exec("node scan.js", function (err, data, c) {
+          //data = 'T10220';
+          //err = null;
+          if (err == null && data.length > 0) {
+            data = data.trim();
+            var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
+            scanEmpId = parse[1];
+            console.log(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId);
+            //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
+            request(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
+              var row = JSON.parse(body);
+              empName.html(row['data1'][0]['F_EMP_NAME']);
+              vueLoadingMask.warnings = row['data2']
+              vueScheduleList.warnings = row['data2']
+            });
+            request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
+              var rows = JSON.parse(body);
+              if (error != null) {
+                pointData = JSON.parse(fs.readFileSync(offlinePointFile));
+                showPoint(pointData, scanEmpId);
+              } else {
+                pointData = rows['data1'];
+                showPoint(pointData, scanEmpId);
               }
-            }
-          }else{
-            offwork.show();
-          }
-        });
-        gowork.click(function(){
-          if($(this).attr("disabled") != true){
-            checkin("goWork");
-          }
-        });
-        offwork.click(function(){
-          let self = this;
-          //檢查當天是否有填寫過值勤交接 check if T_SB_CUST_D2_WORK
-          request(config.apiHost + 'api/workRecord/'+currentCust+'/000/'+scanEmpId, function (error, response, body) {
-            var rows = JSON.parse(body);
-            if(error == null){
-              if(rows.length <1){
-                $(".alert_msg").show();
-                return;
-              }else{
-                if($(self).attr("disabled") != true){
-                  checkin("offWork");
-                }
-              }
-            }
-          });
-          
-        });
-        var checkin = async function(workType){
-          await screenshot({ filename: './screen.png' })
-          showMask();
-          context.drawImage(video, 0, 0, 270, 270);
-          var imageData = canvas.toDataURL("image/png");
-          //logs(new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.72}))
-          //return;
-          if(faceDetections.length == 0){
-            alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
-            hideMask();
-            return false;
-          }
-          var url ;
-          if(scanEmpId != "" && choosePoint!=""&&currentCust!=""){
-            gowork.prop("disabled",true);
-            offwork.prop("disabled",true);  
-            
-            var imageDir = `./public/coworkerImages`;
-            if(!fs.existsSync(imageDir)){
-              fs.mkdirSync(imageDir,0777);
-            }
-            var imageLocation = `${imageDir}/${d.getYear()}-${d.getMonth()}-${d.getDate()}-checkin-${workType}.png`;
-            imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
-            var buf = new Buffer(imageData, 'base64');
-            fs.appendFileSync(imageLocation, buf,{flag: 'w'});
-            url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId;
-            var formData = {
-              checkin_image: fs.createReadStream(imageLocation),
-              screen: fs.createReadStream('./screen.png')
-            };
-            request.post({url: url, formData: formData}, function (error, httpResponse, body) {
-              //console.log(body);
-              if( error !=null){
-                hideMask();
-                fs.stat(offlineCheckinFile,(err)=>{
-                  
-                  var n = d.toLocaleString();
-                  url = config.apiHost + 'barcode/checkin/'+workType+'/'+currentCust+"/"+choosePoint+"/"+scanEmpId+"/"+n.replace(/\//g,"-");
-                  var offlineCheckinList;
-                  var offlineCheckinContent ="";
-                  offlineCheckinContent = fs.readFileSync(offlineCheckinFile);
-                  if(err == null && offlineCheckinContent !=""){
-                    offlineCheckinList = JSON.parse(offlineCheckinContent);
-                    offlineCheckinList.push(url);
-                  }else{
-                    console.log(err);
-                    offlineCheckinList = [url];
+              //設定vue data
+              if (typeof (rows['data2']) != 'undefined') {
+                console.log(rows['data2']);
+                vueScheduleList.list = rows['data2'];
+                var html = $("html");
+                $(window).scroll(function () {
+                  if ($(this).scrollTop()) {
+                    html.css("overflow", "visible");
                   }
-                  fs.appendFile(offlineCheckinFile, JSON.stringify(offlineCheckinList),{flag: "w"}, (err2) => {
-                    alert("打卡完成!");
-                    location.href="index.html";
-                    if (err2) console.log(err);
-                  });
                 });
-              }else{
-                hideMask();
-                switch(String(body)){
-                  case("3"):
-                    alert("打卡完成");
-                  break;
-                  case("1"):
-                    alert("當日未排班");
-                  break;
-                  case("2"):
-                    alert("員工不存在或已離職");
-                  break;
-                  case("4"):
-                    alert("已經超過打卡時限");
-                  break;
-                  case("5"):
-                    alert("當日已在其他地方打卡了");
-                  break;
-                }
-                location.href="index.html";
-
               }
             });
-          }else{
-            alert("資料有錯誤");
+          } else {
+            loadingMask.css("display", "none");
+            loading.css("display", "none");
+            loading.removeClass("rotateIn");
+            loading.addClass("rotateOut");
+            //console.log(err);
           }
+        });
+      });
+      pointList.delegate(".list-group-item", "click", function () {
+        var pointid = $(this).attr("pointid");
+        choosePoint = pointid;
+        $("a.current").removeClass("current");
+        $(this).addClass("current");
+        var yesterday = vueScheduleList.list[pointid].list[0]["checkin"];
+        if (vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"] == "") {
+          gowork.show();
+          if (yesterday["GO_WORKTIME"] != "" && yesterday["OFF_WORKTIME"] == "") {
+            let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0, 2));
+            if (startHour > 15 && d.getHours() <= 9) {
+              offwork.show();
+              gowork.hide();
+            }
+          }
+        } else {
+          offwork.show();
         }
       });
-    </script>
+      gowork.click(function () {
+        if ($(this).attr("disabled") != true) {
+          checkin("goWork");
+        }
+      });
+      offwork.click(function () {
+        let self = this;
+        //檢查當天是否有填寫過值勤交接 check if T_SB_CUST_D2_WORK
+        request(config.apiHost + 'api/workRecord/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
+          var rows = JSON.parse(body);
+          if (error == null) {
+            if (rows.length < 1) {
+              $(".alert_msg").show();
+              return;
+            } else {
+              if ($(self).attr("disabled") != true) {
+                checkin("offWork");
+              }
+            }
+          }
+        });
 
-    <div class="alert alert-danger alert-dismissible alert_msg" style="display:none;" role="alert">
-      <button type="button" class="close" onclick="$('.alert_msg').hide()"><span aria-hidden="true">&times;</span></button>
-      <strong>需先填寫值勤交接才能打卡!!</strong> 
-    </div>
-    <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
-      <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span id="loadingText"> 請在20秒內掃描員工識別證</span>
-    </button>
-    <script type="text/javascript" src="/js/main.js"></script>
-  </body>
+      });
+      var checkin = async function (workType) {
+        await screenshot({ filename: './screen.png' })
+        showMask();
+        context.drawImage(video, 0, 0, 270, 270);
+        var imageData = canvas.toDataURL("image/png");
+        //logs(new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.72}))
+        //return;
+        if (faceDetections.length == 0) {
+          alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
+          hideMask();
+          return false;
+        }
+        var url;
+        if (scanEmpId != "" && choosePoint != "" && currentCust != "") {
+          gowork.prop("disabled", true);
+          offwork.prop("disabled", true);
+
+          var imageDir = `./public/coworkerImages`;
+          if (!fs.existsSync(imageDir)) {
+            fs.mkdirSync(imageDir, 0777);
+          }
+          var imageLocation = `${imageDir}/${d.getYear()}-${d.getMonth()}-${d.getDate()}-checkin-${workType}.png`;
+          imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
+          var buf = new Buffer(imageData, 'base64');
+          fs.appendFileSync(imageLocation, buf, { flag: 'w' });
+          url = config.apiHost + 'barcode/checkin/' + workType + '/' + currentCust + "/" + choosePoint + "/" + scanEmpId;
+          var formData = {
+            checkin_image: fs.createReadStream(imageLocation),
+            screen: fs.createReadStream('./screen.png')
+          };
+          request.post({ url: url, formData: formData }, function (error, httpResponse, body) {
+            //console.log(body);
+            if (error != null) {
+              hideMask();
+              fs.stat(offlineCheckinFile, (err) => {
+
+                var n = d.toLocaleString();
+                url = config.apiHost + 'barcode/checkin/' + workType + '/' + currentCust + "/" + choosePoint + "/" + scanEmpId + "/" + n.replace(/\//g, "-");
+                var offlineCheckinList;
+                var offlineCheckinContent = "";
+                offlineCheckinContent = fs.readFileSync(offlineCheckinFile);
+                if (err == null && offlineCheckinContent != "") {
+                  offlineCheckinList = JSON.parse(offlineCheckinContent);
+                  offlineCheckinList.push(url);
+                } else {
+                  console.log(err);
+                  offlineCheckinList = [url];
+                }
+                fs.appendFile(offlineCheckinFile, JSON.stringify(offlineCheckinList), { flag: "w" }, (err2) => {
+                  alert("打卡完成!");
+                  location.href = "index.html";
+                  if (err2) console.log(err);
+                });
+              });
+            } else {
+              hideMask();
+              switch (String(body)) {
+                case ("3"):
+                  alert("打卡完成");
+                  break;
+                case ("1"):
+                  alert("當日未排班");
+                  break;
+                case ("2"):
+                  alert("員工不存在或已離職");
+                  break;
+                case ("4"):
+                  alert("已經超過打卡時限");
+                  break;
+                case ("5"):
+                  alert("當日已在其他地方打卡了");
+                  break;
+              }
+              location.href = "index.html";
+
+            }
+          });
+        } else {
+          alert("資料有錯誤");
+        }
+      }
+    });
+  </script>
+
+  <div class="alert alert-danger alert-dismissible alert_msg" style="display:none;" role="alert">
+    <button type="button" class="close" onclick="$('.alert_msg').hide()"><span
+        aria-hidden="true">&times;</span></button>
+    <strong>需先填寫值勤交接才能打卡!!</strong>
+  </div>
+  <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
+    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span id="loadingText">
+      請在20秒內掃描員工識別證</span>
+  </button>
+  <script type="text/javascript" src="/js/main.js"></script>
+</body>
+
 </html>
