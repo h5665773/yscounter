@@ -1,8 +1,9 @@
 require('nw.gui').Window.get().maximize()
-let version = `1.0.0`;
+var fs = require('fs');
+var versionFile = "public/v.txt";
+var version = fs.readFileSync(versionFile, { encoding: 'utf-8' });
 var http = require('http');
 var config = require("./config.js");
-var fs = require('fs');
 var jade = require("jade");
 var custFile = "public/custid.txt";
 var currentCust = fs.readFileSync(custFile, { encoding: 'utf-8' });
@@ -84,7 +85,7 @@ $(document).ready(function () {
               console.log(c);
               setTimeout(function () { chrome.runtime.reload(); }, 1500);
             });
-
+            fs.writeFileSync(versionFile, data, { encoding: 'utf-8' });
           });
       } else if (parseInt(nowVer * 10000) + parseInt(nowBlock * 100) + parseInt(nowDetail) > parseInt(ver * 10000) + parseInt(block * 100) + parseInt(detail)) {
         $.ajax({
