@@ -428,7 +428,7 @@
         if (vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"] == "") {
           $.ajax({
             type: `post`,
-            url: `http://localhost:50381/XMLFORM/AjaxOrder.aspx`,
+            url: config.ajaxOrder,
             data: {
               Order: `Get_HasScheduleConfirm`,
               F_EMP_ID: scanEmpId
