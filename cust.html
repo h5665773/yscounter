@@ -415,7 +415,6 @@
             loading.css("display", "none");
             loading.removeClass("rotateIn");
             loading.addClass("rotateOut");
-            //console.log(err);
           }
         });
       });
@@ -425,15 +424,39 @@
         $("a.current").removeClass("current");
         $(this).addClass("current");
         var yesterday = vueScheduleList.list[pointid].list[0]["checkin"];
+        console.log(vueScheduleList.list[pointid]);
         if (vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"] == "") {
-          gowork.show();
-          if (yesterday["GO_WORKTIME"] != "" && yesterday["OFF_WORKTIME"] == "") {
-            let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0, 2));
-            if (startHour > 15 && d.getHours() <= 9) {
-              offwork.show();
-              gowork.hide();
+          $.ajax({
+            type: `post`,
+            url: `http://localhost:50381/XMLFORM/AjaxOrder.aspx`,
+            data: {
+              Order: `Get_HasScheduleConfirm`,
+              F_EMP_ID: scanEmpId
+            },
+            success: function (data) {
+              if (data == "True") {
+                gowork.show();
+                if (yesterday["GO_WORKTIME"] != "" && yesterday["OFF_WORKTIME"] == "") {
+                  let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0, 2));
+                  if (startHour > 15 && d.getHours() <= 9) {
+                    offwork.show();
+                    gowork.hide();
+                  }
+                }
+              } else {
+                let changeLocation = confirm(`尚未確認班表，是否跳轉視窗?`);
+                if (changeLocation) {
+                  location.href = "./scheduleConfirm.html";
+                } else {
+                  loadingMask.css("display", "none");
+                  loading.css("display", "none");
+                  loading.removeClass("rotateIn");
+                  loading.addClass("rotateOut");
+                }
+              }
             }
-          }
+          });
+
         } else {
           offwork.show();
         }
@@ -450,7 +473,13 @@
           var rows = JSON.parse(body);
           if (error == null) {
             if (rows.length < 1) {
-              $(".alert_msg").show();
+              let alert_msg = confirm(`需先填寫值勤交接才能打卡!!是否跳轉頁面`);
+              if (alert_msg) {
+                location.href = "./handover.html";
+              } else {
+                alert(`請先完成值勤交接`);
+              }
+              //$(".alert_msg").show();
               return;
             } else {
               if ($(self).attr("disabled") != true) {
