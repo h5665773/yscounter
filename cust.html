@@ -426,36 +426,36 @@
         var yesterday = vueScheduleList.list[pointid].list[0]["checkin"];
         console.log(vueScheduleList.list[pointid]);
         if (vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"] == "") {
-          $.ajax({
-            type: `post`,
-            url: config.ajaxOrder,
-            data: {
-              Order: `Get_HasScheduleConfirm`,
-              F_EMP_ID: scanEmpId
-            },
-            success: function (data) {
-              if (data == "True") {
-                gowork.show();
-                if (yesterday["GO_WORKTIME"] != "" && yesterday["OFF_WORKTIME"] == "") {
-                  let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0, 2));
-                  if (startHour > 15 && d.getHours() <= 9) {
-                    offwork.show();
-                    gowork.hide();
-                  }
-                }
-              } else {
-                let changeLocation = confirm(`尚未確認班表，是否跳轉視窗?`);
-                if (changeLocation) {
-                  location.href = "./scheduleConfirm.html";
-                } else {
-                  loadingMask.css("display", "none");
-                  loading.css("display", "none");
-                  loading.removeClass("rotateIn");
-                  loading.addClass("rotateOut");
-                }
-              }
+          //$.ajax({
+          //type: `post`,
+          //url: config.ajaxOrder,
+          //data: {
+          //              Order: `Get_HasScheduleConfirm`,
+          //F_EMP_ID: scanEmpId
+          //},
+          //success: function (data) {
+          //              if (data == "True") {
+          gowork.show();
+          if (yesterday["GO_WORKTIME"] != "" && yesterday["OFF_WORKTIME"] == "") {
+            let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0, 2));
+            if (startHour > 15 && d.getHours() <= 9) {
+              offwork.show();
+              gowork.hide();
             }
-          });
+          }
+          //            } else {
+          //let changeLocation = confirm(`尚未確認班表，是否跳轉視窗?`);
+          //if (changeLocation) {
+          //                  location.href = "./scheduleConfirm.html";
+          //} else {
+          //                  loadingMask.css("display", "none");
+          //loading.css("display", "none");
+          //loading.removeClass("rotateIn");
+          //loading.addClass("rotateOut");
+          //}
+          //}
+          //}
+          //});
 
         } else {
           offwork.show();
