@@ -381,14 +381,29 @@
             data = data.trim();
             var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
             scanEmpId = parse[1];
-            console.log(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId);
+            $.ajax({
+              type: `post`,
+              url: config.ajaxOrder,
+              data: {
+                Order: `Get_EmpNameAndEmpWarning`,
+                F_EMP_ID: scanEmpId,
+                F_CU_ID: currentCust
+              },
+              dataType: `json`,
+              success: function (dataSet) {
+                empName.html(dataSet.data1[0]['F_EMP_NAME']);
+                vueLoadingMask.warnings = dataSet.data2;
+                vueScheduleList.warnings = dataSet.data2;
+              }
+            })
+            //console.log(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId);
             //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
-            request(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
-              var row = JSON.parse(body);
-              empName.html(row['data1'][0]['F_EMP_NAME']);
-              vueLoadingMask.warnings = row['data2']
-              vueScheduleList.warnings = row['data2']
-            });
+            //            request(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
+            //var row = JSON.parse(body);
+            //empName.html(row['data1'][0]['F_EMP_NAME']);
+            //vueLoadingMask.warnings = row['data2']
+            //vueScheduleList.warnings = row['data2']
+            //});
             request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
               var rows = JSON.parse(body);
               if (error != null) {
@@ -497,11 +512,11 @@
         var imageData = canvas.toDataURL("image/png");
         //logs(new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.72}))
         //return;
-        if (faceDetections.length == 0) {
-          alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
-          hideMask();
-          return false;
-        }
+        //if (faceDetections.length == 0) {
+        //          alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
+        //hideMask();
+        //return false;
+        //}
         var url;
         if (scanEmpId != "" && choosePoint != "" && currentCust != "") {
           gowork.prop("disabled", true);
