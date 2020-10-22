@@ -512,11 +512,11 @@
         var imageData = canvas.toDataURL("image/png");
         //logs(new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.72}))
         //return;
-        //if (faceDetections.length == 0) {
-        //          alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
-        //hideMask();
-        //return false;
-        //}
+        if (faceDetections.length == 0) {
+          alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
+          hideMask();
+          return false;
+        }
         var url;
         if (scanEmpId != "" && choosePoint != "" && currentCust != "") {
           gowork.prop("disabled", true);
