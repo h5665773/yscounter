@@ -1,893 +1,978 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="icon/favicon-32x32.png">
 
-    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
-    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/colorbox.css" />
-    <link rel="stylesheet" href="/css/main.css" />
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="icon/favicon-32x32.png">
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+  <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/colorbox.css" />
+  <link rel="stylesheet" href="/css/main.css" />
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="/css/bootstrap-theme.css" >
-    <script src="/js/jquery.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="/js/bootstrap.min.js" ></script>
-    <script src="/js/vue.js" ></script>
-    <link rel="stylesheet" href="/css/main.css" >
-    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.css" >
-    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
-    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
-    <script type="text/javascript" src="/js/moment-with-locales.js"></script>
-    <script type="text/javascript" src="/js/bootstrap-datetimepicker.js"></script>
-    <style>
-      h2{
-        font-size: 24px;
-      }
-      .left-side .input-group{
-        margin-bottom:10px;
-      }
-      #mr-detail{
-        height:280px;
-        border:1px dashed #999999;
-        border-top:0;
-        border-radius: 0 0 6px 6px;
-        margin-bottom:10px;
-      }
-      #CFList button{
-        margin-left: 15px;
-        margin-right: 5px;
-      }
-      .nav-tabs li.active a,.nav-tabs li.active a:hover,.nav-tabs li.active a:focus{
-        background: #99ccff;
-        font-weight: bold;
-        width: 100px;
-        text-align: center;
-      }
-      #myBtn {
-        display: none; /* Hidden by default */
-        position: fixed; /* Fixed/sticky position */
-        bottom: 20px; /* Place the button at the bottom of the page */
-        right: 30px; /* Place the button 30px from the right */
-        z-index: 99; /* Make sure it does not overlap */
-        border: none; /* Remove borders */
-        outline: none; /* Remove outline */
-        background-color: red; /* Set a background color */
-        color: white; /* Text color */
-        cursor: pointer; /* Add a mouse pointer on hover */
-        padding: 15px; /* Some padding */
-        border-radius: 10px; /* Rounded corners */
-        font-size: 18px; /* Increase font size */
-      }
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
 
-      #myBtn:hover {
-        background-color: #555; /* Add a dark-grey background on hover */
-      }
-      .pageNavSpan{
-        padding:5px;
-        border:3px solid #dddddd;
-        border-radius: 5px;
-        color:black;
-        background: #ffffff;
-      }
-      .pageNavDisable{
-        color:#dddddd;
-      }
-      #checkItemList .btn{
-        padding:6px;
-      }
-      .container {
-          width: 1112px;
-      }
-    </style>
-    <script type="text/javascript" src="/js/Common.js"></script>
-  </head>
-  <body>
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="/css/bootstrap-theme.css">
+  <script src="/js/jquery.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/vue.js"></script>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/bootstrap-datetimepicker.css">
+  <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+  <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+  <script type="text/javascript" src="/js/moment-with-locales.js"></script>
+  <script type="text/javascript" src="/js/bootstrap-datetimepicker.js"></script>
+  <style>
+    h2 {
+      font-size: 24px;
+    }
 
-    <!-- Fixed navbar -->
-    <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
-    <header>
-      <nav class="navbar">
-      </nav>  
-    </header>
-    
+    .left-side .input-group {
+      margin-bottom: 10px;
+    }
 
-    <!-- Begin page content -->
-    <div class="container main" >
-      <div class="row" id="mrDetail">
-        <div class="col-md-3 left-side">
-          <div class="input-group">
-            <input type="text" class="form-control" id="filter-did" placeholder="" >
-            <span class="input-group-addon" id="basic-addon2">搜尋戶號或姓名</span>
-          </div>
-          <div class="list-group" style="margin-bottom:0">
-            <a href="#" class="list-group-item active">
-              住戶名單
-            </a>
-          </div>
-          <div class="list-group" style="height:400px;overflow-y: scroll">
-            <a href="#" v-on:click="selectLiver(liver.F_CU_DID,liver.F_OWNER_NAME,liver.F_LIVER_ID)" class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-show="liver.hide == false" v-for="liver in liverList">{{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
-          </div>
+    #mr-detail {
+      height: 280px;
+      border: 1px dashed #999999;
+      border-top: 0;
+      border-radius: 0 0 6px 6px;
+      margin-bottom: 10px;
+    }
+
+    #CFList button {
+      margin-left: 15px;
+      margin-right: 5px;
+    }
+
+    .nav-tabs li.active a,
+    .nav-tabs li.active a:hover,
+    .nav-tabs li.active a:focus {
+      background: #99ccff;
+      font-weight: bold;
+      width: 100px;
+      text-align: center;
+    }
+
+    #myBtn {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      /* Fixed/sticky position */
+      bottom: 20px;
+      /* Place the button at the bottom of the page */
+      right: 30px;
+      /* Place the button 30px from the right */
+      z-index: 99;
+      /* Make sure it does not overlap */
+      border: none;
+      /* Remove borders */
+      outline: none;
+      /* Remove outline */
+      background-color: red;
+      /* Set a background color */
+      color: white;
+      /* Text color */
+      cursor: pointer;
+      /* Add a mouse pointer on hover */
+      padding: 15px;
+      /* Some padding */
+      border-radius: 10px;
+      /* Rounded corners */
+      font-size: 18px;
+      /* Increase font size */
+    }
+
+    #myBtn:hover {
+      background-color: #555;
+      /* Add a dark-grey background on hover */
+    }
+
+    .pageNavSpan {
+      padding: 5px;
+      border: 3px solid #dddddd;
+      border-radius: 5px;
+      color: black;
+      background: #ffffff;
+    }
+
+    .pageNavDisable {
+      color: #dddddd;
+    }
+
+    #checkItemList .btn {
+      padding: 6px;
+    }
+
+    .container {
+      width: 1112px;
+    }
+  </style>
+  <script type="text/javascript" src="/js/Common.js"></script>
+</head>
+
+<body>
+
+  <!-- Fixed navbar -->
+  <div class="loadingMask"
+    style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+  <header>
+    <nav class="navbar">
+    </nav>
+  </header>
+
+
+  <!-- Begin page content -->
+  <div class="container main">
+    <div class="row" id="mrDetail">
+      <div class="col-md-3 left-side">
+        <div class="input-group">
+          <input type="text" class="form-control" id="filter-did" placeholder="">
+          <span class="input-group-addon" id="basic-addon2">搜尋戶號或姓名</span>
         </div>
-        <div class="col-md-9" >
-          <div class="" style="position:relative;">
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
-              <li role="presentation" :class="{ active: mk==chooseClass }" v-for="(main,mk) in classes">
-                <a href="#" v-on:click="switchTab(mk)" :data-sub-class-id="main.subclass" :data-class-id="main.class">{{main.name}}</a>
-              </li>
-            </ul>
+        <div class="list-group" style="margin-bottom:0">
+          <a href="#" class="list-group-item active">
+            住戶名單
+          </a>
+        </div>
+        <div class="list-group" style="height:400px;overflow-y: scroll">
+          <a href="#" v-on:click="selectLiver(liver.F_CU_DID,liver.F_OWNER_NAME,liver.F_LIVER_ID)"
+            class="list-group-item" :data-liver-id="liver.F_LIVER_ID" v-show="liver.hide == false"
+            v-for="liver in liverList">{{ liver.F_CU_DID }} |{{ liver.F_OWNER_NAME }}</a>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <div class="" style="position:relative;">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" :class="{ active: mk==chooseClass }" v-for="(main,mk) in classes">
+              <a href="#" v-on:click="switchTab(mk)" :data-sub-class-id="main.subclass"
+                :data-class-id="main.class">{{main.name}}</a>
+            </li>
+          </ul>
 
-            <!-- Tab panes -->
-            <div class="tab-content" >
-              <div role="tabpanel" class="tab-panel panel panel-default active" id="home">
-                <div  class="panel-body" style="min-height:300px"> 
-                  <div id="CFList" v-show="displayCFList">
-                    <button type="button" v-on:click="selectForm(k)" class="btn col-md-2 btn-lg" :class="btnColors[k%6]" style="margin-bottom:10px" v-for="(v,k) in customForms">{{v.F_CF_TITLE}}</button>
-                  </div>
-                
-                  <div id="formDetail" v-show="displayDetail">
-                    <form id="myform" action="" method="post">
-                      <input type="hidden" name="cf-id" v-model="customForm.F_CF_ID">
-                      <input type="hidden" name="record-id" v-model="customForm.F_RECORD_ID">
-                      <table class="table table-hover table-bordered"> 
-                        <tbody> 
-                          <tr> 
-                            <th class="success" width="20%">進場時間</th> 
-                            <td  width="30%">
-                              <div class='input-group date' id='datetimepicker1'>
-                                <input type="text" name="start-time"  class="form-control" placeholder=""  readonly="readonly" v-model="customForm.F_START_TIME">
-                                <!-- <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span> -->
-                              </div>
-                            </td> 
-                            <td  width="20%" class="success">離場時間</td> 
-                            <td  width="30%">
-                              <div class='input-group date' id='datetimepicker2'>
-                                <input type="text" class="form-control" readonly="readonly" name="end-time"  v-model="customForm.F_END_TIME">
-                                <!-- <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span> -->
-                              </div>
-                            </td>  
-                          </tr> 
-                          <tr> 
-                            <th class="success" width="20%">姓名</th> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" class="form-control" v-model="liverName" name="user-name" placeholder="" >
-                              </div>
-                            </td> 
-                            <td  width="20%" class="success">戶號</td> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" class="form-control" v-model="liverId" placeholder="" name="liver-id" >
-                                <input type="text" class="form-control" v-model="liverDid" placeholder="" name="liver-did" >
-                              </div>
-                            </td>  
-                          </tr> 
-                          <tr v-show="customForm.F_ITEM1_TITLE!=''"> 
-                            <th class="success" width="20%">{{customForm.F_ITEM1_TITLE}}</th> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input name="name-item1" @focus="scan(customForm.F_ITEM1_TITLE,$event)" type="text" class="form-control" placeholder=""  v-model="customForm.F_ITEM1_VALUE">
-                              </div>
-                            </td> 
-                            <td  width="20%" class="success">{{customForm.F_ITEM2_TITLE}}</td> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" name="name-item2" class="form-control" placeholder=""  v-model="customForm.F_ITEM2_VALUE">
-                              </div>
-                            </td>  
-                          </tr> 
-                          <tr v-show="customForm.F_ITEM3_TITLE!=' '"> 
-                            <th class="success" width="20%">{{customForm.F_ITEM3_TITLE}}</th> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" name="name-item3" class="form-control" placeholder=""  v-model="customForm.F_ITEM3_VALUE">
-                              </div>
-                            </td> 
-                            <td  width="20%" class="success">{{customForm.F_ITEM4_TITLE}}</td> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" name="name-item4" class="form-control" placeholder=""  v-model="customForm.F_ITEM4_VALUE">
-                              </div>
-                            </td>  
-                          </tr> 
-                          <tr v-show="customForm.F_ITEM5_TITLE !=' '"> 
-                            <th class="success" width="20%">{{customForm.F_ITEM5_TITLE}}</th> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" class="form-control" name="name-item5" placeholder=""  v-model="customForm.F_ITEM5_VALUE">
-                              </div>
-                            </td> 
-                            <td  width="20%" class="success">{{customForm.F_ITEM6_TITLE}}</td> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item6"  v-model="customForm.F_ITEM6_VALUE">
-                              </div>
-                            </td>  
-                          </tr> 
-                          <tr v-show="customForm.F_ITEM7_TITLE!=' '"> 
-                            <th class="success" width="20%">{{customForm.F_ITEM7_TITLE}}</th> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item7"  v-model="customForm.F_ITEM7_VALUE">
-                              </div>
-                            </td> 
-                            <td  width="20%" class="success">{{customForm.F_ITEM8_TITLE}}</td> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" class="form-control" placeholder="" name="name-item8"  v-model="customForm.F_ITEM8_VALUE">
-                              </div>
-                            </td>  
-                          </tr> 
-                          <tr v-show="customForm.F_ITEM9_TITLE!=' '"> 
-                            <th class="success" width="20%">{{customForm.F_ITEM9_TITLE}}</th> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" class="form-control" placeholder=""  name="name-item9"  v-model="customForm.F_ITEM9_VALUE">
-                              </div>
-                            </td> 
-                            <td  width="20%" class="success">{{customForm.F_ITEM10_TITLE}}</td> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input type="text" name="name-item10" class="form-control" placeholder=""  v-model="customForm.F_ITEM10_VALUE">
-                              </div>
-                            </td>  
-                          </tr> 
-                          <tr> 
-                            <th class="success" width="20%">計費單位</th> 
-                            <td  width="30%">
-                              <input type="hidden" name="billing-method" v-model="customForm.F_B_METHOD">
-                              <div class="input-group">
-                                <input type="text" class="form-control" name='unit-type' readonly v-model="customForm.F_CF_UNIT_TYPE">
-                              </div>
-                            </td> 
-                            <td  width="20%" class="success">單位金額</td> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input  type="text" class="form-control" name='unit-price' v-model="customForm.F_UNIT_PRICE">
-                              </div>
-                            </td>  
-                          </tr> 
-                          <tr v-show="customForm.F_CF_UNIT_TYPE!='時'">
-                            <td  width="20%" class="success">數量</td> 
-                            <td  width="30%">
-                              <div class="input-group">
-                                <input  type="number" class="form-control" name='quantity' v-model="customForm.F_QUANTITY">
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td colspan="4">
-                              備註
-                              <textarea name="cf-note" class="form-control" rows="3">{{customForm.F_CF_NOTE}}</textarea>
-                            </td>
-                            
-                          </tr>
-                        </tbody> 
-                      </table>
-                      <button id="btnCheckin" type="button" :disabled="typeof(customForm.F_RECORD_ID)!='undefined'" class="btn btn-info" style="margin-left:10px">入場</button>
-                      <button id="btnCheckout" type="button" :disabled="customForm.F_CHECKOUT=='1' || typeof(customForm.F_RECORD_ID)=='undefined'" class="btn btn-warning">結帳</button> 
-                      
-                      
-                    </form>
-                  </div>
-                  
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-panel panel panel-default active" id="home">
+              <div class="panel-body" style="min-height:300px">
+                <div id="CFList" v-show="displayCFList">
+                  <button type="button" v-on:click="selectForm(k)" class="btn col-md-2 btn-lg" :class="btnColors[k%6]"
+                    style="margin-bottom:10px" v-for="(v,k) in customForms">{{v.F_CF_TITLE}}</button>
                 </div>
+
+                <div id="formDetail" v-show="displayDetail">
+                  <form id="myform" action="" method="post">
+                    <input type="hidden" name="cf-id" v-model="customForm.F_CF_ID">
+                    <input type="hidden" name="record-id" v-model="customForm.F_RECORD_ID">
+                    <table class="table table-hover table-bordered">
+                      <tbody>
+                        <tr>
+                          <th class="success" width="20%">進場時間</th>
+                          <td width="30%">
+                            <div class='input-group date' id='datetimepicker1'>
+                              <input type="text" name="start-time" class="form-control" placeholder=""
+                                readonly="readonly" v-model="customForm.F_START_TIME">
+                              <!-- <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span> -->
+                            </div>
+                          </td>
+                          <td width="20%" class="success">離場時間</td>
+                          <td width="30%">
+                            <div class='input-group date' id='datetimepicker2'>
+                              <input type="text" class="form-control" readonly="readonly" name="end-time"
+                                v-model="customForm.F_END_TIME">
+                              <!-- <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span> -->
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="success" width="20%">姓名</th>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" class="form-control" v-model="liverName" name="user-name"
+                                placeholder="">
+                            </div>
+                          </td>
+                          <td width="20%" class="success">戶號</td>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" class="form-control" v-model="liverId" placeholder="" name="liver-id">
+                              <input type="text" class="form-control" v-model="liverDid" placeholder=""
+                                name="liver-did">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr v-show="customForm.F_ITEM1_TITLE!=''">
+                          <th class="success" width="20%">{{customForm.F_ITEM1_TITLE}}</th>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input name="name-item1" @focus="scan(customForm.F_ITEM1_TITLE,$event)" type="text"
+                                class="form-control" placeholder="" v-model="customForm.F_ITEM1_VALUE">
+                            </div>
+                          </td>
+                          <td width="20%" class="success">{{customForm.F_ITEM2_TITLE}}</td>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" name="name-item2" class="form-control" placeholder=""
+                                v-model="customForm.F_ITEM2_VALUE">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr v-show="customForm.F_ITEM3_TITLE!=' '">
+                          <th class="success" width="20%">{{customForm.F_ITEM3_TITLE}}</th>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" name="name-item3" class="form-control" placeholder=""
+                                v-model="customForm.F_ITEM3_VALUE">
+                            </div>
+                          </td>
+                          <td width="20%" class="success">{{customForm.F_ITEM4_TITLE}}</td>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" name="name-item4" class="form-control" placeholder=""
+                                v-model="customForm.F_ITEM4_VALUE">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr v-show="customForm.F_ITEM5_TITLE !=' '">
+                          <th class="success" width="20%">{{customForm.F_ITEM5_TITLE}}</th>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" class="form-control" name="name-item5" placeholder=""
+                                v-model="customForm.F_ITEM5_VALUE">
+                            </div>
+                          </td>
+                          <td width="20%" class="success">{{customForm.F_ITEM6_TITLE}}</td>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" class="form-control" placeholder="" name="name-item6"
+                                v-model="customForm.F_ITEM6_VALUE">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr v-show="customForm.F_ITEM7_TITLE!=' '">
+                          <th class="success" width="20%">{{customForm.F_ITEM7_TITLE}}</th>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" class="form-control" placeholder="" name="name-item7"
+                                v-model="customForm.F_ITEM7_VALUE">
+                            </div>
+                          </td>
+                          <td width="20%" class="success">{{customForm.F_ITEM8_TITLE}}</td>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" class="form-control" placeholder="" name="name-item8"
+                                v-model="customForm.F_ITEM8_VALUE">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr v-show="customForm.F_ITEM9_TITLE!=' '">
+                          <th class="success" width="20%">{{customForm.F_ITEM9_TITLE}}</th>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" class="form-control" placeholder="" name="name-item9"
+                                v-model="customForm.F_ITEM9_VALUE">
+                            </div>
+                          </td>
+                          <td width="20%" class="success">{{customForm.F_ITEM10_TITLE}}</td>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" name="name-item10" class="form-control" placeholder=""
+                                v-model="customForm.F_ITEM10_VALUE">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="success" width="20%">計費單位</th>
+                          <td width="30%">
+                            <input type="hidden" name="billing-method" v-model="customForm.F_B_METHOD">
+                            <div class="input-group">
+                              <input type="text" class="form-control" name='unit-type' readonly
+                                v-model="customForm.F_CF_UNIT_TYPE">
+                            </div>
+                          </td>
+                          <td width="20%" class="success">單位金額</td>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="text" class="form-control" name='unit-price'
+                                v-model="customForm.F_UNIT_PRICE">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr v-show="customForm.F_CF_UNIT_TYPE!='時'">
+                          <td width="20%" class="success">數量</td>
+                          <td width="30%">
+                            <div class="input-group">
+                              <input type="number" class="form-control" name='quantity' v-model="customForm.F_QUANTITY">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colspan="4">
+                            備註
+                            <textarea name="cf-note" class="form-control" rows="3">{{customForm.F_CF_NOTE}}</textarea>
+                          </td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button id="btnCheckin" type="button" :disabled="typeof(customForm.F_RECORD_ID)!='undefined'"
+                      class="btn btn-info" style="margin-left:10px">入場</button>
+                    <button id="btnCheckout" type="button"
+                      :disabled="customForm.F_CHECKOUT=='1' || typeof(customForm.F_RECORD_ID)=='undefined'"
+                      class="btn btn-warning">結帳</button>
+
+
+                  </form>
+                </div>
+
               </div>
             </div>
           </div>
-          <div class="bs-example" id="checkItemList"> 
-            <table class="table table-hover table-bordered"> 
-              <thead> 
-                <tr  class="info " style="color: #a94442;background-color: #f2dede !important;border-color: #ebccd1;">  
-                  <th colspan="6" class="alert-danger">未結帳</th> 
-                  <th colspan="2" class="alert-danger">
-                    <div class="input-group" style="width:100%;">
-                      <input type="text" class="form-control" id="keywordRecord" placeholder="輸入關鍵字">
-                      <span class="input-group-btn">
-                        <button class="btn btn-default" @click="searchRecord" type="button">搜尋!</button>
-                      </span>
-                      <span style="float:right;height: 26px;">
-                        <a class="pageNavSpan" :class="{pageNavDisable: checkinPage==0}">
-                          <span @click="checkinPrev" :readonly="checkinPage==0" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                        </a> 
-                        <span>{{checkinMaxPage}}</span> - <span>{{checkinPage}}</span>
-                        <a class="pageNavSpan" :class="{pageNavDisable: checkinPage==checkinMaxPage}">
-                          <span @click="checkinNext" :readonly="checkinPage==checkinMaxPage" class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                        </a>
-                      </span>
-                    </div><!-- /input-group -->
-                  </th> 
-                </tr>
-                <tr class="info"> 
-                  <th>主分類</th> 
-                  <th>表單名稱</th>
-                  <th>代碼</th>
-                  <th>戶號</th>  
-                  <th>姓名</th>  
-                  <th>單價</th> 
-                  <th>起始時間</th> 
-                  <th>功能</th> 
-                </tr> 
-              </thead> 
-              <tbody> 
-                <tr v-for="(val,key) in checkin" v-if="val.DISPLAY_FLAG"> 
-                  <td>{{val.F_CLASS_NAME}}</td> 
-                  <td>{{val.F_CF_TITLE}}</td> 
-                  <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} : <br>{{val.F_ITEM1_VALUE}}</td> 
-                  <td >{{val.F_DID}}</td> 
-                  <td >{{val.F_LIVER_NAME}}</td> 
-                  <td>{{val.F_UNIT_PRICE}}元</td> 
-                  <td>{{val.F_START_TIME}}</td> 
-                  <td>
-                    <button class="btn btnLoadCheckin" v-on:click="loadCheckin(key)" type="button">載入</button>
-                    <button v-on:click="startPrint(key)"  type="button"  class="btn btn-success" style="margin-left:10px">入場列印</button>
-                    <button class="btn btn-danger btnCancelCheckin" v-on:click="CancelCheckin(val.F_RECORD_ID)" >作廢</button>
-                  </td> 
-                </tr>
-              </tbody> 
-            </table> 
-            <table class="table table-hover table-bordered"> 
-              <thead> 
-                <tr  class="info">  
-                  <th colspan="8" class="alert-success">
-                    已結帳
-                    <span style="float:right;">
-                        <a  class="pageNavSpan"  :class="{pageNavDisable: checkoutPage==0}">
-                          <span @click="checkoutPrev" :readonly="checkoutPage==0" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                        </a> 
-                        <span>{{checkoutMaxPage}}</span> - <span>{{checkoutPage}}</span>
-                        <a class="pageNavSpan" :class="{pageNavDisable: checkoutPage==checkoutMaxPage}">
-                          <span @click="checkoutNext" :readonly="checkoutPage==checkoutMaxPage" class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                        </a>
-                      </span>
-                  </th> 
-                </tr>
-                <tr class="info"> 
-                  <th>主分類</th> 
-                  <th>表單名稱</th> 
-                  <th>代碼</th>
-                  <th>戶號</th> 
-                  <th width="100" >姓名</th> 
-                  <th >費用</th> 
-                  <th>起始時間</th> 
-                  <th >功能</th> 
-                </tr> 
-              </thead> 
-              <tbody> 
-                <tr v-for="(val,key) in checkout" v-if="val.DISPLAY_FLAG"> 
-                  <td>{{val.F_CLASS_NAME}}</td> 
-                  <td>{{val.F_CF_TITLE}}</td> 
-                  <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} :<br> {{val.F_ITEM1_VALUE}}</td> 
-                  <th >{{val.F_DID}}</th> 
-                  <th >{{val.F_LIVER_NAME}}</th> 
-                  <td>{{val.F_COST_MONEY}}元</td> 
-                  <td >入{{val.F_START_TIME}}<br>結{{val.F_END_TIME}}</td> 
-                  <td>
-                    <button class="btn btnLoadCheckout" v-on:click="loadCheckout(key)" type="button">載入</button>
-                    <button v-on:click="endPrint(key)" type="button" class="btn btn-primary">列印</button>
-                    <button v-on:click="endExcel(key)" type="button" class="btn btn-success">Excel</button>
-                  </td> 
-                </tr>
-              </tbody> 
-            </table> 
-            <table class="table table-hover table-bordered"> 
-              <thead> 
-                <tr  class="info">  
-                  <th colspan="8" class="alert-info">日結列表</th> 
-                </tr>
-                <tr class="info"> 
-                  <th>日期</th> 
-                  <th>結帳金額</th> 
-                  <th>功能</th>
-                  
-                </tr> 
-              </thead> 
-              <tbody> 
-                <tr v-for="(val,key) in subtotal"> 
-                  <td>{{val.F_END_TIME}}</td> 
-                  <td>{{val.total}}</td> 
-                  <td>
-                    <button v-on:click="subtotalExcel(val.F_END_TIME)" type="button" class="btn btn-success">Excel</button>
-                  </td> 
-                </tr>
-              </tbody> 
-            </table> 
-          </div>
+        </div>
+        <div class="bs-example" id="checkItemList">
+          <table class="table table-hover table-bordered">
+            <thead>
+              <tr class="info " style="color: #a94442;background-color: #f2dede !important;border-color: #ebccd1;">
+                <th colspan="6" class="alert-danger">未結帳</th>
+                <th colspan="2" class="alert-danger">
+                  <div class="input-group" style="width:100%;">
+                    <input type="text" class="form-control" id="keywordRecord" placeholder="輸入關鍵字">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" @click="searchRecord" type="button">搜尋!</button>
+                    </span>
+                    <span style="float:right;height: 26px;">
+                      <a class="pageNavSpan" :class="{pageNavDisable: checkinPage==0}">
+                        <span @click="checkinPrev" :readonly="checkinPage==0" class="glyphicon glyphicon-chevron-left"
+                          aria-hidden="true"></span>
+                      </a>
+                      <span>{{checkinMaxPage}}</span> - <span>{{checkinPage}}</span>
+                      <a class="pageNavSpan" :class="{pageNavDisable: checkinPage==checkinMaxPage}">
+                        <span @click="checkinNext" :readonly="checkinPage==checkinMaxPage"
+                          class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                      </a>
+                    </span>
+                  </div><!-- /input-group -->
+                </th>
+              </tr>
+              <tr class="info">
+                <th>主分類</th>
+                <th>表單名稱</th>
+                <th>代碼</th>
+                <th>戶號</th>
+                <th>姓名</th>
+                <th>單價</th>
+                <th>起始時間</th>
+                <th>功能</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(val,key) in checkin" v-if="val.DISPLAY_FLAG">
+                <td>{{val.F_CLASS_NAME}}</td>
+                <td>{{val.F_CF_TITLE}}</td>
+                <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} : <br>{{val.F_ITEM1_VALUE}}</td>
+                <td>{{val.F_DID}}</td>
+                <td>{{val.F_LIVER_NAME}}</td>
+                <td>{{val.F_UNIT_PRICE}}元</td>
+                <td>{{val.F_START_TIME}}</td>
+                <td>
+                  <button class="btn btnLoadCheckin" v-on:click="loadCheckin(key)" type="button">載入</button>
+                  <button v-on:click="startPrint(key)" type="button" class="btn btn-success"
+                    style="margin-left:10px">入場列印</button>
+                  <button class="btn btn-danger btnCancelCheckin"
+                    v-on:click="CancelCheckin(val.F_RECORD_ID)">作廢</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="table table-hover table-bordered">
+            <thead>
+              <tr class="info">
+                <th colspan="8" class="alert-success">
+                  已結帳
+                  <span style="float:right;">
+                    <a class="pageNavSpan" :class="{pageNavDisable: checkoutPage==0}">
+                      <span @click="checkoutPrev" :readonly="checkoutPage==0" class="glyphicon glyphicon-chevron-left"
+                        aria-hidden="true"></span>
+                    </a>
+                    <span>{{checkoutMaxPage}}</span> - <span>{{checkoutPage}}</span>
+                    <a class="pageNavSpan" :class="{pageNavDisable: checkoutPage==checkoutMaxPage}">
+                      <span @click="checkoutNext" :readonly="checkoutPage==checkoutMaxPage"
+                        class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    </a>
+                  </span>
+                </th>
+              </tr>
+              <tr class="info">
+                <th>主分類</th>
+                <th>表單名稱</th>
+                <th>代碼</th>
+                <th>戶號</th>
+                <th width="100">姓名</th>
+                <th>費用</th>
+                <th>起始時間</th>
+                <th>功能</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(val,key) in checkout" v-if="val.DISPLAY_FLAG">
+                <td>{{val.F_CLASS_NAME}}</td>
+                <td>{{val.F_CF_TITLE}}</td>
+                <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} :<br> {{val.F_ITEM1_VALUE}}</td>
+                <th>{{val.F_DID}}</th>
+                <th>{{val.F_LIVER_NAME}}</th>
+                <td>{{val.F_COST_MONEY}}元</td>
+                <td>入{{val.F_START_TIME}}<br>結{{val.F_END_TIME}}</td>
+                <td>
+                  <button class="btn btnLoadCheckout" v-on:click="loadCheckout(key)" type="button">載入</button>
+                  <button v-on:click="endPrint(key)" type="button" class="btn btn-primary">列印</button>
+                  <button v-on:click="endExcel(key)" type="button" class="btn btn-success">Excel</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="table table-hover table-bordered">
+            <thead>
+              <tr class="info">
+                <th colspan="8" class="alert-info">日結列表</th>
+              </tr>
+              <tr class="info">
+                <th>日期</th>
+                <th>結帳金額</th>
+                <th>功能</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(val,key) in subtotal">
+                <td>{{val.F_END_TIME}}</td>
+                <td>{{val.total}}</td>
+                <td>
+                  <button v-on:click="subtotalExcel(val.F_END_TIME)" type="button"
+                    class="btn btn-success">Excel</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-    <button onclick="topFunction()" id="myBtn" title="Go to top">回上面</button>
-    <footer class="footer">
-      <div class="container">
-        <p class="text-muted">Place sticky footer content here.</p>
-      </div>
-    </footer>
+  </div>
+  <button onclick="topFunction()" id="myBtn" title="Go to top">回上面</button>
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted">Place sticky footer content here.</p>
+    </div>
+  </footer>
 
-    <script type="text/javascript">
-      var TableToExcel = require('./js/table-to-excel');
-      var tableToExcel=new TableToExcel();
-      //left-list
-      var printData = {}; 
-      var loading = $("#loading");
-      var loadingMask = $(".loadingMask");
-      var pageBase = 5;
-      var mrDetail = new Vue({
-        el: '#mrDetail',
-        data: {
-          liverList: [],
-          classes: [
-            
-          ],
-          subclasses: {
-          },
-          subtotal: [],
-          customForms: [],
-          customForm: {},
-          liverName: "",
-          liverId: "",
-          liverDid: "",
-          currentTab: 1,
-          displaySubClass: true,
-          displayCFList: true,
-          displayDetail: false,
-          chooseSubClass: 1,
-          chooseClass: 1,
-          btnColors: ['btn-default','btn-primary','btn-success',"btn-info",'btn-warning','btn-danger'],
-          cf: {},
-          checkin: [],
-          checkout: [],
-          checkinPage: 0,
-          checkoutPage: 0,
-          checkinMaxPage: 1,
-          checkoutMaxPage: 1
+  <script type="text/javascript">
+    var TableToExcel = require('./js/table-to-excel');
+    var tableToExcel = new TableToExcel();
+    //left-list
+    var printData = {};
+    var loading = $("#loading");
+    var loadingMask = $(".loadingMask");
+    var pageBase = 5;
+    var mrDetail = new Vue({
+      el: '#mrDetail',
+      data: {
+        liverList: [],
+        classes: [
+
+        ],
+        subclasses: {
         },
-        methods: {
-          selectLiver: function(did,name,liverid){
-            this.liverName = name;
-            this.liverDid = did;
-            this.liverId = liverid;
-          },
-          switchTab: function (key) {
-            // `this` inside methods points to the Vue instance
-            currentTab = key;
-            this.customForms = this.classes[key].customForms;
-            this.displayCFList = true;
-            this.displayDetail = false;
-            this.chooseClass = key;
-            this.liverName = "";
-            this.liverId = "";
-            this.liverDid = "";
-          },
-          selectForm: function(key){
-            var d = new Date();
-            this.liverName = "";
-            this.liverId = "";
-            this.liverDid = "";
-            this.displayCFList = false;
-            this.displayDetail = true;
-            this.customForm = this.customForms[key];
-            console.log(this.customForm);
-            this.customForm.F_START_TIME = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+        subtotal: [],
+        customForms: [],
+        customForm: {},
+        liverName: "",
+        liverId: "",
+        liverDid: "",
+        currentTab: 1,
+        displaySubClass: true,
+        displayCFList: true,
+        displayDetail: false,
+        chooseSubClass: 1,
+        chooseClass: 1,
+        btnColors: ['btn-default', 'btn-primary', 'btn-success', "btn-info", 'btn-warning', 'btn-danger'],
+        cf: {},
+        checkin: [],
+        checkout: [],
+        checkinPage: 0,
+        checkoutPage: 0,
+        checkinMaxPage: 1,
+        checkoutMaxPage: 1
+      },
+      methods: {
+        selectLiver: function (did, name, liverid) {
+          this.liverName = name;
+          this.liverDid = did;
+          this.liverId = liverid;
+        },
+        switchTab: function (key) {
+          // `this` inside methods points to the Vue instance
+          currentTab = key;
+          this.customForms = this.classes[key].customForms;
+          this.displayCFList = true;
+          this.displayDetail = false;
+          this.chooseClass = key;
+          this.liverName = "";
+          this.liverId = "";
+          this.liverDid = "";
+        },
+        selectForm: function (key) {
+          var d = new Date();
+          this.liverName = "";
+          this.liverId = "";
+          this.liverDid = "";
+          this.displayCFList = false;
+          this.displayDetail = true;
+          this.customForm = this.customForms[key];
+          console.log(this.customForm);
+          this.customForm.F_START_TIME = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
 
-          },
-          loadCheckin: function(recordId){
-            let recordRow = this.checkin[recordId];
-            recordRow.F_CF_UNIT_TYPE = recordRow.F_UNIT_TYPE ;
-            this.switchTab(recordRow.F_CLASS_ID);
-            this.displayCFList = false;
-            this.displayDetail = true;
-            let customForm = this.classes[recordRow.F_CLASS_ID].customForms[recordRow.F_CF_ID];
-            //let mergeObj = _.merge(recordRow,customForm);
-            recordRow.F_ITEM1_TITLE = customForm.F_ITEM1_TITLE;
-            recordRow.F_ITEM2_TITLE = customForm.F_ITEM2_TITLE;
-            recordRow.F_ITEM3_TITLE = customForm.F_ITEM3_TITLE;
-            recordRow.F_ITEM4_TITLE = customForm.F_ITEM4_TITLE;
-            recordRow.F_ITEM5_TITLE = customForm.F_ITEM5_TITLE;
-            recordRow.F_ITEM6_TITLE = customForm.F_ITEM6_TITLE;
-            recordRow.F_ITEM7_TITLE = customForm.F_ITEM7_TITLE;
-            recordRow.F_ITEM8_TITLE = customForm.F_ITEM8_TITLE;
-            recordRow.F_ITEM9_TITLE = customForm.F_ITEM9_TITLE;
-            recordRow.F_ITEM10_TITLE = customForm.F_ITEM10_TITLE;
-            this.liverName = recordRow.F_LIVER_NAME;
-            this.liverDid = recordRow.F_DID;
-            this.liverId = recordRow.F_LIVER_ID;
-            console.log(recordRow);
-            this.customForm = recordRow;
-          },
-          loadCheckout: function(recordId){
-            let recordRow = this.checkout[recordId];
-            recordRow.F_CF_UNIT_TYPE = recordRow.F_UNIT_TYPE;
-            this.switchTab(recordRow.F_CLASS_ID);
-            this.displayCFList = false;
-            this.displayDetail = true;
-            let customForm = this.classes[recordRow.F_CLASS_ID].customForms[recordRow.F_CF_ID];
-            recordRow.F_ITEM1_TITLE = customForm.F_ITEM1_TITLE;
-            recordRow.F_ITEM2_TITLE = customForm.F_ITEM2_TITLE;
-            recordRow.F_ITEM3_TITLE = customForm.F_ITEM3_TITLE;
-            recordRow.F_ITEM4_TITLE = customForm.F_ITEM4_TITLE;
-            recordRow.F_ITEM5_TITLE = customForm.F_ITEM5_TITLE;
-            recordRow.F_ITEM6_TITLE = customForm.F_ITEM6_TITLE;
-            recordRow.F_ITEM7_TITLE = customForm.F_ITEM7_TITLE;
-            recordRow.F_ITEM8_TITLE = customForm.F_ITEM8_TITLE;
-            recordRow.F_ITEM9_TITLE = customForm.F_ITEM9_TITLE;
-            recordRow.F_ITEM10_TITLE = customForm.F_ITEM10_TITLE;
-            this.liverName = recordRow.F_LIVER_NAME;
-            this.liverDid = recordRow.F_DID;
-            this.liverId = recordRow.F_LIVER_ID;
-            console.log(recordRow);
-            this.customForm = recordRow;
-          },
-          CancelCheckin: function(recordId){
-            if(confirm("確定要作廢?")==false){
-              return false;
-            }
-            $.ajax(config.apiHost + 'post/mrCancel' , {
-              type: "POST",
-              data: "record-id="+recordId+"&cuid="+currentCust,
-              dataType: 'json',
-              complete: function(data,status){
-                
-                let obj = data.responseJSON;
-                mrDetail.displayCFList = true;
-                mrDetail.displayDetail = false;
-                alert("作廢完成!");
-                
-                mrDetail.checkin = obj.checkinRecord;
-                mrDetail.checkout = obj.checkoutRecord;
-                mrDetail.countPage();
-              }
-            });
-          },
-          countPage: function(){
-            mrDetail.checkinMaxPage = Math.floor(mrDetail.checkin.length/pageBase);
-            mrDetail.checkoutMaxPage = Math.floor(mrDetail.checkout.length/pageBase);
-            if(mrDetail.checkin.length%pageBase==0 && mrDetail.checkinMaxPage>0){
-              mrDetail.checkinMaxPage-=1;
-            }
-            if(mrDetail.checkout.length%pageBase==0 && mrDetail.checkoutMaxPage>0){
-              mrDetail.checkoutMaxPage-=1;
-            }
-          },
-          startPrint: function(key){
-            this.loadCheckin(key);
-            this.customForm.companyName = $("#companyName").text();
-            printData = this.customForm;
-            window.open("./mrCheckin.html");
-          },
-          endPrint: function(recordId){
-            console.log(recordId);
-            this.loadCheckout(recordId);
-            this.customForm.companyName = $("#companyName").text();
-            printData = this.customForm;
-            window.open("./mrCheckout.html");
-          },
-          endExcel: function(recordId){
-            this.loadCheckout(recordId);
-            let form = this.customForm;
-            let printData = [];
-            printData.push(['進場時間',form.F_START_TIME]);
-            printData.push(['住戶姓名',form.F_LIVER_NAME]);
-            printData.push(['住戶戶號',form.F_DID]);
-            for(let i =1;i<=10;i++){
-              let itemTitle =form['F_ITEM'+i+'_TITLE'].trim();
-              let itemValue =form['F_ITEM'+i+'_VALUE'].trim();
-              if(itemTitle != ""){
-                printData.push([itemTitle,itemValue]);
-              }
-            }
-            printData.push(['計費單位',form.F_UNIT_TYPE]);
-            printData.push(['單位金額',form.F_UNIT_PRICE]);
-            printData.push(['金額總計',form.F_COST_MONEY]);
-            tableToExcel.render(printData,[{text:$("#companyName").text(),bg:"#999",color:"#fff"}]);
-          },
-          scan: function(title,e){
-            return false;
-            if(title != '車號(etag)'){
-              return;
-            }
-            loadingMask.css("display","block");
-            loading.removeClass("rotateOut");
-            loading.css("display","block");
-            loading.addClass("rotateIn");
-            exec("node scan.js" , function(err ,data ,c){
-              if(err == null && data.length > 0){
-                let scanId = data.trim();
-                console.log(scanId);
-                e.target.value=scanId;
-              }else{
-                loadingMask.css("display","none");
-                loading.css("display","none");
-                loading.removeClass("rotateIn");
-                loading.addClass("rotateOut");
-                console.log(err);
-              }
-            });
-          },
-          searchRecord: function(e){
-            let keyword = $("#keywordRecord").val();
-            console.log(keyword);
-            if(keyword == "" || keyword.length<2){
-              alert("請至少輸入兩個以上的關鍵字!!");
-              return false;
-            }
-            $.ajax(config.apiHost + 'api/mrRecord' , {
-              type: "POST",
-              data: "keyword="+keyword+"&cuid="+currentCust,
-              dataType: 'json',
-              complete: function(data,status){
-                console.log(data);
-                let obj = data.responseJSON;
-                console.log(obj);
-                mrDetail.checkin = obj.checkinRecord;
-                mrDetail.checkout = obj.checkoutRecord;
-                mrDetail.countPage();
-              }
-            });
-          },
-          subtotalExcel: function(ymd){
-            $.ajax(config.apiHost + 'api/mrDaily/'+currentCust+'/'+ymd , {
-              type: "GET",
-              dataType: 'json',
-              complete: function(data,status){
-                let obj = data.responseJSON;
-                console.log(obj);
-                let printData = [];
-                printData.push(['入場時間','結帳時間','單位','單價','結帳金額','結帳者','分類']);
-                let total = 0;
-                obj.map(function(v,k){
-                  printData.push([v.F_START_TIME,v.F_END_TIME,v.F_UNIT_TYPE,v.F_UNIT_PRICE,v.F_COST_MONEY,v.F_EMP_END_NAME,v.F_CLASS_NAME]);
-                  total+=parseInt(v.F_COST_MONEY);
-                });
-                printData.push(['總計','','','',total,'','']);
-                tableToExcel.render(printData,[{text:ymd+"結帳列表",bg:"#333",color:"#fff"}]);
-              }
-            });
-          },
-          checkinPrev: function(){
-            let self = this;
-            this.checkinPage --;
-            if(this.checkinPage < 0){
-              this.checkinPage =0 ;
-              return;
-            }
-            if(this.checkinMaxPage <1){
-              this.checkinMaxPage = 1;
-              return;
-            }
-            let pStart = this.checkinPage*pageBase;
-            let pEnd = pStart+pageBase;
-            mrDetail.checkin.map(function(v,k){
-              if(k>=pStart && k<pEnd){
-                v.DISPLAY_FLAG = 1;
-              }else{
-                v.DISPLAY_FLAG = 0;
-              }
-            });
-          },
-          checkinNext: function(){
-            let self = this;
-            if(mrDetail.checkinPage == mrDetail.checkinMaxPage){
-              return;
-            }
-            if(this.checkinMaxPage <1){
-              this.checkinMaxPage = 1;
-              return;
-            }
-            this.checkinPage++;
-            let pStart = this.checkinPage*pageBase;
-            let pEnd = pStart+pageBase;
-            console.log(mrDetail.checkoutPage);
-            console.log(pageBase);
-            console.log(pStart);
-            console.log(pEnd);
-            mrDetail.checkin.map(function(v,k){
-              if(k>=pStart && k<pEnd){
-                v.DISPLAY_FLAG = 1;
-              }else{
-                v.DISPLAY_FLAG = 0;
-              }
-            });
-          },
-          checkoutPrev: function(){
-            let self = this;
-            mrDetail.checkoutPage --;
-            if(mrDetail.checkoutPage < 0){
-              mrDetail.checkoutPage =0 ;
-              return;
-            }
-            if(mrDetail.checkoutMaxPage <1){
-              mrDetail.checkoutMaxPage = 1;
-              return;
-            }
-            let pStart = this.checkoutPage*pageBase;
-            let pEnd = pStart+pageBase;
-            mrDetail.checkout.map(function(v,k){
-              if(k>=pStart && k<pEnd){
-                v.DISPLAY_FLAG = 1;
-              }else{
-                v.DISPLAY_FLAG = 0;
-              }
-            });
-          },
-          checkoutNext: function(){
-            
-            let self = this;
-            if(mrDetail.checkoutPage == mrDetail.checkoutMaxPage){
-              return;
-            }
-            if(mrDetail.checkoutMaxPage <1){
-              mrDetail.checkoutMaxPage = 1;
-              return;
-            }
-            mrDetail.checkoutPage++;
-            let pStart = mrDetail.checkoutPage*pageBase;
-            let pEnd = pStart+pageBase;
-            mrDetail.checkout.map(function(v,k){
-              if(k>=pStart && k<pEnd){
-                console.log(k);
-                v.DISPLAY_FLAG = 1;
-              }else{
-                v.DISPLAY_FLAG = 0;
-              }
-            });
-          }
-        }
-      });
-      
-      var exec = require('child_process').exec,
-          child;
-      var _ = require("lodash");
-      const request = require("request");
-      $(document).ready(function(){
-        var startTime = $("input[name='start-time']");
-        var endTime = $("input[name='end-time']");
-        var liverName = $("input[name='liver-name']");
-        var liverDid = $("input[name='liver-did']");
-        var unitType = $("input[name='unit-type']");
-        var unitPrice = $("input[name='unit-price']");
-        var btnCheckin = $("#btnCheckin");
-        var btnCheckout = $("#btnCheckout");
-        var startPrint = $("#startPrint");
-        var endPrint = $("#endPrint");
-        logs(config.apiHost + 'api/mrData/'+currentCust+'/000/000')
-        request(config.apiHost + 'api/mrData/'+currentCust+'/000/000', function (error, response, body) {
-          var resObj = JSON.parse(body);
-          console.log(resObj);
-          mrDetail.liverList = resObj.liver;
-          mrDetail.classes = resObj.mr; 
-          mrDetail.switchTab(Object.keys(resObj.mr)[0]);
-          mrDetail.checkin = resObj.mrCheckin;
-          mrDetail.checkout = resObj.mrCheckout;
-          mrDetail.subtotal = resObj.mrSubtotal;
-          mrDetail.countPage();
-        });
-
-        $('#datetimepicker1').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
-        $('#datetimepicker2').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
-
-        btnCheckin.click(function(){
-          if(confirm("確定要入場?")==false){
+        },
+        loadCheckin: function (recordId) {
+          let recordRow = this.checkin[recordId];
+          recordRow.F_CF_UNIT_TYPE = recordRow.F_UNIT_TYPE;
+          this.switchTab(recordRow.F_CLASS_ID);
+          this.displayCFList = false;
+          this.displayDetail = true;
+          let customForm = this.classes[recordRow.F_CLASS_ID].customForms[recordRow.F_CF_ID];
+          //let mergeObj = _.merge(recordRow,customForm);
+          recordRow.F_ITEM1_TITLE = customForm.F_ITEM1_TITLE;
+          recordRow.F_ITEM2_TITLE = customForm.F_ITEM2_TITLE;
+          recordRow.F_ITEM3_TITLE = customForm.F_ITEM3_TITLE;
+          recordRow.F_ITEM4_TITLE = customForm.F_ITEM4_TITLE;
+          recordRow.F_ITEM5_TITLE = customForm.F_ITEM5_TITLE;
+          recordRow.F_ITEM6_TITLE = customForm.F_ITEM6_TITLE;
+          recordRow.F_ITEM7_TITLE = customForm.F_ITEM7_TITLE;
+          recordRow.F_ITEM8_TITLE = customForm.F_ITEM8_TITLE;
+          recordRow.F_ITEM9_TITLE = customForm.F_ITEM9_TITLE;
+          recordRow.F_ITEM10_TITLE = customForm.F_ITEM10_TITLE;
+          this.liverName = recordRow.F_LIVER_NAME;
+          this.liverDid = recordRow.F_DID;
+          this.liverId = recordRow.F_LIVER_ID;
+          console.log(recordRow);
+          this.customForm = recordRow;
+        },
+        loadCheckout: function (recordId) {
+          let recordRow = this.checkout[recordId];
+          recordRow.F_CF_UNIT_TYPE = recordRow.F_UNIT_TYPE;
+          this.switchTab(recordRow.F_CLASS_ID);
+          this.displayCFList = false;
+          this.displayDetail = true;
+          let customForm = this.classes[recordRow.F_CLASS_ID].customForms[recordRow.F_CF_ID];
+          recordRow.F_ITEM1_TITLE = customForm.F_ITEM1_TITLE;
+          recordRow.F_ITEM2_TITLE = customForm.F_ITEM2_TITLE;
+          recordRow.F_ITEM3_TITLE = customForm.F_ITEM3_TITLE;
+          recordRow.F_ITEM4_TITLE = customForm.F_ITEM4_TITLE;
+          recordRow.F_ITEM5_TITLE = customForm.F_ITEM5_TITLE;
+          recordRow.F_ITEM6_TITLE = customForm.F_ITEM6_TITLE;
+          recordRow.F_ITEM7_TITLE = customForm.F_ITEM7_TITLE;
+          recordRow.F_ITEM8_TITLE = customForm.F_ITEM8_TITLE;
+          recordRow.F_ITEM9_TITLE = customForm.F_ITEM9_TITLE;
+          recordRow.F_ITEM10_TITLE = customForm.F_ITEM10_TITLE;
+          this.liverName = recordRow.F_LIVER_NAME;
+          this.liverDid = recordRow.F_DID;
+          this.liverId = recordRow.F_LIVER_ID;
+          console.log(recordRow);
+          this.customForm = recordRow;
+        },
+        CancelCheckin: function (recordId) {
+          if (confirm("確定要作廢?") == false) {
             return false;
           }
-          if(checkForm("") == false){
-            return;
-          }
-          const postData = $("#myform").serialize();
-          $.ajax(config.apiHost + 'post/mrcheckin' , {
+          $.ajax(config.apiHost + 'post/mrCancel', {
             type: "POST",
-            data: postData+"&cuid="+currentCust,
+            data: "record-id=" + recordId + "&cuid=" + currentCust,
             dataType: 'json',
-            complete: function(data,status){
+            complete: function (data, status) {
+
               let obj = data.responseJSON;
-              //console.log(obj.checkinRecord);
               mrDetail.displayCFList = true;
               mrDetail.displayDetail = false;
-              alert("儲存完成!");
+              alert("作廢完成!");
+
               mrDetail.checkin = obj.checkinRecord;
               mrDetail.checkout = obj.checkoutRecord;
+              mrDetail.countPage();
             }
           });
-        });
-        btnCheckout.click(function(){
-          if(confirm("確定要結帳?")==false){
-            return false;
+        },
+        countPage: function () {
+          mrDetail.checkinMaxPage = Math.floor(mrDetail.checkin.length / pageBase);
+          mrDetail.checkoutMaxPage = Math.floor(mrDetail.checkout.length / pageBase);
+          if (mrDetail.checkin.length % pageBase == 0 && mrDetail.checkinMaxPage > 0) {
+            mrDetail.checkinMaxPage -= 1;
           }
-          if(checkForm("end") == false){
+          if (mrDetail.checkout.length % pageBase == 0 && mrDetail.checkoutMaxPage > 0) {
+            mrDetail.checkoutMaxPage -= 1;
+          }
+        },
+        startPrint: function (key) {
+          this.loadCheckin(key);
+          this.customForm.companyName = $("#companyName").text();
+          printData = this.customForm;
+          window.open("./mrCheckin.html");
+        },
+        endPrint: function (recordId) {
+          console.log(recordId);
+          this.loadCheckout(recordId);
+          this.customForm.companyName = $("#companyName").text();
+          printData = this.customForm;
+          window.open("./mrCheckout.html");
+        },
+        endExcel: function (recordId) {
+          this.loadCheckout(recordId);
+          let form = this.customForm;
+          let printData = [];
+          printData.push(['進場時間', form.F_START_TIME]);
+          printData.push(['住戶姓名', form.F_LIVER_NAME]);
+          printData.push(['住戶戶號', form.F_DID]);
+          for (let i = 1; i <= 10; i++) {
+            let itemTitle = form['F_ITEM' + i + '_TITLE'].trim();
+            let itemValue = form['F_ITEM' + i + '_VALUE'].trim();
+            if (itemTitle != "") {
+              printData.push([itemTitle, itemValue]);
+            }
+          }
+          printData.push(['計費單位', form.F_UNIT_TYPE]);
+          printData.push(['單位金額', form.F_UNIT_PRICE]);
+          printData.push(['金額總計', form.F_COST_MONEY]);
+          tableToExcel.render(printData, [{ text: $("#companyName").text(), bg: "#999", color: "#fff" }]);
+        },
+        scan: function (title, e) {
+          return false;
+          if (title != '車號(etag)') {
             return;
           }
-          const postData = $("#myform").serialize();
-          $.ajax(config.apiHost + 'post/mrcheckout' , {
+          loadingMask.css("display", "block");
+          loading.removeClass("rotateOut");
+          loading.css("display", "block");
+          loading.addClass("rotateIn");
+          exec("node scan.js", function (err, data, c) {
+            if (err == null && data.length > 0) {
+              let scanId = data.trim();
+              console.log(scanId);
+              e.target.value = scanId;
+            } else {
+              loadingMask.css("display", "none");
+              loading.css("display", "none");
+              loading.removeClass("rotateIn");
+              loading.addClass("rotateOut");
+              console.log(err);
+            }
+          });
+        },
+        searchRecord: function (e) {
+          let keyword = $("#keywordRecord").val();
+          console.log(keyword);
+          if (keyword == "" || keyword.length < 2) {
+            alert("請至少輸入兩個以上的關鍵字!!");
+            return false;
+          }
+          $.ajax(config.apiHost + 'api/mrRecord', {
             type: "POST",
-            data: postData+"&cuid="+currentCust,
+            data: "keyword=" + keyword + "&cuid=" + currentCust,
             dataType: 'json',
-            complete: function(data,status){
+            complete: function (data, status) {
               console.log(data);
               let obj = data.responseJSON;
-              mrDetail.displayCFList = true;
-              mrDetail.displayDetail = false;
-              alert("結帳完成!");
+              console.log(obj);
               mrDetail.checkin = obj.checkinRecord;
               mrDetail.checkout = obj.checkoutRecord;
-              mrDetail.subtotal = obj.mrSubtotal;
+              mrDetail.countPage();
             }
           });
-        });
-        var checkForm = function(type){
-          for(let i =1;i<=10;i++){
-            let itemTitle =mrDetail.customForm['F_ITEM'+i+'_TITLE'].trim();
-            if(itemTitle == "行動電話"){
-              let chkVal = String($("input[name='name-item"+i+"']").val());
-              if(chkVal.match(/^[0-9]{10}$/) == null){
-                alert("請填寫正確的行動電話格式(10位數)!");
-                return false;
-              }
+        },
+        subtotalExcel: function (ymd) {
+          $.ajax({
+            type: `post`,
+            url: config.ajaxOrder,
+            data: {
+              Order: `mrDailySubtotal`,
+              cuid: currentCust,
+              ymd: ymd
+            },
+            dataType: `json`,
+            success: function (data) {
+              let printData = [];
+              printData.push(['入場時間', '結帳時間', '單位', '單價', '結帳金額', '結帳者', '分類', `車牌`, `戶號`, `車位號`, `姓名`]);
+              let total = 0;
+              data.map(function (v, k) {
+                let F_LIVER_NAME = v.F_LIVER_NAME.split("");
+                F_LIVER_NAME.splice(1, 1, "*");
+                printData.push([v.F_START_TIME, v.F_END_TIME, v.F_UNIT_TYPE, v.F_UNIT_PRICE, v.F_COST_MONEY, v.F_EMP_END_NAME || ``, v.F_CLASS_NAME, v.F_ITEM3_VALUE, v.F_DID, v.F_ITEM1_VALUE, F_LIVER_NAME.join("")]);
+                total += parseInt(v.F_COST_MONEY);
+              });
+              printData.push(['總計', '', '', '', total, '', '', '', '', '', '']);
+              tableToExcel.render(printData, [{ text: ymd + "結帳列表", bg: "#333", color: "#fff" }]);
             }
-          }
-          // if(liverName.val()==''){
-          //   alert("請輸入住戶名稱");
-          //   return false;
-          // }
-          // if(liverDid.val()==''){
-          //   alert("請輸入住戶戶號");
-          //   return false;
-          // }
-          if(unitPrice.val()==''){
-            alert("請輸入單位金額");
-            return false;
-          }
-        }
-        var filterDid = $("#filter-did");
-        $("#filter-did").keyup(function(){
-          let str = $(this).val();
-          let liveList = mrDetail.liverList;
-          console.log(mrDetail.liverList);
-          mrDetail.liverList.map(function(v,k){
-            if(str == ""){
-              mrDetail.liverList[k].hide = false;
-            }else{
-              if(v.F_CU_DID.indexOf(str)<0 && v.F_OWNER_NAME.indexOf(str)<0){
-                mrDetail.liverList[k].hide = true;
-              }else{
-                mrDetail.liverList[k].hide = false;
-              }  
-            }
-            
           });
-        });
-        // When the user scrolls down 20px from the top of the document, show the button
-        window.onscroll = function() {scrollFunction()};
-
-        function scrollFunction() {
-          if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-            document.getElementById("myBtn").style.display = "block";
-          } else {
-            document.getElementById("myBtn").style.display = "none";
+          //$.ajax(config.apiHost + 'api/mrDaily/' + currentCust + '/' + ymd, {
+          //            type: "GET",
+          //dataType: 'json',
+          //complete: function (data, status) {
+          //              let obj = data.responseJSON;
+          //console.log(obj);
+          //let printData = [];
+          //printData.push(['入場時間', '結帳時間', '單位', '單價', '結帳金額', '結帳者', '分類', `車牌`, `戶號`, `車位號`, `姓名`]);
+          //let total = 0;
+          //obj.map(function (v, k) {
+          //let F_LIVER_NAME = v.F_LIVER_NAME.split("");
+          //F_LIVER_NAME.splice(1, 1, "*");
+          //printData.push([v.F_START_TIME, v.F_END_TIME, v.F_UNIT_TYPE, v.F_UNIT_PRICE, v.F_COST_MONEY, v.F_EMP_END_NAME, v.F_CLASS_NAME, `車牌`, v.F_DID, '車位號', F_LIVER_NAME.join("")]);
+          //total += parseInt(v.F_COST_MONEY);
+          //});
+          //printData.push(['總計', '', '', '', total, '', '', '', '', '', '']);
+          //tableToExcel.render(printData, [{ text: ymd + "結帳列表", bg: "#333", color: "#fff" }]);
+          //}
+          //});
+        },
+        checkinPrev: function () {
+          let self = this;
+          this.checkinPage--;
+          if (this.checkinPage < 0) {
+            this.checkinPage = 0;
+            return;
           }
-        }
+          if (this.checkinMaxPage < 1) {
+            this.checkinMaxPage = 1;
+            return;
+          }
+          let pStart = this.checkinPage * pageBase;
+          let pEnd = pStart + pageBase;
+          mrDetail.checkin.map(function (v, k) {
+            if (k >= pStart && k < pEnd) {
+              v.DISPLAY_FLAG = 1;
+            } else {
+              v.DISPLAY_FLAG = 0;
+            }
+          });
+        },
+        checkinNext: function () {
+          let self = this;
+          if (mrDetail.checkinPage == mrDetail.checkinMaxPage) {
+            return;
+          }
+          if (this.checkinMaxPage < 1) {
+            this.checkinMaxPage = 1;
+            return;
+          }
+          this.checkinPage++;
+          let pStart = this.checkinPage * pageBase;
+          let pEnd = pStart + pageBase;
+          console.log(mrDetail.checkoutPage);
+          console.log(pageBase);
+          console.log(pStart);
+          console.log(pEnd);
+          mrDetail.checkin.map(function (v, k) {
+            if (k >= pStart && k < pEnd) {
+              v.DISPLAY_FLAG = 1;
+            } else {
+              v.DISPLAY_FLAG = 0;
+            }
+          });
+        },
+        checkoutPrev: function () {
+          let self = this;
+          mrDetail.checkoutPage--;
+          if (mrDetail.checkoutPage < 0) {
+            mrDetail.checkoutPage = 0;
+            return;
+          }
+          if (mrDetail.checkoutMaxPage < 1) {
+            mrDetail.checkoutMaxPage = 1;
+            return;
+          }
+          let pStart = this.checkoutPage * pageBase;
+          let pEnd = pStart + pageBase;
+          mrDetail.checkout.map(function (v, k) {
+            if (k >= pStart && k < pEnd) {
+              v.DISPLAY_FLAG = 1;
+            } else {
+              v.DISPLAY_FLAG = 0;
+            }
+          });
+        },
+        checkoutNext: function () {
 
-        // When the user clicks on the button, scroll to the top of the document
-        
-      });
-      function topFunction() {
-        document.body.scrollTop = 0; // For Safari
-        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+          let self = this;
+          if (mrDetail.checkoutPage == mrDetail.checkoutMaxPage) {
+            return;
+          }
+          if (mrDetail.checkoutMaxPage < 1) {
+            mrDetail.checkoutMaxPage = 1;
+            return;
+          }
+          mrDetail.checkoutPage++;
+          let pStart = mrDetail.checkoutPage * pageBase;
+          let pEnd = pStart + pageBase;
+          mrDetail.checkout.map(function (v, k) {
+            if (k >= pStart && k < pEnd) {
+              console.log(k);
+              v.DISPLAY_FLAG = 1;
+            } else {
+              v.DISPLAY_FLAG = 0;
+            }
+          });
+        }
       }
-    </script>
-    <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
-    <script type="text/javascript" src="/js/main.js"></script>
-  </body>
+    });
+
+    var exec = require('child_process').exec,
+      child;
+    var _ = require("lodash");
+    const request = require("request");
+    $(document).ready(function () {
+      var startTime = $("input[name='start-time']");
+      var endTime = $("input[name='end-time']");
+      var liverName = $("input[name='liver-name']");
+      var liverDid = $("input[name='liver-did']");
+      var unitType = $("input[name='unit-type']");
+      var unitPrice = $("input[name='unit-price']");
+      var btnCheckin = $("#btnCheckin");
+      var btnCheckout = $("#btnCheckout");
+      var startPrint = $("#startPrint");
+      var endPrint = $("#endPrint");
+      logs(config.apiHost + 'api/mrData/' + currentCust + '/000/000')
+      request(config.apiHost + 'api/mrData/' + currentCust + '/000/000', function (error, response, body) {
+        var resObj = JSON.parse(body);
+        console.log(resObj);
+        mrDetail.liverList = resObj.liver;
+        mrDetail.classes = resObj.mr;
+        mrDetail.switchTab(Object.keys(resObj.mr)[0]);
+        mrDetail.checkin = resObj.mrCheckin;
+        mrDetail.checkout = resObj.mrCheckout;
+        mrDetail.subtotal = resObj.mrSubtotal;
+        mrDetail.countPage();
+      });
+
+      $('#datetimepicker1').datetimepicker({ format: 'YYYY-MM-DD HH:mm:ss' });
+      $('#datetimepicker2').datetimepicker({ format: 'YYYY-MM-DD HH:mm:ss' });
+
+      btnCheckin.click(function () {
+        if (confirm("確定要入場?") == false) {
+          return false;
+        }
+        if (checkForm("") == false) {
+          return;
+        }
+        const postData = $("#myform").serialize();
+        $.ajax(config.apiHost + 'post/mrcheckin', {
+          type: "POST",
+          data: postData + "&cuid=" + currentCust,
+          dataType: 'json',
+          complete: function (data, status) {
+            let obj = data.responseJSON;
+            //console.log(obj.checkinRecord);
+            mrDetail.displayCFList = true;
+            mrDetail.displayDetail = false;
+            alert("儲存完成!");
+            mrDetail.checkin = obj.checkinRecord;
+            mrDetail.checkout = obj.checkoutRecord;
+          }
+        });
+      });
+      btnCheckout.click(function () {
+        if (confirm("確定要結帳?") == false) {
+          return false;
+        }
+        if (checkForm("end") == false) {
+          return;
+        }
+        const postData = $("#myform").serialize();
+        $.ajax(config.apiHost + 'post/mrcheckout', {
+          type: "POST",
+          data: postData + "&cuid=" + currentCust,
+          dataType: 'json',
+          complete: function (data, status) {
+            console.log(data);
+            let obj = data.responseJSON;
+            mrDetail.displayCFList = true;
+            mrDetail.displayDetail = false;
+            alert("結帳完成!");
+            mrDetail.checkin = obj.checkinRecord;
+            mrDetail.checkout = obj.checkoutRecord;
+            mrDetail.subtotal = obj.mrSubtotal;
+          }
+        });
+      });
+      var checkForm = function (type) {
+        for (let i = 1; i <= 10; i++) {
+          let itemTitle = mrDetail.customForm['F_ITEM' + i + '_TITLE'].trim();
+          if (itemTitle == "行動電話") {
+            let chkVal = String($("input[name='name-item" + i + "']").val());
+            if (chkVal.match(/^[0-9]{10}$/) == null) {
+              alert("請填寫正確的行動電話格式(10位數)!");
+              return false;
+            }
+          }
+        }
+        // if(liverName.val()==''){
+        //   alert("請輸入住戶名稱");
+        //   return false;
+        // }
+        // if(liverDid.val()==''){
+        //   alert("請輸入住戶戶號");
+        //   return false;
+        // }
+        if (unitPrice.val() == '') {
+          alert("請輸入單位金額");
+          return false;
+        }
+      }
+      var filterDid = $("#filter-did");
+      $("#filter-did").keyup(function () {
+        let str = $(this).val();
+        let liveList = mrDetail.liverList;
+        console.log(mrDetail.liverList);
+        mrDetail.liverList.map(function (v, k) {
+          if (str == "") {
+            mrDetail.liverList[k].hide = false;
+          } else {
+            if (v.F_CU_DID.indexOf(str) < 0 && v.F_OWNER_NAME.indexOf(str) < 0) {
+              mrDetail.liverList[k].hide = true;
+            } else {
+              mrDetail.liverList[k].hide = false;
+            }
+          }
+
+        });
+      });
+      // When the user scrolls down 20px from the top of the document, show the button
+      window.onscroll = function () { scrollFunction() };
+
+      function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+          document.getElementById("myBtn").style.display = "block";
+        } else {
+          document.getElementById("myBtn").style.display = "none";
+        }
+      }
+
+      // When the user clicks on the button, scroll to the top of the document
+
+    });
+    function topFunction() {
+      document.body.scrollTop = 0; // For Safari
+      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    }
+  </script>
+  <button class="btn btn-lg btn-warning" id="loading" style="display:none;"><span
+      class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>請在20秒內掃描員工識別證</button>
+  <script type="text/javascript" src="/js/main.js"></script>
+</body>
+
 </html>
