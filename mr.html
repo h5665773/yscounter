@@ -444,7 +444,21 @@
           <table class="table table-hover table-bordered">
             <thead>
               <tr class="info">
-                <th colspan="8" class="alert-info">日結列表</th>
+                <th colspan="8" class="alert-info">
+                  日結列表
+                  <span style="float:right;">
+                    <a class="pageNavSpan" :class="{pageNavDisable: checkoutPage==0}">
+                      <span @click="subTotalPrev()" :readonly="checkoutPage==0" class="glyphicon glyphicon-chevron-left"
+                        aria-hidden="true"></span>
+                    </a>
+                    <span>{{subTotalMaxPage}}</span> - <span>{{subTotalPage}}</span>
+                    <a class="pageNavSpan" :class="{pageNavDisable: checkoutPage==checkoutMaxPage}">
+                      <span @click="subTotalNext()" :readonly="checkoutPage==checkoutMaxPage"
+                        class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    </a>
+                    </a>
+                  </span>
+                </th>
               </tr>
               <tr class="info">
                 <th>日期</th>
@@ -454,7 +468,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(val,key) in subtotal">
+              <tr v-for="(val,key) in subtotal" v-if="key>=subTotalPage*10&&key<(subTotalPage+1)*10">
                 <td>{{val.F_END_TIME}}</td>
                 <td>{{val.total}}</td>
                 <td>
@@ -511,7 +525,10 @@
         checkinPage: 0,
         checkoutPage: 0,
         checkinMaxPage: 1,
-        checkoutMaxPage: 1
+        checkoutMaxPage: 1,
+        subTotalPage: 0,
+        subTotalMaxPage: 1,
+
       },
       methods: {
         selectLiver: function (did, name, liverid) {
@@ -613,6 +630,7 @@
         countPage: function () {
           mrDetail.checkinMaxPage = Math.floor(mrDetail.checkin.length / pageBase);
           mrDetail.checkoutMaxPage = Math.floor(mrDetail.checkout.length / pageBase);
+          mrDetail.subTotalMaxPage = Math.ceil(mrDetail.subtotal.length / 10);
           if (mrDetail.checkin.length % pageBase == 0 && mrDetail.checkinMaxPage > 0) {
             mrDetail.checkinMaxPage -= 1;
           }
@@ -712,6 +730,7 @@
               let total = 0;
               data.map(function (v, k) {
                 let F_LIVER_NAME = v.F_LIVER_NAME.split("");
+                console.log(v.F_LIVER_NAME);
                 F_LIVER_NAME.splice(1, 1, "*");
                 printData.push([v.F_START_TIME, v.F_END_TIME, v.F_UNIT_TYPE, v.F_UNIT_PRICE, v.F_COST_MONEY, v.F_EMP_END_NAME || ``, v.F_CLASS_NAME, v.F_ITEM3_VALUE, v.F_DID, v.F_ITEM1_VALUE, F_LIVER_NAME.join("")]);
                 total += parseInt(v.F_COST_MONEY);
@@ -827,6 +846,12 @@
               v.DISPLAY_FLAG = 0;
             }
           });
+        },
+        subTotalPrev() {
+          this.subTotalPage = Math.max(this.subTotalPage - 1, 0);
+        },
+        subTotalNext() {
+          this.subTotalPage = Math.min(this.subTotalPage + 1, this.subTotalMaxPage);
         }
       }
     });
