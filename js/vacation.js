@@ -88,6 +88,7 @@ $(document).ready(function () {
                 }
                 this.ym.year = now.getFullYear();
                 this.ym.month = now.getMonth() + 1;
+                now = new Date(now.getFullYear(), now.getMonth(), 1);
                 now = now.firstDayOfWeek();
                 for (let i = 0; i < now.weekOfMonth(); i++) {
                     let week = [];
