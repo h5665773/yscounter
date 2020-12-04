@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="icon/favicon-32x32.png">
+
+    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/colorbox.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.css">
+    <script src="/js/jquery.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/vue.js"></script>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.css">
+    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+    <script type="text/javascript" src="/js/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/Common.js"></script>
+    <script type="text/javascript" src="./js/vacation.js"></script>
+</head>
+
+<body>
+    <style>
+        .flex-row {
+            flex-direction: row;
+        }
+    </style>
+    <div id="body">
+        <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;"
+            v-if="endScanSec>0">
+        </div>
+        <button class="btn btn-lg btn-warning" id="loading" v-if="endScanSec>0">
+            <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span>請在20秒內掃描員工識別證</span>
+        </button>
+        <header>
+            <nav class="navbar">
+            </nav>
+        </header>
+        <div class="container main">
+            <div class="row">
+                <div class="col-lg-3" style="position:relative">
+                    <p>
+                        <a class="btn btn-default" href="#" role="button"
+                            @click="startScan(getData)">開始讀取員工條碼&raquo;</a>
+                    </p>
+                </div>
+            </div>
+            <div class="row" v-if="empid!=''&&cancelSec>0">
+                <div class="col-lg-2"></div>
+                <div class="col-lg-8 text-center" style="font-size: xx-large;">{{ym.year}}-{{ym.month}}</div>
+                <div class="col-lg-2">{{cancelSec}}</div>
+                <div class="col-lg-12">
+                    <table style="width:90%;margin:0 auto;">
+                        <thead>
+                            <tr>
+                                <th class="flex-row text-center">日</th>
+                                <th class="flex-row text-center">一</th>
+                                <th class="flex-row text-center">二</th>
+                                <th class="flex-row text-center">三</th>
+                                <th class="flex-row text-center">四</th>
+                                <th class="flex-row text-center">五</th>
+                                <th class="flex-row text-center">六</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="week in calendar">
+                                <td v-for="day in week" class="row">
+                                    <div class="col-lg-2">
+                                        <span>{{day.date}}</span>
+                                    </div>
+                                    <select v-if="day.year==ym.year&&day.month==ym.month" class="col-lg-10"
+                                        v-model="day.point" @change="computeUsePoint()">
+                                        <option value="0" v-if="6-usePoint>=0||day.point>=0">0</option>
+                                        <option value="1" v-if="6-usePoint>=1||day.point>=1">1</option>
+                                        <option value="2" v-if="6-usePoint>=2||day.point>=2">2</option>
+                                        <option value="3" v-if="6-usePoint>=3||day.point>=3">3</option>
+                                        <option value="4" v-if="6-usePoint>=4||day.point>=4">4</option>
+                                        <option value="5" v-if="6-usePoint>=5||day.point>=5">5</option>
+                                        <option value="6" v-if="6-usePoint>=6||day.point>=6">6</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-12 text-right">
+                    <input type="button" class="btn btn-success" value="送出" @click="startScan(submitData)">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fixed navbar -->
+
+
+</body>
+
+</html>
