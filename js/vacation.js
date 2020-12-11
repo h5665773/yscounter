@@ -13,19 +13,24 @@ $(document).ready(function () {
     Date.prototype.firstDayOfWeek = function () {
         return this.addDays(this.getDay() * (-1));
     }
+    $(document).ajaxError((event, request, settings) => {
+        console.log(event, request, settings);
+    });
     const this_Vue = new Vue({
         el: `#body`,
         data: {
             endScanSec: 0,
             cancelSec: 0,
-            editTime: 60 * 10,
             empid: ``,
+            showContent: false,
             ym: {
                 year: 0,
                 month: 0
             },
-            calendar: [],
-            usePoint: 0
+            calendar: {
+                dateList: [],
+                chooseDate: [],
+            },
         },
         methods: {
             async startScan(callback) {
@@ -51,9 +56,10 @@ $(document).ready(function () {
             },
             async getData() {
                 await this_Vue.createCalendar();
+                this_Vue.empid = "T11272";
                 await $.ajax({
                     type: `post`,
-                    url: config.testURL,
+                    url: config.ajaxOrder,
                     data: {
                         Order: `Get_ExprectVacation`,
                         cuid: custid,
@@ -62,25 +68,13 @@ $(document).ready(function () {
                     dataType: `json`,
                     success: function (data) {
                         data.forEach(x => {
-                            let [year, month, date] = x.VacationDate.split('/');
-                            year = parseInt(year);
-                            month = parseInt(month);
-                            date = parseInt(date);
-                            this_Vue.calendar.forEach((weekCurrentValue, weekIndex, calendarArray) => {
-                                weekCurrentValue.forEach((dayCurrentValue, dayIndex, weekArray) => {
-                                    if (year == dayCurrentValue.year && month == dayCurrentValue.month && date == dayCurrentValue.date) {
-                                        this_Vue.calendar[weekIndex][dayIndex].point = x.Point;
-                                        this_Vue.usePoint += parseInt(x.Point);
-                                    }
-                                })
-                            })
-                        })
-                        this_Vue.showContent();
+                            this_Vue.calendar.chooseDate.push(new Date(x.VacationDate).getDate());
+                        });
+                        this_Vue.showContent = true;
                     }
                 })
             },
             async createCalendar() {
-                this.calendar = [];
                 let now = new Date();
                 now = new Date(now.setMonth(now.getMonth() + 1));
                 if (now.getDate() > 20) {
@@ -88,71 +82,37 @@ $(document).ready(function () {
                 }
                 this.ym.year = now.getFullYear();
                 this.ym.month = now.getMonth() + 1;
-                now = new Date(now.getFullYear(), now.getMonth(), 1);
-                now = now.firstDayOfWeek();
-                for (let i = 0; i < now.weekOfMonth(); i++) {
-                    let week = [];
-                    for (let j = 0; j < 7; j++) {
-                        let day = {
-                            year: now.addDays(i * 7).addDays(j).getFullYear(),
-                            month: now.addDays(i * 7).addDays(j).getMonth() + 1,
-                            date: now.addDays(i * 7).addDays(j).getDate(),
-                            day: now.addDays(i * 7).addDays(j).getDay(),
-                            point: 0
-                        };
-                        week.push(day);
-                    }
-                    this.calendar.push(week);
+                this.calendar.dateList = [];
+                this.calendar.chooseDate = [];
+                for (let i = 0; i < new Date(this_Vue.ym.year, this_Vue.ym.month, 0).getDate(); i++) {
+                    this.calendar.dateList.push(false);
                 }
-            },
-            computeUsePoint() {
-                let total = 0;
-                for (let i = 0; i < this.calendar.length; i++) {
-                    for (let j = 0; j < 7; j++) {
-                        total += parseInt(this.calendar[i][j].point);
-                    }
-                }
-                this.usePoint = total;
-            },
-            showContent() {
-                this.cancelSec = this.editTime;
-                let timeOut = setInterval(() => {
-                    this_Vue.cancelSec = this_Vue.cancelSec - 1;
-                    if (this_Vue.cancelSec <= 0) {
-                        clearInterval(timeOut);
-                        this_Vue.empid = ``;
-                    }
-                }, 1000);
             },
             submitData() {
-                let data = [];
-                this.calendar.forEach((weekCurrentValue, weekIndex, calendarArray) => {
-                    weekCurrentValue.forEach((dayCurrentValue, dayIndex, weekArray) => {
-                        if (dayCurrentValue.point != 0) {
-                            data.push({
-                                VacationDate: `${dayCurrentValue.year}-${dayCurrentValue.month}-${dayCurrentValue.date}`,
-                                Point: dayCurrentValue.point
-                            })
-                        }
-                    })
-                })
-                this.cancelSec = 0;
                 $.ajax({
                     type: `post`,
-                    url: config.testURL,
+                    url: config.ajaxOrder,
                     data: {
                         Order: `Update_ExprectVacation`,
+                        ym: `${this_Vue.ym.year}-${this_Vue.ym.month}`,
                         cuid: custid,
                         empid: this_Vue.empid,
-                        ym: new Date(this_Vue.ym.year, this_Vue.ym.month, 0).toISOString().substr(0, 10),
-                        data: JSON.stringify(data)
+                        date: this_Vue.calendar.chooseDate.toString()
                     },
-                    complete: function (jqXHR, textStatus) {
-                        if (jqXHR.responseText != `Success`) {
-                            console.log(`Data error!`);
+                    complete: function (XMLHttpRequest, textStatus) {
+                        if (XMLHttpRequest.responseText == `Success`) {
+                            alert(`儲存成功`);
+                            this_Vue.empid = ``;
+                            this_Vue.showContent = false;
+                        }
+                        else {
+                            alert(`請檢查網路並且更新版本，如未解決請回報公司!`);
                         }
                     }
                 })
+            },
+            disabled(date) {
+                return this.calendar.chooseDate.length > 5 && this.calendar.chooseDate.filter(x => x == date).length == 0;
             }
         },
         components: {
