@@ -22,6 +22,7 @@ $(document).ready(function () {
             endScanSec: 0,
             cancelSec: 0,
             empid: ``,
+            empName: ``,
             showContent: false,
             ym: {
                 year: 0,
@@ -66,9 +67,10 @@ $(document).ready(function () {
                     },
                     dataType: `json`,
                     success: function (data) {
-                        data.forEach(x => {
+                        data.main.forEach(x => {
                             this_Vue.calendar.chooseDate.push(new Date(x.VacationDate).getDate());
                         });
+                        this_Vue.empName = data.name;
                         this_Vue.showContent = true;
                     }
                 })
