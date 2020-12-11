@@ -56,7 +56,6 @@ $(document).ready(function () {
             },
             async getData() {
                 await this_Vue.createCalendar();
-                this_Vue.empid = "T11272";
                 await $.ajax({
                     type: `post`,
                     url: config.ajaxOrder,
