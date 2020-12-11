@@ -70,7 +70,7 @@ $(document).ready(function () {
                         data.main.forEach(x => {
                             this_Vue.calendar.chooseDate.push(new Date(x.VacationDate).getDate());
                         });
-                        this_Vue.empName = data.name;
+                        this_Vue.empName = data.name[0].F_EMP_NAME;
                         this_Vue.showContent = true;
                     }
                 })
