@@ -32,30 +32,33 @@ $(document).ready(function () {
                 dateList: [],
                 chooseDate: [],
             },
+            dayOfWeek: [`日`, `一`, `二`, `三`, `四`, `五`, `六`]
         },
         methods: {
             async startScan(callback) {
-                this.endScanSec = 20;
-                let scanTimeout = setInterval(() => {
-                    this_Vue.endScanSec = this_Vue.endScanSec - 1;
-                    if (this_Vue.endScanSec <= 0) {
-                        clearInterval(scanTimeout);
-                    }
-                }, 20000);
-                require('child_process').exec("node scan.js", function (err, data, c) {
-                    const regex = RegExp(/[A-Z][0-9]*[A-Z]?/);
-                    if (regex.test(data) && data.toUpperCase().indexOf(`ERROR`) == -1) {
-                        this_Vue.empid = data.match(/[A-Z][0-9]*[A-Z]?/)[0];
-                        this_Vue.endScanSec = 0;
-                        if (callback) {
-                            callback();
-                        }
-                    } else {
-                        this_Vue.startScan(callback);
-                    }
-                });
+                callback();
+                //this.endScanSec = 20;
+                //let scanTimeout = setInterval(() => {
+                //    this_Vue.endScanSec = this_Vue.endScanSec - 1;
+                //    if (this_Vue.endScanSec <= 0) {
+                //        clearInterval(scanTimeout);
+                //    }
+                //}, 20000);
+                //require('child_process').exec("node scan.js", function (err, data, c) {
+                //    const regex = RegExp(/[A-Z][0-9]*[A-Z]?/);
+                //    if (regex.test(data) && data.toUpperCase().indexOf(`ERROR`) == -1) {
+                //        this_Vue.empid = data.match(/[A-Z][0-9]*[A-Z]?/)[0];
+                //        this_Vue.endScanSec = 0;
+                //        if (callback) {
+                //            callback();
+                //        }
+                //    } else {
+                //        this_Vue.startScan(callback);
+                //    }
+                //});
             },
             async getData() {
+                this_Vue.empid = `T11272`;
                 await this_Vue.createCalendar();
                 await $.ajax({
                     type: `post`,
@@ -114,6 +117,23 @@ $(document).ready(function () {
             },
             disabled(date) {
                 return this.calendar.chooseDate.length > 5 && this.calendar.chooseDate.filter(x => x == date).length == 0;
+            },
+            getDayOfMonth(date) {
+                date = new Date(this_Vue.ym.year, this_Vue.ym.month - 1, date);
+                return date.getDay();
+            },
+            dateClass(date) {
+                switch (this.getDayOfMonth(date)) {
+                    case 0:
+                        return 'Date Sunday';
+                        break;
+                    case 6:
+                        return 'Date Saturday';
+                        break;
+                    default:
+                        return `Date`;
+                        break;
+                }
             }
         },
         components: {
