@@ -1,4 +1,4 @@
-require('nw.gui').Window.get().maximize()
+//require('nw.gui').Window.get().maximize()
 var fs = require('fs');
 var versionFile = "public/v.txt";
 var version = fs.readFileSync(versionFile, { encoding: 'utf-8' });

@@ -79,9 +79,9 @@ $(document).ready(function () {
             async createCalendar() {
                 let now = new Date();
                 now = new Date(now.setMonth(now.getMonth() + 1));
-                if (now.getDate() > 20) {
-                    now = new Date(now.setMonth(now.getMonth() + 1));
-                }
+                //if (now.getDate() > 20) {
+                //    now = new Date(now.setMonth(now.getMonth() + 1));
+                //}
                 this.ym.year = now.getFullYear();
                 this.ym.month = now.getMonth() + 1;
                 this.calendar.dateList = [];
@@ -114,7 +114,7 @@ $(document).ready(function () {
                 })
             },
             disabled(date) {
-                return this.calendar.chooseDate.length > 5 && this.calendar.chooseDate.filter(x => x == date).length == 0;
+                return this.calendar.chooseDate.length > 1 && this.calendar.chooseDate.filter(x => x == date).length == 0;
             },
             getDayOfMonth(date) {
                 date = new Date(this_Vue.ym.year, this_Vue.ym.month - 1, date);
