@@ -1,7 +1,7 @@
 //require('nw.gui').Window.get().maximize()
 var fs = require('fs');
 var versionFile = "public/v.txt";
-var version = fs.readFileSync(versionFile, { encoding: 'utf-8' });
+var version = require('./package.json').version;
 var http = require('http');
 var config = require("./config.js");
 var jade = require("jade");
