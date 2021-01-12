@@ -415,7 +415,6 @@
               }
               //設定vue data
               if (typeof (rows['data2']) != 'undefined') {
-                console.log(rows['data2']);
                 vueScheduleList.list = rows['data2'];
                 var html = $("html");
                 $(window).scroll(function () {
@@ -438,7 +437,7 @@
         choosePoint = pointid;
         $("a.current").removeClass("current");
         $(this).addClass("current");
-        var yesterday = vueScheduleList.list[pointid].list[0]["checkin"];
+        var yesterday = vueScheduleList.list[pointid].list[0];
         if (vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"] == "") {
           //$.ajax({
           //type: `post`,
@@ -450,8 +449,8 @@
           //success: function (data) {
           //              if (data == "True") {
           gowork.show();
-          if (yesterday["GO_WORKTIME"] != "" && yesterday["OFF_WORKTIME"] == "") {
-            let startHour = parseInt(yesterday["GO_WORKTIME"].substr(0, 2));
+          if (yesterday["checkin"]["GO_WORKTIME"] != "" && yesterday["checkin"]["OFF_WORKTIME"] == "" && d.getTime() > new Date(`${yesterday.checkin.REC_DATE} ${yesterday.edt.trim()}:00:00`).getTime() + (10 * 3600)) {
+            let startHour = parseInt(yesterday["checkin"]["GO_WORKTIME"].substr(0, 2));
             if (startHour > 15 && d.getHours() <= 9) {
               offwork.show();
               gowork.hide();
