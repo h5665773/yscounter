@@ -88,7 +88,8 @@ $(document).ready(function () {
                         this_Vue.showContent = true;
                     },
                     error: function (err) {
-                        alert(err.responseText);
+                        alert('查無班表');
+                        // alert(err.responseText);
                         location.href = "./index.html";
                     }
                 })
