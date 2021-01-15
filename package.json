@@ -1,6 +1,6 @@
 {
   "name": "yscounter",
-  "version": "6.2.6",
+  "version": "6.2.7",
   "main": "index.html",
   "window": {
     "title": "node-webkit demo",

@@ -422,14 +422,14 @@
                     location.href = "./AgreeSchedule.html";
                   }
                   return;
-                } else {
-                  $('#goWork').attr('disabled', false);
-                  $('#offWork').attr('disabled', false);
                 }
                 if (data.nextMonth != `True`) {
                   temp = confirm('下個月班表尚未確認，是否跳轉也面進行確認?');
                   if (temp) {
                     location.href = "./AgreeSchedule.html";
+                  } else {
+                    $('#goWork').attr('disabled', false);
+                    $('#offWork').attr('disabled', false);
                   }
                 }
               }
