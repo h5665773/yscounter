@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="icon/favicon-32x32.png">
+
+    <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/colorbox.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.css">
+    <script src="/js/jquery.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/vue.js"></script>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.css">
+    <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+    <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+    <script type="text/javascript" src="/js/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-datetimepicker.js"></script>
+    <script src="/js/face-api.min.js"></script>
+    <script type="text/javascript" src="/js/Common.js"></script>
+    <script type="text/javascript" src="./js/AgreeSchedule.js"></script>
+</head>
+
+<body>
+    <style>
+        .loading {
+            z-index: 9999;
+            position: fixed;
+            top: 44%;
+            left: 39%;
+        }
+
+        canvas {
+            position: absolute;
+            top: 39px;
+            left: 15px;
+        }
+
+        #cameraArea {
+            position: relative;
+        }
+
+        #canvas {
+            z-index: -99;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        .shotLine {
+            position: absolute;
+            display: block;
+            width: 80px;
+            height: 50px;
+        }
+
+        .shotLine.leftTop {
+            border-right: 1px dotted #0000ff;
+            border-bottom: 1px dotted #0000ff;
+            top: 65px;
+            left: 0;
+        }
+
+        .shotLine.rightTop {
+            border-left: 1px dotted #0000ff;
+            border-bottom: 1px dotted #0000ff;
+            top: 65px;
+            right: 0;
+        }
+
+        .shotLine.leftBottom {
+            border-right: 1px dotted #0000ff;
+            border-top: 1px dotted #0000ff;
+            bottom: 35px;
+            left: 0;
+        }
+
+        .shotLine.rightBottom {
+            border-left: 1px dotted #0000ff;
+            border-top: 1px dotted #0000ff;
+            bottom: 35px;
+            right: 0;
+        }
+
+        .Date>input {
+            height: 30px;
+            width: 30px;
+        }
+
+        .Date.Sunday {
+            color: red;
+        }
+
+        .Date.Saturday {
+            color: green;
+        }
+    </style>
+    <div id="body">
+        <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;"
+            v-if="endScanSec>0">
+        </div>
+        <button class="btn btn-lg btn-warning" id="loading" v-if="endScanSec>0">
+            <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span>請在20秒內掃描員工識別證</span>
+        </button>
+        <loading v-if="loadShow" :loadmessage.sync="loadMessage"></loading>
+        <!-- <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;" -->
+        <!-- v-if="endScanSec>0"> -->
+        <!-- </div> -->
+        <!-- <button class="btn btn-lg btn-warning" id="loading" v-if="endScanSec>0"> -->
+        <!-- <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span>請在20秒內掃描員工識別證</span> -->
+        <!-- </button> -->
+        <header>
+            <nav class="navbar">
+            </nav>
+        </header>
+        <div class="container main">
+            <div class="row">
+                <div class="col-lg-3" style="position:relative">
+                    <p>
+                        <a class="btn btn-default" href="#" role="button"
+                            @click="startScan(getData)">開始讀取員工條碼&raquo;</a>
+                    </p>
+                    <p v-if="showContent">
+                        <a class="btn btn-success" href="#" role="button" :disabled="checked&&scanCheck"
+                            @click="submitData()">確認班表&raquo;</a>
+                    </p>
+                </div>
+                <face-camera v-if="showContent" :facedetections.sync="facedetections"></face-camera>
+            </div>
+            <div class="row" v-if="showContent">
+                <div class="col-lg-12 text-center" style="font-size:xx-large;">{{ym.year}}年{{ym.month}}月班表</div>
+            </div>
+            <div class="row">
+                <table class="col-lg-12">
+                    <tr>
+                        <td style="width:16.3%;border:1px solid;" v-if="showContent"></td>
+                        <td v-for=" d in date" style="width:2.7%;font-size:larger;border:1px solid;"
+                            :class="dateClass(d)">{{d}}</br>
+                            ({{dayOfWeek[getDayOfMonth(d)]}})</td>
+                    </tr>
+                    <tr v-for="p in point">
+                        <td class="text-center" style="border:1px solid;"><span
+                                style="font-size:x-large;">{{p.F_POINT_NAME}}</span>
+                        </td>
+                        <td class="text-center" v-for=" d in p.sche" style="font-size:larger;border:1px solid;">
+                            {{d.Day}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

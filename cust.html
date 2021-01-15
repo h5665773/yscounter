@@ -404,6 +404,36 @@
             //vueLoadingMask.warnings = row['data2']
             //vueScheduleList.warnings = row['data2']
             //});
+            $.ajax({
+              type: 'post',
+              url: config.ajaxOrder,
+              data: {
+                Order: 'Get_CheckScheduleConfirm',
+                empid: scanEmpId
+              },
+              dataType: 'json',
+              success: function (data) {
+                let temp;
+                if (data.thisMonth != `True`) {
+                  $('#goWork').attr('disabled', true);
+                  $('#offWork').attr('disabled', true);
+                  temp = confirm('本月班表尚未確認，是否跳轉也面進行確認?');
+                  if (temp) {
+                    location.href = "./AgreeSchedule.html";
+                  }
+                  return;
+                } else {
+                  $('#goWork').attr('disabled', false);
+                  $('#offWork').attr('disabled', false);
+                }
+                if (data.nextMonth != `True`) {
+                  temp = confirm('下個月班表尚未確認，是否跳轉也面進行確認?');
+                  if (temp) {
+                    location.href = "./AgreeSchedule.html";
+                  }
+                }
+              }
+            })
             request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
               var rows = JSON.parse(body);
               if (error != null) {
