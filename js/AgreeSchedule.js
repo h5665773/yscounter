@@ -33,6 +33,7 @@ $(document).ready(function () {
                 year: 0,
                 month: 0
             },
+            monthText: '',
             dayOfWeek: [`日`, `一`, `二`, `三`, `四`, `五`, `六`],
             checked: false
         },
@@ -83,7 +84,9 @@ $(document).ready(function () {
                         for (let i = 0; i < new Date(that.ym.year, that.ym.month, 0).getDate(); i++) {
                             that.date.push(i + 1);
                         }
-                        that.checked = data.confirmed.length == 1;
+                        that.monthText = data.information[0].MonthText + `(${parseInt(that.ym.month)}/${data.sche.filter(x => x.Day == '國')[0].Date})`;
+                        that.checked = data.information[0].confirmed == 'True';
+                        that.empName = data.information[0].empName;
                         that.point = point;
                         this_Vue.showContent = true;
                     },
@@ -225,7 +228,14 @@ $(document).ready(function () {
                 props: ["loadmessage"],
             }
         },
-        mounted() {
+        async mounted() {
+            let searchList = location.search.substr(1).split('&');
+            let empObj = searchList.filter(x => x.indexOf('empid') > -1)[0];
+            if (empObj) {
+                let empid = empObj.match(/[A-Z][0-9]{5}/)[0];
+                this.empid = empid;
+                await this.getData();
+            }
         }
     });
 });
