@@ -375,8 +375,8 @@
         loading.addClass("rotateIn");
 
         exec("node scan.js", function (err, data, c) {
-          //data = 'T10220';
-          //err = null;
+          // data = 'K10297';
+          // err = null;
           if (err == null && data.length > 0) {
             data = data.trim();
             var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
@@ -391,11 +391,12 @@
               },
               dataType: `json`,
               success: function (dataSet) {
+                console.log(dataSet);
                 empName.html(dataSet.data1[0]['F_EMP_NAME']);
                 vueLoadingMask.warnings = dataSet.data2;
                 vueScheduleList.warnings = dataSet.data2;
               }
-            })
+            });
             //console.log(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId);
             //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
             //request(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
@@ -417,6 +418,7 @@
               },
               dataType: 'json',
               success: function (data) {
+                console.log(data);
                 if (data.thisMonth == 'False') {
                   alert('尚未確認班表，將自動跳轉頁面!');
                   location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
