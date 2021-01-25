@@ -160,6 +160,30 @@ $(document).ready(function () {
                 this.loadMessage = ``;
                 this.loadShow = false;
             },
+            setVideo() {
+                let video = document.getElementById('video');
+                navigator.getUserMedia(
+                    { video: {} },
+                    stream => video.srcObject = stream,
+                    err => console.error(err)
+                )
+                video.addEventListener('play', () => {
+                    let _this = this;
+                    const canvasF = faceapi.createCanvasFromMedia(video)
+                    $(`#cameraArea`).append(canvasF)
+                    const displaySize = { width: video.width, height: video.height }
+                    faceapi.matchDimensions(canvasF, displaySize)
+                    setInterval(async () => {
+                        let faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }));
+                        const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
+                        canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
+                        faceapi.draw.drawDetections(canvasF, resizedDetections)
+                        let score = 0;
+                        if (resizedDetections.length) score = resizedDetections[0].score * 100;
+                        _this.facedetections = score;
+                    }, 200)
+                });
+            }
         },
         watch: {
             facedetections: function () {
@@ -237,6 +261,12 @@ $(document).ready(function () {
                 this.empid = empid;
                 await this.getData();
             }
+            Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri('/js'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('/js'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('/js'),
+                faceapi.nets.faceExpressionNet.loadFromUri('/js')
+            ]).then(this.setVideo());
         }
     });
 });
