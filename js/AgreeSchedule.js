@@ -84,7 +84,8 @@ $(document).ready(function () {
                         for (let i = 0; i < new Date(that.ym.year, that.ym.month, 0).getDate(); i++) {
                             that.date.push(i + 1);
                         }
-                        that.monthText = data.information[0].MonthText + `(${parseInt(that.ym.month)}/${data.sche.filter(x => x.Day == '國')[0].Date})`;
+                        let temp = data.sche.filter(x => x.Day == '國');
+                        that.monthText = data.information[0].MonthText + (temp[0] ? `(${parseInt(that.ym.month)}/${temp[0].Date})` : '');//+ ;
                         that.checked = data.information[0].confirmed == 'True';
                         that.empName = data.information[0].empName;
                         that.point = point;
