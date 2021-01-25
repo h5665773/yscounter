@@ -204,7 +204,7 @@ $(document).ready(function () {
                                 let score = 0;
                                 if (resizedDetections.length) score = resizedDetections[0].score * 100;
                                 this.$emit('update:facedetections', score);
-                            }, 200)
+                            }, 500)
                         });
                     },
                 },

@@ -458,15 +458,6 @@
         $(this).addClass("current");
         var yesterday = vueScheduleList.list[pointid].list[0];
         if (vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"] == "") {
-          //$.ajax({
-          //type: `post`,
-          //url: config.ajaxOrder,
-          //data: {
-          //              Order: `Get_HasScheduleConfirm`,
-          //F_EMP_ID: scanEmpId
-          //},
-          //success: function (data) {
-          //              if (data == "True") {
           gowork.show();
           if (yesterday["checkin"]["GO_WORKTIME"] != "" && yesterday["checkin"]["OFF_WORKTIME"] == "" && d.getTime() > new Date(`${yesterday.checkin.REC_DATE} ${yesterday.edt.trim()}:00:00`).getTime() + (10 * 3600)) {
             let startHour = parseInt(yesterday["checkin"]["GO_WORKTIME"].substr(0, 2));
@@ -475,20 +466,6 @@
               gowork.hide();
             }
           }
-          //            } else {
-          //let changeLocation = confirm(`尚未確認班表，是否跳轉視窗?`);
-          //if (changeLocation) {
-          //                  location.href = "./scheduleConfirm.html";
-          //} else {
-          //                  loadingMask.css("display", "none");
-          //loading.css("display", "none");
-          //loading.removeClass("rotateIn");
-          //loading.addClass("rotateOut");
-          //}
-          //}
-          //}
-          //});
-
         } else {
           offwork.show();
         }
