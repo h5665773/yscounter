@@ -461,13 +461,13 @@
         var yesterday = vueScheduleList.list[pointid].list[0];
         if (vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"] == "") {
           gowork.show();
-          if (yesterday["checkin"]["GO_WORKTIME"] != "" && yesterday["checkin"]["OFF_WORKTIME"] == "" && d.getTime() > new Date(`${yesterday.checkin.REC_DATE} ${yesterday.edt.trim()}:00:00`).getTime() + (10 * 3600)) {
-            let startHour = parseInt(yesterday["checkin"]["GO_WORKTIME"].substr(0, 2));
-            if (startHour > 15 && d.getHours() <= 9) {
-              offwork.show();
-              gowork.hide();
-            }
-          }
+          // if (yesterday["checkin"]["GO_WORKTIME"] != "" && yesterday["checkin"]["OFF_WORKTIME"] == "" && d.getTime() > new Date(`${yesterday.checkin.REC_DATE} ${yesterday.edt.trim()}:00:00`).getTime() + (10 * 3600)) {
+          //   let startHour = parseInt(yesterday["checkin"]["GO_WORKTIME"].substr(0, 2));
+          //   if (startHour > 15 && d.getHours() <= 9) {
+          //     offwork.show();
+          //     gowork.hide();
+          //   }
+          // }
         } else {
           offwork.show();
         }

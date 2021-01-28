@@ -183,6 +183,9 @@ $(document).ready(function () {
                         _this.facedetections = score;
                     }, 200)
                 });
+            },
+            disagreeSchedule() {
+                alert('不同意班表請與排班管理人員聯絡!');
             }
         },
         watch: {
