@@ -243,6 +243,7 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
+            const url = require('./config.js').ajaxOrder;
             var app = new Vue({
                 el: '#ListPage',
                 data: {
@@ -304,7 +305,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: `http://admin.wyattst.com.tw/YSWEB/XMLFORM/AjaxOrder.aspx`,
+                    url: url,
                     data: {
                         Order: 'Get_Announcement',
                         F_CU_ID: F_CU_ID_str,
@@ -322,7 +323,7 @@
             function Get_AnnouncementDetail(F_ANNOUNCEMENT_NO_str) {
                 $.ajax({
                     type: 'POST',
-                    url: `http://admin.wyattst.com.tw/YSWEB/XMLFORM/AjaxOrder.aspx`,
+                    url: url,
                     data: {
                         Order: 'Get_Announcement',
                         F_ANNOUNCEMENT_NO: F_ANNOUNCEMENT_NO_str

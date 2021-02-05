@@ -168,36 +168,38 @@
         <div class="shotLine rightBottom"></div>
       </div>
       <div class="col-lg-6 point-schedule" align="center">
-        <table class="table table-bordered" v-for="(ps,pk) in list">
+        <table class="table table-bordered" v-if="list.length">
+          <!-- v-for="(ps,pk) in list" -->
           <thead>
             <tr>
-              <th colspan="8">{{ps.F_POINT_NAME}} <span class="label label-warning">國 = 國定假日</span>
+              <!-- {{ps.F_POINT_NAME}} -->
+              <th colspan="8">{{pointName}}<span class="label label-warning">國 = 國定假日</span>
             </tr>
           </thead>
           <tbody>
             <tr>
               <th>日期</th>
-              <td v-for="(v,k) in ps.list" v-html="v.date"></td>
+              <td v-for="item in list" v-html="item.date"></td>
             </tr>
             <tr>
               <th scope="row">班別</th>
-              <td v-for="(v,k) in ps.list">{{v.classType}}</td>
+              <td v-for="item in list">{{item.classType}}</td>
             </tr>
             <tr>
               <th scope="row">應上班</th>
-              <td v-for="(v,k) in ps.list">{{v.sdt}}</td>
+              <td v-for="item in list">{{item.sdt}}</td>
             </tr>
             <tr>
               <th scope="row">上班打卡</th>
-              <td v-for="(v,k) in ps.list">{{v.checkin['GO_WORKTIME']}}</td>
+              <td v-for="item in list">{{item.GO_WORKTIME}}</td>
             </tr>
             <tr>
               <th scope="row">應下班</th>
-              <td v-for="(v,k) in ps.list">{{v.edt}}</td>
+              <td v-for="item in list">{{item.edt}}</td>
             </tr>
             <tr>
               <th scope="row">下班打卡</th>
-              <td v-for="(v,k) in ps.list">{{v.checkin['OFF_WORKTIME']}}</td>
+              <td v-for="item in list">{{item.OFF_WORKTIME}}</td>
             </tr>
           </tbody>
         </table>
@@ -266,8 +268,12 @@
       el: '#scheduleList',
       data: {
         list: {},
-        warnings: []
-      }
+        warnings: [],
+        pointID: ``,
+        listObj: {},
+        pointData: [],
+        pointName: ``
+      },
     });
     var vueLoadingMask = new Vue({
       el: '#loading-mask',
@@ -355,7 +361,6 @@
         loading.addClass("rotateOut");
         pointList.empty();
         var resEmpName = "";
-
         for (var i in pointData) {
           pointList.append('<a href="#" pointid="' + pointData[i].F_POINT_ID + '" class="list-group-item list-group-item-danger">' + pointData[i].F_POINT_NAME + '<span>(點選以打卡)</span></a>');
         }
@@ -391,7 +396,6 @@
               },
               dataType: `json`,
               success: function (dataSet) {
-                console.log(dataSet);
                 empName.html(dataSet.data1[0]['F_EMP_NAME']);
                 vueLoadingMask.warnings = dataSet.data2;
                 vueScheduleList.warnings = dataSet.data2;
@@ -418,25 +422,28 @@
               },
               dataType: 'json',
               success: function (data) {
-                console.log(data);
                 if (data.thisMonth == 'False') {
                   alert('尚未確認班表，將自動跳轉頁面!');
                   location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
                 }
               }
             });
-            request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
-              var rows = JSON.parse(body);
-              if (error != null) {
-                pointData = JSON.parse(fs.readFileSync(offlinePointFile));
+            $.ajax({
+              type: 'get',
+              url: config.ajaxOrder,
+              data: {
+                Order: 'Get_SevenDaysSchedule',
+                custid: currentCust,
+                empid: scanEmpId
+              },
+              dataType: `json`,
+              success: function (data) {
+                vueScheduleList.pointID = ``;
+                vueScheduleList.pointData = data.pointList;
+                pointData = data.pointList;
                 showPoint(pointData, scanEmpId);
-              } else {
-                pointData = rows['data1'];
-                showPoint(pointData, scanEmpId);
-              }
-              //設定vue data
-              if (typeof (rows['data2']) != 'undefined') {
-                vueScheduleList.list = rows['data2'];
+                delete data.pointList;
+                vueScheduleList.listObj = data;
                 var html = $("html");
                 $(window).scroll(function () {
                   if ($(this).scrollTop()) {
@@ -445,6 +452,27 @@
                 });
               }
             });
+            // request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
+            //   var rows = JSON.parse(body);
+            //   // console.log(rows);
+            //   if (error != null) {
+            //     // pointData = JSON.parse(fs.readFileSync(offlinePointFile));
+            //     // showPoint(pointData, scanEmpId);
+            //   } else {
+            //     // pointData = rows['data1'];
+            //     // showPoint(pointData, scanEmpId);
+            //   }
+            //   //設定vue data
+            //   if (typeof (rows['data2']) != 'undefined') {
+            //     // vueScheduleList.list = rows['data2'];
+            //     var html = $("html");
+            //     $(window).scroll(function () {
+            //       if ($(this).scrollTop()) {
+            //         html.css("overflow", "visible");
+            //       }
+            //     });
+            //   }
+            // });
           } else {
             loadingMask.css("display", "none");
             loading.css("display", "none");
@@ -455,21 +483,17 @@
       });
       pointList.delegate(".list-group-item", "click", function () {
         var pointid = $(this).attr("pointid");
+        vueScheduleList.list = vueScheduleList.listObj[pointid];
+        vueScheduleList.pointName = vueScheduleList.pointData.filter(x => x.F_POINT_ID == pointid)[0].F_POINT_NAME
         choosePoint = pointid;
         $("a.current").removeClass("current");
         $(this).addClass("current");
-        var yesterday = vueScheduleList.list[pointid].list[0];
-        if (vueScheduleList.list[pointid].list[1]["checkin"]["GO_WORKTIME"] == "") {
-          gowork.show();
-          // if (yesterday["checkin"]["GO_WORKTIME"] != "" && yesterday["checkin"]["OFF_WORKTIME"] == "" && d.getTime() > new Date(`${yesterday.checkin.REC_DATE} ${yesterday.edt.trim()}:00:00`).getTime() + (10 * 3600)) {
-          //   let startHour = parseInt(yesterday["checkin"]["GO_WORKTIME"].substr(0, 2));
-          //   if (startHour > 15 && d.getHours() <= 9) {
-          //     offwork.show();
-          //     gowork.hide();
-          //   }
-          // }
-        } else {
+        if (vueScheduleList.list[1]["GO_WORKTIME"]) {
           offwork.show();
+          if (vueScheduleList.list[1]["OFF_WORKTIME"])
+            offwork.attr('disabled', true);
+        } else {
+          gowork.show();
         }
       });
       gowork.click(function () {
