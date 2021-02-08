@@ -124,7 +124,10 @@
                                                     <span v-else>-</span>
                                                 </td>
                                                 <td><a href="#" @click="Detail(data.F_ANNOUNCEMENT_NO);"><span
-                                                            class="glyphicon glyphicon-search"></span></a></td>
+                                                            class="glyphicon glyphicon-search"></span></a>
+                                                    <a href="#" v-if="data.F_VIDEOHREF" @click="openWindow(data)"><span
+                                                            class="glyphicon glyphicon-play"></span></a>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -253,6 +256,9 @@
                     Detail: function (F_ANNOUNCEMENT_NO_str) {
                         Get_AnnouncementDetail(F_ANNOUNCEMENT_NO_str);
                         ShowDetail();
+                    },
+                    openWindow(item) {
+                        window.open(item.F_VIDEOHREF);
                     }
                 }
             });
