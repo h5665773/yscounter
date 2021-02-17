@@ -3,5 +3,5 @@ module.exports = {
 	ajaxOrder: "http://admin.wyattst.com.tw//YSWEB/JSONFORM/YsCounterApi.aspx",
 	updateURL: "https://github.com/h5665773/yscounter/archive/master.zip",
 	CMSOrder: "http://admin.wyattst.com.tw/CMS/Api/AjaxOrder",
-	testURL: "http://localhost:50381/JSONFORM/YsCounterApi.aspx"
+	testURL: "http://localhost:50066/JSONFORM/YsCounterApi.aspx"
 };

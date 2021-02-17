@@ -370,7 +370,11 @@
       }
       $("#scanEmp").click(function () {
         var pointData = {};
+        let targerUrl = config.ajaxOrder;
+        // let targerUrl = config.testURL;
+
         if ($(this).attr("disabled") == true) {
+          
           return false;
         }
         loadingText.text("請在20秒內掃描員工識別證!");
@@ -380,15 +384,17 @@
         loading.addClass("rotateIn");
 
         exec("node scan.js", function (err, data, c) {
+          
           // data = 'K10297';
           // err = null;
           if (err == null && data.length > 0) {
             data = data.trim();
             var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
             scanEmpId = parse[1];
+            
             $.ajax({
               type: `post`,
-              url: config.ajaxOrder,
+              url: targerUrl,
               data: {
                 Order: `Get_EmpNameAndEmpWarning`,
                 F_EMP_ID: scanEmpId,
@@ -415,7 +421,7 @@
 
             $.ajax({
               type: 'post',
-              url: config.ajaxOrder,
+              url: targerUrl,
               data: {
                 Order: 'Get_CheckScheduleConfirm',
                 empid: scanEmpId
@@ -428,9 +434,10 @@
                 }
               }
             });
+
             $.ajax({
               type: 'get',
-              url: config.ajaxOrder,
+              url: targerUrl,
               data: {
                 Order: 'Get_SevenDaysSchedule',
                 custid: currentCust,
@@ -481,6 +488,7 @@
           }
         });
       });
+
       pointList.delegate(".list-group-item", "click", function () {
         var pointid = $(this).attr("pointid");
         vueScheduleList.list = vueScheduleList.listObj[pointid];
