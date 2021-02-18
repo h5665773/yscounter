@@ -435,6 +435,7 @@
               }
             });
 
+            // console.log(`${targerUrl}?Order=Get_SevenDaysSchedule&custid=${currentCust}&empid=${scanEmpId}`);
             $.ajax({
               type: 'get',
               url: targerUrl,
@@ -533,6 +534,7 @@
         });
 
       });
+      
       var checkin = async function (workType) {
         await screenshot({ filename: './screen.png' })
         showMask();
