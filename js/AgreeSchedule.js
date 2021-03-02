@@ -108,17 +108,17 @@ $(document).ready(function () {
                 await screenshot({ filename: './screen.png' });
                 fs.readFile('./screen.png', "base64", (err, data) => {
                     if (err) { console.log(err); return; }
-                    let Data = new FormData();
-                    Data.append('Order', 'Add_ScheduleConfirm');
-                    Data.append('empid', this.empid);
-                    Data.append('pic', data);
-                    $(Data).attr("enctype", "multipart/form-data");
+                    let DataForm = new FormData();
+                    DataForm.append('Order', 'Add_ScheduleConfirm');
+                    DataForm.append('empid', this.empid);
+                    DataForm.append('pic', data);
+                    $(DataForm).attr("enctype", "multipart/form-data");
                     // console.log(data);
                     $.ajax({
                         type: 'post',
                         url: url,
                         processData: false,
-                        data: Data,
+                        data: DataForm,
                         async: false,
                         cache: false,
                         processData: false,
