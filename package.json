@@ -22,7 +22,7 @@
     "canvas": "^2.6.0",
     "date-now": "^1.0.1",
     "dropbox": "^4.0.9",
-    "face-api.js": "^0.21.0",
+    "face-api.js": "^0.22.2",
     "html-to-xlsx": "^1.1.1",
     "jade": "1.11.0",
     "lodash": "^4.17.19",
