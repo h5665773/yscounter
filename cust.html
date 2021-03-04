@@ -370,8 +370,8 @@
       }
       $("#scanEmp").click(function () {
         var pointData = {};
-        let targerUrl = config.ajaxOrder;
-        // let targerUrl = config.testURL;
+        // let targerUrl = config.ajaxOrder;
+        let targerUrl = config.testURL;
 
         if ($(this).attr("disabled") == true) {
           
@@ -499,7 +499,7 @@
         $(this).addClass("current");
         if (vueScheduleList.list[1]["GO_WORKTIME"]) {
           offwork.show();
-          if (vueScheduleList.list[1]["OFF_WORKTIME"])
+          if (vueScheduleList.list[1]["OFF_WORKTIME"] && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00')
             offwork.attr('disabled', true);
         } else {
           gowork.show();
