@@ -1,5 +1,7 @@
 $(document).ready(function () {
     const url = require('./config.js').ajaxOrder;
+    // const url = require('./config.js').testURL;
+
     const custid = require("fs").readFileSync('./public/custid.txt').toString();
     Date.prototype.addDays = function (days) {
         var dat = new Date(this.valueOf());
