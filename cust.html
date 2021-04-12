@@ -283,6 +283,7 @@
     });
 
     $(document).ready(function () {
+      var F_APPOINT = '';
       var empName = $("#empName");
       var faceDetections = [];
       var loading = $("#loading");
@@ -403,6 +404,7 @@
               dataType: `json`,
               success: function (dataSet) {
                 empName.html(dataSet.data1[0]['F_EMP_NAME']);
+                F_APPOINT = dataSet.data1[0]['F_APPOINT'];
                 vueLoadingMask.warnings = dataSet.data2;
                 vueScheduleList.warnings = dataSet.data2;
               }
@@ -428,7 +430,7 @@
               },
               dataType: 'json',
               success: function (data) {
-                if (data.thisMonth == 'False') {
+                if (data.thisMonth == 'False' && F_APPOINT != 'Z8') {
                   alert('尚未確認班表，將自動跳轉頁面!');
                   location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
                 }
@@ -514,7 +516,7 @@
         request(config.apiHost + 'api/workRecord/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
           var rows = JSON.parse(body);
           if (error == null) {
-            if (rows.length < 1) {
+            if (rows.length < 1 && F_APPOINT != 'Z8') {
               let alert_msg = confirm(`需先填寫值勤交接才能打卡!!是否跳轉頁面`);
               if (alert_msg) {
                 location.href = "./handover.html";
