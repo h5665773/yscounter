@@ -101,7 +101,7 @@ $(document).ready(function () {
                     }
                 })
             },
-            async submitData() {
+            async submitData(F_YM) {
                 let that = this;
                 if (that.scanCheck) {
                     alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
@@ -113,6 +113,7 @@ $(document).ready(function () {
                     let DataForm = new FormData();
                     DataForm.append('Order', 'Add_ScheduleConfirm');
                     DataForm.append('empid', this.empid);
+                    DataForm.append('F_YM',F_YM);
                     DataForm.append('pic', data);
                     $(DataForm).attr("enctype", "multipart/form-data");
                     // console.log(data);

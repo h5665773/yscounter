@@ -135,7 +135,7 @@
                     </p>
                     <p v-if="showContent">
                         <a class="btn btn-success" href="#" role="button" :disabled="checked"
-                            @click="submitData()">確認班表&raquo;</a>
+                            @click="submitData(ym.year+'-'+ym.month)">確認班表&raquo;</a>
                         <a class="btn btn-danger" href="#" role="button" :disabled="checked"
                             @click="disagreeSchedule()">不同意班表&raquo;</a>
                     </p>
