@@ -125,8 +125,11 @@
                                                 </td>
                                                 <td><a href="#" @click="Detail(data.F_ANNOUNCEMENT_NO);"><span
                                                             class="glyphicon glyphicon-search"></span></a>
-                                                    <a href="#" v-if="data.F_VIDEOHREF" @click="openWindow(data)"><span
-                                                            class="glyphicon glyphicon-play"></span></a>
+                                                    <a href="#" v-if="data.F_VIDEOHREF" @click="openWindow(data)">
+                                                        <img
+                                                            src="icon/youtube_icon.jpg" class="imageLink"
+                                                            style="width:20px;height:20px;">
+                                                    </a>
                                                 </td>
                                             </tr>
                                         </tbody>
