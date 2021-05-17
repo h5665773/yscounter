@@ -60,6 +60,9 @@ $(document).ready(function () {
                         this_Vue.startScan(callback);
                     }
                 });
+                //測試用
+                // this_Vue.empid = 'T10011';
+                // callback();
             },
             async getData() {
                 let that = this;
@@ -87,7 +90,8 @@ $(document).ready(function () {
                             that.date.push(i + 1);
                         }
                         let temp = data.sche.filter(x => x.Day == '國');
-                        that.monthText = data.information[0].MonthText + (temp[0] ? `(${parseInt(that.ym.month)}/${temp[0].Date})` : '');//+ ;
+                        that.monthText = data.information[0].MonthText
+                        // that.monthText = data.information[0].MonthText + (temp[0] ? `(${parseInt(that.ym.month)}/${temp[0].Date})` : '');//+ ;
                         that.checked = data.information[0].confirmed == 'True';
                         that.empName = data.information[0].empName;
                         that.point = point;
