@@ -292,6 +292,7 @@
       var pointList = $(".pointList");
       //$(".viewDetail").colorbox({inline:true, width:"50%"});
       var scanEmpId = "";
+      var scanEmpName = "";
       var chooseCust = "";
       var choosePoint = "";
       var gowork = $("#goWork");
@@ -372,6 +373,7 @@
       $("#scanEmp").click(function () {
         var pointData = {};
         let targerUrl = config.ajaxOrder;
+        //測試
         // let targerUrl = config.testURL;
 
         if ($(this).attr("disabled") == true) {
@@ -385,13 +387,15 @@
         loading.addClass("rotateIn");
 
         exec("node scan.js", function (err, data, c) {
-          
-          // data = 'K10297';
+          //測試
+          // data = 'T11250';
           // err = null;
+
           if (err == null && data.length > 0) {
             data = data.trim();
             var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
             scanEmpId = parse[1];
+            
             
             $.ajax({
               type: `post`,
@@ -404,9 +408,15 @@
               dataType: `json`,
               success: function (dataSet) {
                 empName.html(dataSet.data1[0]['F_EMP_NAME']);
+                scanEmpName = dataSet.data1[0]['F_EMP_NAME'];
                 F_APPOINT = dataSet.data1[0]['F_APPOINT'];
                 vueLoadingMask.warnings = dataSet.data2;
                 vueScheduleList.warnings = dataSet.data2;
+                
+                //刷員工證資料載入 > 檢查事件紀錄 > 檢查確認班表
+                
+                //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
+                CheckEventList();
               }
             });
             //console.log(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId);
@@ -418,10 +428,31 @@
             //vueScheduleList.warnings = row['data2']
             //});
 
+            function CheckEventList(){
+              if(F_APPOINT != 'Z8' && (F_APPOINT == 'W'|| F_APPOINT == 'S5')){
+              $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Get_CheckEventList',
+                empid: scanEmpId,
+                empname: scanEmpName
+              },
+              success: function (data) {
+                if (data == 'no_pass') {
+                  alert('總幹事/祕書 至少要寫5筆事件紀錄才能打卡!');
+                  location.href = `./cust.html`;
+                }
+                else{
+                  CheckScheduleConfirm();
+                }
+              }
+            });
+            }
+            }
 
-            //??????????20200115???到底要不要?
-
-            $.ajax({
+            function CheckScheduleConfirm(){
+              $.ajax({
               type: 'post',
               url: targerUrl,
               data: {
@@ -434,8 +465,12 @@
                   alert('尚未確認班表，將自動跳轉頁面!');
                   location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
                 }
+                else{
+
+                }
               }
             });
+            }
 
             // console.log(`${targerUrl}?Order=Get_SevenDaysSchedule&custid=${currentCust}&empid=${scanEmpId}`);
             $.ajax({
