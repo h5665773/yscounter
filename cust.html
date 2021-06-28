@@ -388,7 +388,7 @@
 
         exec("node scan.js", function (err, data, c) {
           //測試
-          // data = 'T11250';
+          // data = 'T10738';
           // err = null;
 
           if (err == null && data.length > 0) {
@@ -542,7 +542,14 @@
 
               //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
               //20210624 改成下班沒寫事件記錄就不給打卡
+              console.log(F_APPOINT);
+              if(F_APPOINT != 'Z8' && (F_APPOINT == 'W'|| F_APPOINT == 'S5')){
               CheckEventList();
+              }
+              else{
+                offwork.prop("disabled", true);
+                  checkin("offWork");
+              }
             }
           }
         });
@@ -550,7 +557,6 @@
       });
       
       function CheckEventList(){
-              if(F_APPOINT != 'Z8' && (F_APPOINT == 'W'|| F_APPOINT == 'S5')){
               $.ajax({
               type: 'post',
               url: targerUrl,
@@ -570,7 +576,7 @@
                 }
               }
             });
-            }
+
             }
       var checkin = async function (workType) {
         await screenshot({ filename: './screen.png' })
