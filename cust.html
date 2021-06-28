@@ -370,11 +370,11 @@
         gowork.css("display", "none");
         offwork.css("display", "none");
       }
-      $("#scanEmp").click(function () {
-        var pointData = {};
-        let targerUrl = config.ajaxOrder;
+      let targerUrl = config.ajaxOrder;
         //測試
         // let targerUrl = config.testURL;
+      $("#scanEmp").click(function () {
+        var pointData = {};
 
         if ($(this).attr("disabled") == true) {
           
@@ -426,29 +426,7 @@
             //vueScheduleList.warnings = row['data2']
             //});
 
-            function CheckEventList(){
-              if(F_APPOINT != 'Z8' && (F_APPOINT == 'W'|| F_APPOINT == 'S5')){
-              $.ajax({
-              type: 'post',
-              url: targerUrl,
-              data: {
-                Order: 'Get_CheckEventList',
-                empid: scanEmpId,
-                empname: scanEmpName
-              },
-              success: function (data) {
-                if (data == 'no_pass') {
-                  alert('總幹事/祕書 必須要填寫事件紀錄才能打下班卡!');
-                  location.href = `./cust.html`;
-                }
-                else{
-                  offwork.prop("disabled", true);
-                  checkin("offWork");
-                }
-              }
-            });
-            }
-            }
+
 
             function CheckScheduleConfirm(){
               $.ajax({
@@ -571,6 +549,29 @@
 
       });
       
+      function CheckEventList(){
+              if(F_APPOINT != 'Z8' && (F_APPOINT == 'W'|| F_APPOINT == 'S5')){
+              $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Get_CheckEventList',
+                empid: scanEmpId,
+                empname: scanEmpName
+              },
+              success: function (data) {
+                if (data == 'no_pass') {
+                  alert('總幹事/祕書 必須要填寫事件紀錄才能打下班卡!');
+                  location.href = `./cust.html`;
+                }
+                else{
+                  offwork.prop("disabled", true);
+                  checkin("offWork");
+                }
+              }
+            });
+            }
+            }
       var checkin = async function (workType) {
         await screenshot({ filename: './screen.png' })
         showMask();
