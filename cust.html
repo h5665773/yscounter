@@ -567,7 +567,8 @@
               },
               success: function (data) {
                 if (data == 'no_pass') {
-                  alert('總幹事/祕書 必須要填寫事件紀錄才能打下班卡!');
+                  alert('總幹事/祕書 必須要填寫5筆事件紀錄才能打下班卡!');
+                  window.open('http://admin.wyattst.com.tw/CMS/Maintain/MaintainLogin');
                   location.href = `./cust.html`;
                 }
                 else{
