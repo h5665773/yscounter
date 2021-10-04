@@ -64,8 +64,9 @@
           loading.css("display","block");
           loading.addClass("rotateIn");
       		scan(empId => {
-            //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
-            request(config.apiHost + `api/scheduleByEmp/${currentCust}/0/${empId}/${ym}`, function (error, response, body) {
+            request(config.apiHost + `api/scheduleByCust/${currentCust}/0/${empId}/${ym}`, function (error, response, body) {
+            // request(config.apiHost + `api/scheduleByEmp/${currentCust}/0/${empId}/${ym}`, function (error, response, body) {
+              // console.log(config.apiHost + `api/scheduleByCust/${currentCust}/0/${empId}/${ym}`);
               if(error == null){
                 let classListData = JSON.parse(body);
                 classHtml = classJade({data: classListData});
