@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>櫃台服務系統 - 教育訓練</title>
+  <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/colorbox.css" />
+  <link rel="stylesheet" href="/css/main.css" />
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="/css/bootstrap-theme.css">
+
+  <script src="/js/jquery.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/vue.js"></script>
+  <script src="/js/face-api.min.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <link rel="stylesheet" href="/css/main.css">
+  <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+  <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+  <style>
+    html {
+      overflow: visible;
+    }
+    h2 {
+      font-size: 24px;
+    }
+    tr>td:nth-child(3) {
+      background-color: #41a6ee
+    }
+    .point-schedule td,
+    .point-schedule th {
+      font-size: 12px;
+    }
+    .point-schedule th {
+      padding: 3px;
+    }
+    thead th {
+      background-color: #ccff;
+    }
+    canvas {
+      position: absolute;
+      top: 39px;
+      left: 15px;
+    }
+    #cameraArea {
+      position: relative;
+    }
+    #canvas {
+      z-index: -99;
+      top: -9999px;
+      left: -9999px;
+    }
+    .shotLine {
+      position: absolute;
+      display: block;
+      width: 80px;
+      height: 50px;
+    }
+    .shotLine.leftTop {
+      border-right: 1px dotted #0000ff;
+      border-bottom: 1px dotted #0000ff;
+      top: 65px;
+      left: 0;
+    }
+    .shotLine.rightTop {
+      border-left: 1px dotted #0000ff;
+      border-bottom: 1px dotted #0000ff;
+      top: 65px;
+      right: 0;
+    }
+    .shotLine.leftBottom {
+      border-right: 1px dotted #0000ff;
+      border-top: 1px dotted #0000ff;
+      bottom: 35px;
+      left: 0;
+    }
+    .shotLine.rightBottom {
+      border-left: 1px dotted #0000ff;
+      border-top: 1px dotted #0000ff;
+      bottom: 35px;
+      right: 0;
+    }
+    .loadingMask {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 1111;
+      top: 0;
+      left: 0;
+    }
+    .controlButton{
+      width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;
+    }
+  </style>
+  <script type="text/javascript" src="/js/Common.js"></script>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+    </nav>
+  </header>
+  <!-- Begin page content -->
+  <div class="container main" id="app">
+    <div class="row">
+      <div class="col-lg-3" style="position:relative">
+        <p><a class="btn btn-default" @click="scanEmp">開始讀取員工條碼&raquo;</a></p>
+        <div v-show="F_EMP_NAME!=''" id="pointDetail">
+          <div class="alert alert-success" style="width:200px" role="alert">
+            您好
+            <strong id="empName">
+              {{F_EMP_NAME}}
+            </strong>
+          </div>
+        </div>
+        <h4 v-show="warnings.length >0">警告注意!</h4>
+        <ul class="list-group">
+          <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+            <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME"
+              target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file"
+                aria-hidden="true"></span></a>
+            <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}
+            </h5>
+            <span>{{v.F_DESCRIPTION}}</span>
+          </li>
+        </ul>
+        <div align="center" id="cameraArea">
+          <h4>攝影機畫面</h4>
+          <video id="video" width="270" height="270" autoplay></video>
+          <canvas id="canvas" width="270" height="270"></canvas>
+          <div class="shotLine leftTop"></div>
+          <div class="shotLine rightTop"></div>
+          <div class="shotLine leftBottom"></div>
+          <div class="shotLine rightBottom"></div>
+        </div>
+        <div class="row" v-show="classList.length>0">
+          <div class="form-group">
+            <div class="input-group bg-info">
+              <div class="input-group-addon">上課日期</div>
+              <div class="form-control" >{{classDate(singleClassData.F_DATE)}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-addon bg-info">開始課程</div>
+              <input type="text" class="form-control" v-model="singleClassData.F_STR_TIME" readonly>
+              <div class="input-group-addon">結束課程</div>
+              <input type="text" class="form-control" v-model="singleClassData.F_END_TIME" readonly>
+            </div>
+          </div>
+          
+          <!-- <button type="button" class="btn btn-info" @click="insertTRRecord">存檔</button> -->
+        </div>
+      </div>
+      <div class="col-lg-9" id="cameraArea" align="center" v-show="classList.length>0">
+        <h5>選擇課程</h5>
+        <select class="form-control" v-model="classIdx" @change="changeClass">
+          <option v-for="(v,k) in classList" :value="k">{{className(v)}}</option>
+        </select>
+        <div id="player" style="margin-top:12px"></div>
+        <div class="row">
+          <button type="button" class="btn btn-success controlButton" v-show="singleClassData" @click="playVideo">播放</button>
+          <button type="button" class="btn btn-warning controlButton" v-show="singleClassData" @click="pauseVideo">暫停</button>
+          <!-- <button type="button" class="btn btn-danger controlButton" v-show="singleClassData" @click="stopVideo" >停止</button> -->
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-danger alert-dismissible alert_msg" style="display:none;" role="alert">
+      <button type="button" class="close" onclick="$('.alert_msg').hide()"><span
+          aria-hidden="true">&times;</span></button>
+      <strong>需先填寫值勤交接才能打卡!!</strong>
+    </div>
+    <button class="btn btn-lg btn-warning loading" :class="{'rotateOut': !loading, 'rotateIn': loading}" v-show="loading">
+      <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+      <span>{{loadingText}}</span>
+    </button>
+    <div class="loadingMask" v-show="loading"></div>
+  </div>
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted">Place sticky footer content here.</p>
+    </div>
+  </footer>
+  <div id="loading-mask" v-show="warnings.length >0"
+    style="position:fixed;width: 100%;height:100%;background-color: rgba(0,0,0,0.5);z-index: 999;display: none;top:0;left:0;overflow:scroll">
+    <div style="padding: 15px;background: rgb(255, 255, 255);width: 500px;position: relative;left: 30%;top: 10%;">
+      <h4>警告注意!</h4>
+      <ul class="list-group">
+        <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+          <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME"
+            target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file"
+              aria-hidden="true"></span></a>
+          <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}
+          </h5>
+          <span>{{v.F_DESCRIPTION}}</span>
+        </li>
+      </ul>
+      <button type="button" onclick="$('#loading-mask').hide()">關閉</button>
+    </div>
+  </div>
+  <script type="text/javascript">
+    const screenshot = require('screenshot-desktop')
+    var exec = require('child_process').exec,
+      child;
+    const request = require("request");
+    const targerUrl = config.ajaxOrder;
+    var player;
+    var videoDone = false;
+    var app = new Vue({
+      el: '#app',
+      data: {
+        classIdx: '',
+        singleClassData: {},
+        classList: [],
+        warnings: [],
+        pointID: ``,
+        listObj: {},
+        pointData: [],
+        pointName: ``,
+        F_EMP_ID: '',
+        F_EMP_NAME: '',
+        scanEmpId: '',
+        scanning: false,
+        loading: false,
+        loadingText: '',
+        palying: false
+      },
+      methods: {
+        changeClass (){
+          this.loadVideo(this.classIdx)
+        },
+        className (row) {
+          if(row.F_TR_ID != null){
+            return row.F_ANNOUNCEMENT_TITLE+'(已上過)'
+          }else{
+            return row.F_ANNOUNCEMENT_TITLE
+          }
+        },
+        classDate (dateStr) {
+          if(dateStr == null){
+            return ''
+          }else{
+            return String(dateStr).substr(0,10)
+          }
+        },
+        playVideo () {
+          player.playVideo()
+          this.palying = true
+          console.log(YT.PlayerState)
+          this.singleClassData.F_STR_TIME = String(d.getHours() + 1).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
+        },
+        pauseVideo () {
+          player.pauseVideo()
+        },
+        stopVideo () {
+          player.stopVideo()
+          this.singleClassData.F_END_TIME = String(d.getHours() + 1).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
+        },
+        loadVideo (idx){
+          if(this.playing ){
+            if(!confirm("影片正在播放中，確定要切換?")){
+              return
+            }
+          }
+          this.classIdx = idx
+          this.singleClassData = this.classList[idx]
+          if(this.classList[idx].F_VIDEOHREF == null){
+            alert('該課程尚無影片')
+          }
+          player.loadVideoById()
+        },
+        loadVideoList (){
+          const self = this
+          $.ajax({
+            type: `post`,
+            url: targerUrl,
+            data: {
+              Order: 'Get_TrainingCheckedByEmpid',
+              F_EMP_ID: self.scanEmpId,
+              F_CU_ID: currentCust
+            },
+            dataType: `json`,
+            success: function (dataSet) {
+              // console.log(dataSet)
+              self.F_EMP_ID = self.scanEmpId
+              self.F_EMP_NAME = dataSet.emp[0]['F_EMP_NAME']
+              self.classList = dataSet.classList
+              if(dataSet.classList.length>0){
+                self.loadVideo(0)
+              }else{
+                alert("目前沒有課程資料")
+              }
+            },
+            complete: function(dataSet,b,c){
+              // console.log(dataSet,b,c)
+            }
+          });
+        },
+        scanEmp() {
+          const self = this
+          self.scanning = true
+          self.loading = true
+          self.loadingText = "請在20秒內掃描員工識別證!"
+          exec("node scan.js", function (err, data, c) {
+            self.scanning = false
+            self.loading = false
+            //測試
+            // data = 'H10019';
+            // err = null;
+            //測試
+            if (err == null && data.length > 0) {
+              // console.log("scanem",data)
+              data = data.trim();
+              var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
+              self.scanEmpId = parse[1];
+              self.loadVideoList()
+            } else {
+              console.log(err)
+              self.loading = false
+            }
+          });
+        },
+        insertTRRecord: async function() {
+          this.singleClassData.F_END_TIME = String(d.getHours() + 1).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
+          this.loading = true
+          this.loadingText = '載入中'
+          var self = this
+          await screenshot({ filename: './screen.png' })
+          var postdata = {
+            Order: 'Insert_TrainingAttendClass',
+            F_EMP_ID: this.F_EMP_ID,
+            F_EMP_NAME: this.F_EMP_NAME,
+            F_COM_ID: currentCust.substr(0,2),
+            F_DATE: d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0") ,
+            F_FILE_URL1: '',
+            F_FILE_URL2: '',
+            F_SIGN_IN_LIST_FILE: '',
+            F_CLASS_ID: this.singleClassData.F_CLASS_ID,
+            F_STR_TIME: this.singleClassData.F_STR_TIME,
+            F_END_TIME: this.singleClassData.F_END_TIME
+          }
+          var url = config.apiHost + 'v1/uploadPic'
+          var formData = {
+            empId: this.F_EMP_ID,
+            cuid: currentCust,
+            pic: fs.createReadStream('./screen.png')
+          };
+          // 上傳圖片到dropbox
+          request.post({ url: url, formData: formData }, function (error, httpResponse, body) {
+            //console.log(body);
+            self.loading = false
+            if (error == null) {
+              console.log(body)
+              var row = JSON.parse(body)
+              postdata.F_SIGN_IN_LIST_FILE = row.data
+              $.ajax({
+                type: `post`,
+                url: targerUrl,
+                data: postdata,
+                dataType: `json`,
+                complete: function(dataSet,b,c){
+                  console.log(dataSet,b,c)
+                  alert("課程完成")
+                  self.loadVideoList()
+                }
+              });
+            }else{
+              console.log(error)
+            }
+          })
+        }
+      },
+      mounted () {
+        // console.log(123)
+      }
+    });
+    var vueLoadingMask = new Vue({
+      el: '#loading-mask',
+      data: {
+        warnings: []
+      }
+    });
+    function onYouTubeIframeAPIReady() {
+      // console.log("onYouTubeIframeAPIReady")
+      player = new YT.Player('player', {
+        height: '390',
+        width: '640',
+        videoId: 'SBA9xLXHxrY',
+        playerVars: {
+          'playsinline': 1,
+          controls: 0,
+          disablekb: 1
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    // 4. The API will call this function when the video player is ready.
+    function onPlayerReady(event) {
+      //event.target.playVideo();
+    }
+
+    // 5. The API calls this function when the player's state changes.
+    //    The function indicates that when playing a video (state=1),
+    //    the player should play for six seconds and then stop.
+    
+    function onPlayerStateChange(event) {
+      // console.log(event.data)
+      // if (event.data == YT.PlayerState.PLAYING && !videoDone) {
+      //   setTimeout(stopVideo, 6000);
+      //   videoDone = true;
+      // }
+      if(YT.PlayerState.ENDED == event.data){
+        // 發送存檔紀錄
+        app.insertTRRecord()
+        app.palying = false
+      }
+    }
+    function stopVideo() {
+      player.stopVideo();
+    }
+    $(document).ready(function () {
+      var F_APPOINT = '';
+      var faceDetections = [];
+      var scanEmpId = "";
+      var scanEmpName = "";
+      var gowork = $("#goWork");
+      var offwork = $("#offWork");
+      var video = document.getElementById('video');
+      var d = new Date();
+      var mediaConfig = { video: true };
+      var errBack = function (e) {
+        console.log('An error has occurred!', e)
+      };
+      Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri('/js'),
+        faceapi.nets.faceLandmark68Net.loadFromUri('/js'),
+        faceapi.nets.faceRecognitionNet.loadFromUri('/js'),
+        faceapi.nets.faceExpressionNet.loadFromUri('/js')
+      ]).then(startVideo)
+      function startVideo() {
+        navigator.getUserMedia(
+          { video: {} },
+          stream => video.srcObject = stream,
+          err => console.error(err)
+        )
+        video.addEventListener('play', () => {
+          const canvasF = faceapi.createCanvasFromMedia(video)
+          $("#cameraArea").append(canvasF)
+          const displaySize = { width: video.width, height: video.height }
+          faceapi.matchDimensions(canvasF, displaySize)
+          setInterval(async () => {
+            //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+            faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
+            //console.log(detections);
+            const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
+            canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
+            faceapi.draw.drawDetections(canvasF, resizedDetections)
+            //faceapi.draw.drawFaceExpressions(canvasF, resizedDetections)
+          }, 200)
+        })
+      }
+
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+    });
+  </script>
+</body>
+
+</html>

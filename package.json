@@ -25,13 +25,14 @@
     "face-api.js": "^0.22.2",
     "html-to-xlsx": "^1.1.1",
     "jade": "1.11.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "qrcode": "^1.4.4",
     "qrcode-reader": "^1.0.4",
     "request": "^2.88.0",
     "screenshot-desktop": "^1.12.1",
     "serialport": "^8.0.5",
     "unzipper": "*",
-    "url-download": "0.0.4"
+    "url-download": "0.0.4",
+    "youtube-player": "^5.5.2"
   }
 }

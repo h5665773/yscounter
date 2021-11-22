@@ -1,4 +1,7 @@
-#loading,.alert_msg{
+body{
+    overflow: hidden;
+}
+.loading,#loading,.alert_msg{
 	z-index:9999;
 	position: fixed;
     top: 44%;
@@ -199,6 +202,6 @@ nav .logo{
   }
 @media (min-width: 1200px){
     .container {
-        width: 100%;
+        width: 96%;
     }    
 }
