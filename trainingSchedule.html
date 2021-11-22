@@ -257,8 +257,7 @@
         playVideo () {
           player.playVideo()
           this.palying = true
-          console.log(YT.PlayerState)
-          this.singleClassData.F_STR_TIME = String(d.getHours() + 1).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
+          // console.log(YT.PlayerState)
         },
         pauseVideo () {
           player.pauseVideo()
@@ -277,8 +276,13 @@
           this.singleClassData = this.classList[idx]
           if(this.classList[idx].F_VIDEOHREF == null){
             alert('該課程尚無影片')
+            player.loadVideoById('null')
+          }else{
+            // console.log(this.singleClassData)
+            player.loadVideoById(this.singleClassData.F_VIDEOHREF)
+            this.pauseVideo()
+            this.singleClassData.F_STR_TIME = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
           }
-          player.loadVideoById()
         },
         loadVideoList (){
           const self = this
@@ -303,7 +307,7 @@
               }
             },
             complete: function(dataSet,b,c){
-              // console.log(dataSet,b,c)
+              console.log(dataSet,b,c)
             }
           });
         },
