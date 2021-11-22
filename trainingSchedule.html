@@ -278,8 +278,9 @@
             alert('該課程尚無影片')
             player.loadVideoById('null')
           }else{
-            // console.log(this.singleClassData)
-            player.loadVideoById(this.singleClassData.F_VIDEOHREF)
+            console.log(this.singleClassData)
+            const youtubeId = String(this.singleClassData.F_VIDEOHREF).replace(/(.*)watch\?v=([^&]+)(.*)/,"$2")
+            player.loadVideoById(youtubeId)
             this.pauseVideo()
             this.singleClassData.F_STR_TIME = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
           }
