@@ -321,14 +321,14 @@
             self.scanning = false
             self.loading = false
             //測試
-            // data = 'H10019';
+            // data = 'YS0012';
             // err = null;
             //測試
             if (err == null && data.length > 0) {
               // console.log("scanem",data)
               data = data.trim();
               var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
-              self.scanEmpId = parse[1];
+              self.scanEmpId = data
               self.loadVideoList()
             } else {
               console.log(err)
