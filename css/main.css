@@ -1,5 +1,5 @@
 body{
-    overflow: hidden;
+    overflow-x: hidden;
 }
 .loading,#loading,.alert_msg{
 	z-index:9999;
