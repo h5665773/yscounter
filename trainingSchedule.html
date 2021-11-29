@@ -217,6 +217,7 @@
     const targerUrl = config.ajaxOrder;
     var player;
     var videoDone = false;
+    var playInterval = null
     var app = new Vue({
       el: '#app',
       data: {
@@ -321,7 +322,7 @@
             self.scanning = false
             self.loading = false
             //測試
-            // data = 'YS0012';
+            // data = 'T10220';
             // err = null;
             //測試
             if (err == null && data.length > 0) {
@@ -335,6 +336,37 @@
               self.loading = false
             }
           });
+        },
+        uploadStageImage (stage) {
+          let self = this
+          return new Promise(function(resolve, reject) {
+            var filename = './screen'+stage+'.png'
+            console.log(filename)
+            if(fs.existsSync(filename)){
+              var fileData = fs.createReadStream(filename)
+            }else{
+              alert("檔案不完整")
+              reject("檔案不完整")
+              return
+            }
+            var formData = {
+              empId: self.F_EMP_ID,
+              cuid: currentCust,
+              pic: fileData
+            }
+            var url = config.apiHost + 'v1/uploadPic'
+            request.post({ url: url, formData: formData }, function (error, httpResponse, body) {
+              if (error == null) {
+                console.log(body)
+                var row = JSON.parse(body)
+                resolve(row.data)
+              }else{
+                alert("上傳檔案失敗")
+                console.log(error)
+                reject(error)
+              }
+            })
+          })
         },
         insertTRRecord: async function() {
           this.singleClassData.F_END_TIME = String(d.getHours() + 1).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
@@ -350,40 +382,41 @@
             F_DATE: d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0") ,
             F_FILE_URL1: '',
             F_FILE_URL2: '',
+            F_FILE_URL3: '',
+            F_FILE_URL4: '',
             F_SIGN_IN_LIST_FILE: '',
             F_CLASS_ID: this.singleClassData.F_CLASS_ID,
             F_STR_TIME: this.singleClassData.F_STR_TIME,
             F_END_TIME: this.singleClassData.F_END_TIME
           }
-          var url = config.apiHost + 'v1/uploadPic'
           var formData = {
             empId: this.F_EMP_ID,
             cuid: currentCust,
             pic: fs.createReadStream('./screen.png')
           };
-          // 上傳圖片到dropbox
-          request.post({ url: url, formData: formData }, function (error, httpResponse, body) {
-            //console.log(body);
-            self.loading = false
-            if (error == null) {
-              console.log(body)
-              var row = JSON.parse(body)
-              postdata.F_SIGN_IN_LIST_FILE = row.data
-              $.ajax({
-                type: `post`,
-                url: targerUrl,
-                data: postdata,
-                dataType: `json`,
-                complete: function(dataSet,b,c){
-                  console.log(dataSet,b,c)
-                  alert("課程完成")
-                  self.loadVideoList()
-                }
-              });
-            }else{
-              console.log(error)
+          postdata.F_FILE_URL1 = await self.uploadStageImage(1)
+          postdata.F_FILE_URL2 = await self.uploadStageImage(2)
+          postdata.F_FILE_URL3 = await self.uploadStageImage(3)
+          postdata.F_FILE_URL4 = await self.uploadStageImage(4)
+          
+          self.loading = false
+          postdata.F_SIGN_IN_LIST_FILE = postdata.F_FILE_URL4
+          console.log(postdata)
+          $.ajax({
+            type: `post`,
+            url: targerUrl,
+            data: postdata,
+            dataType: `json`,
+            complete: function(dataSet,b,c){
+              console.log(dataSet,b,c)
+              alert("課程完成")
+              self.loadVideoList()
+              fs.unlinkSync('./screen1.png')
+              fs.unlinkSync('./screen2.png')
+              fs.unlinkSync('./screen3.png')
+              fs.unlinkSync('./screen4.png')
             }
-          })
+          });
         }
       },
       mounted () {
@@ -418,21 +451,51 @@
     function onPlayerReady(event) {
       //event.target.playVideo();
     }
-
-    // 5. The API calls this function when the player's state changes.
-    //    The function indicates that when playing a video (state=1),
-    //    the player should play for six seconds and then stop.
     
-    function onPlayerStateChange(event) {
-      // console.log(event.data)
+    async function onPlayerStateChange(event) {
+      console.log('onPlayerStateChange-event',event)
       // if (event.data == YT.PlayerState.PLAYING && !videoDone) {
       //   setTimeout(stopVideo, 6000);
       //   videoDone = true;
       // }
       if(YT.PlayerState.ENDED == event.data){
         // 發送存檔紀錄
+        await screenshot({ filename: './screen4.png' })
         app.insertTRRecord()
         app.palying = false
+        clearInterval(playInterval)
+      }
+      if(YT.PlayerState.PAUSED == event.data){
+        clearInterval(playInterval)
+      }
+      if(YT.PlayerState.PLAYING == event.data){
+        await screenshot({ filename: './screen1.png' })
+        // console.log(player.getDuration())
+        app.videoLength = player.getDuration()
+        var videoPerStage = Math.ceil(app.videoLength/3)
+        app.videoStage1 = videoPerStage
+        app.videoStage2 = videoPerStage*2
+        // 所有圖片的時間點
+        /*
+        1.開始撥放
+        2.stage1
+        3.stage2
+        4.ended
+        */
+        playInterval = setInterval(async () => {
+          // console.log('playInterval')
+          var currentTime = parseInt(player.getCurrentTime())
+          // console.log(currentTime)
+          if(currentTime == 1){
+            await screenshot({ filename: './screen1.png' })
+          }
+          if(currentTime == app.videoStage1){
+            await screenshot({ filename: './screen2.png' })
+          }
+          if(currentTime == app.videoStage2){
+            await screenshot({ filename: './screen3.png' })
+          }
+        }, 1000);
       }
     }
     function stopVideo() {
