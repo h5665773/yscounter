@@ -260,8 +260,17 @@
           this.palying = true
           // console.log(YT.PlayerState)
         },
-        pauseVideo () {
+        async pauseVideo (msg = null) {
+          var self = this
           player.pauseVideo()
+          setTimeout(function(){
+            if(msg != null){
+              this.palying = false
+              if (confirm(msg)) {
+                self.playVideo()
+              }
+            }
+          },1500)
         },
         stopVideo () {
           player.stopVideo()
@@ -486,14 +495,32 @@
           // console.log('playInterval')
           var currentTime = parseInt(player.getCurrentTime())
           // console.log(currentTime)
-          if(currentTime == 1){
-            await screenshot({ filename: './screen1.png' })
+          switch (currentTime) {
+            case (1):
+            case (app.videoStage1-2):
+            case (app.videoStage2-2):
+              app.pauseVideo("即將截圖並上傳，請將頭像對準攝影機，以免截圖失敗")
+            break
           }
-          if(currentTime == app.videoStage1){
-            await screenshot({ filename: './screen2.png' })
-          }
-          if(currentTime == app.videoStage2){
-            await screenshot({ filename: './screen3.png' })
+          switch (currentTime) {
+            case (3):
+              app.loading = true
+              app.loadingText = '截圖中'
+              await screenshot({ filename: './screen1.png' })
+              app.loading = false
+            break
+            case (app.videoStage1):
+              app.loading = true
+              app.loadingText = '截圖中'
+              await screenshot({ filename: './screen2.png' })
+              app.loading = false
+            break
+            case (app.videoStage2):
+              app.loading = true
+              app.loadingText = '截圖中'
+              await screenshot({ filename: './screen3.png' })
+              app.loading = false
+            break
           }
         }, 1000);
       }
