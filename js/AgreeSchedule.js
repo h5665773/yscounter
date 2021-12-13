@@ -107,7 +107,7 @@ $(document).ready(function () {
             },
             async submitData(F_YM) {
                 let that = this;
-                if (that.scanCheck) {
+                if (!that.scanCheck) {
                     alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
                     return;
                 }
@@ -198,7 +198,7 @@ $(document).ready(function () {
         watch: {
             facedetections: function () {
                 let that = this;
-                console.log(that.facedetections);
+                // console.log(that.facedetections);
                 if (that.facedetections > 75) {
                     that.scanCheck = true;
                     setTimeout(() => {
