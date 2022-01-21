@@ -366,12 +366,11 @@
         gowork.css("display", "none");
         offwork.css("display", "none");
       }
-      // let targerUrl = config.ajaxOrder;
-      let targerUrl = config.testURL;
+      let targerUrl = config.ajaxOrder;
+      // let targerUrl = config.testURL;
         //測試
         // let targerUrl = config.testURL;
       $("#scanEmp").click(function () {
-        console.log('scanEmp')
         var pointData = {};
         if ($(this).attr("disabled") == true) {
           return false;
@@ -429,7 +428,6 @@
               dataType: 'json'
             });
             if(result.responseJSON){
-              console.log('2 result', result)
               var dataSet = result.responseJSON
               if (dataSet.thisMonth == 'False' && F_APPOINT != 'Z8') {
                 alert('尚未確認班表，將自動跳轉頁面!');
