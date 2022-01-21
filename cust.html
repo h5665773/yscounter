@@ -407,13 +407,15 @@
               F_APPOINT = dataSet.data1[0]['F_APPOINT'];
               vueLoadingMask.warnings = dataSet.data2;
               vueScheduleList.warnings = dataSet.data2;
-              if(dataSet.data3[0].arrange_count != dataSet.data3[0].attend_count){
-                var courseWarning = {
-                  F_SUMMAR: '教育訓練課程通知',
-                  F_DESCRIPTION: `目前應上課程: ${dataSet.data3[0].arrange_count}, 未上課程: ${dataSet.data3[0].attend_count}, 請安排時間上課`,
-                  PICTURE_NAME: ''
+              if(dataSet.data3.length>0){
+                if(dataSet.data3[0].arrange_count != dataSet.data3[0].attend_count){
+                  var courseWarning = {
+                    F_SUMMAR: '教育訓練課程通知',
+                    F_DESCRIPTION: `目前應上課程: ${dataSet.data3[0].arrange_count}, 未上課程: ${dataSet.data3[0].attend_count}, 請安排時間上課`,
+                    PICTURE_NAME: ''
+                  }
+                  vueScheduleList.warnings.push(courseWarning)
                 }
-                vueScheduleList.warnings.push(courseWarning)
               }
               //刷員工證資料載入 > 檢查確認班表 > 執行打卡動作
             }
