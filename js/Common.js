@@ -20,8 +20,8 @@ $(document).ready(function () {
     });
     res.on('end', function () {
       var cust = JSON.parse(resContent);
-      $("#companyName").html(cust[0].F_CU_NAME)
-      currentCustName = cust[0].F_CU_NAME
+      $("#companyName").html(cust[0].F_CU_SNAME)
+      currentCustName = cust[0].F_CU_SNAME
     });
     res.resume();
   });
