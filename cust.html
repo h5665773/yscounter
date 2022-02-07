@@ -383,7 +383,7 @@
         exec("node scan.js", function (err, data, c) {
           //測試
           const ddd = new Date();
-          // data = 'T10220';
+          // data = 'T10725';
           // err = null;
           if (err == null && data.length > 0) {
             data = data.trim();
@@ -408,7 +408,9 @@
               vueLoadingMask.warnings = dataSet.data2;
               vueScheduleList.warnings = dataSet.data2;
               if(dataSet.data3.length>0){
+                // console.log(dataSet.data3)
                 if(dataSet.data3[0].arrange_count != dataSet.data3[0].attend_count){
+                  dataSet.data3[0].attend_count = dataSet.data3[0].attend_count === null ? 0 : dataSet.data3[0].attend_count
                   var courseWarning = {
                     F_SUMMAR: '教育訓練課程通知',
                     F_DESCRIPTION: `目前應上課程: ${dataSet.data3[0].arrange_count}, 已上課程: ${dataSet.data3[0].attend_count}, 請安排時間上課`,
