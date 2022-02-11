@@ -480,10 +480,11 @@
         choosePoint = pointid;
         $("a.current").removeClass("current");
         $(this).addClass("current");
-        if (vueScheduleList.list[1]["GO_WORKTIME"]) {
+        if (vueScheduleList.list[1]["GO_WORKTIME"] != null) {
           offwork.show();
-          if (vueScheduleList.list[1]["OFF_WORKTIME"] && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00')
+          if (vueScheduleList.list[1]["OFF_WORKTIME"] != null && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00'){
             offwork.attr('disabled', true);
+          } 
         } else {
           gowork.show();
         }
