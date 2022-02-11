@@ -211,6 +211,7 @@
   </div>
   <script type="text/javascript">
     const screenshot = require('screenshot-desktop')
+    var faceDetections = [];
     var exec = require('child_process').exec,
       child;
     const request = require("request");
@@ -232,6 +233,7 @@
         F_EMP_ID: '',
         F_EMP_NAME: '',
         scanEmpId: '',
+        waitFaceDetect: false,
         scanning: false,
         loading: false,
         loadingText: '',
@@ -254,6 +256,30 @@
           }else{
             return String(dateStr).substr(0,10)
           }
+        },
+        captureScreen (stage) {
+          if (this.waitFaceDetect === true) {
+            alert('人臉辨識尚未完成')
+            return false
+          }
+          this.pauseVideo()
+          this.waitFaceDetect = true
+          this.loading = true
+          this.loadingText = '截圖中，等待人臉辨識完成'
+          let self = this
+          return new Promise(resolve => {
+            var captureInterval = setInterval(async function(){
+              if (faceDetections.length > 0) {
+                await screenshot({ filename: `./screen${stage}.png` })
+                console.log(faceDetections, 'self.loading = false')
+                self.loading = false
+                self.waitFaceDetect = false
+                clearInterval(captureInterval)
+                self.playVideo()
+                resolve(true)
+              }
+            }, 500)
+          });
         },
         playVideo () {
           player.playVideo()
@@ -331,7 +357,7 @@
             self.scanning = false
             self.loading = false
             //測試
-            // data = 'T10220';
+            // data = 'T10725';
             // err = null;
             //測試
             if (err == null && data.length > 0) {
@@ -443,8 +469,8 @@
     function onYouTubeIframeAPIReady() {
       // console.log("onYouTubeIframeAPIReady")
       player = new YT.Player('player', {
-        height: '390',
-        width: '640',
+        height: '450',
+        width: '800',
         videoId: 'SBA9xLXHxrY',
         playerVars: {
           'playsinline': 1,
@@ -471,7 +497,7 @@
       // }
       if(YT.PlayerState.ENDED == event.data){
         // 發送存檔紀錄
-        await screenshot({ filename: './screen4.png' })
+        await app.captureScreen(4)
         app.insertTRRecord()
         app.palying = false
         clearInterval(playInterval)
@@ -494,9 +520,8 @@
         4.ended
         */
         playInterval = setInterval(async () => {
-          // console.log('playInterval')
+          console.log('playInterval')
           var currentTime = parseInt(player.getCurrentTime())
-          // console.log(currentTime)
           switch (currentTime) {
             case (1):
             case (app.videoStage1-2):
@@ -506,22 +531,13 @@
           }
           switch (currentTime) {
             case (3):
-              app.loading = true
-              app.loadingText = '截圖中'
-              await screenshot({ filename: './screen1.png' })
-              app.loading = false
+              await app.captureScreen(1)
             break
             case (app.videoStage1):
-              app.loading = true
-              app.loadingText = '截圖中'
-              await screenshot({ filename: './screen2.png' })
-              app.loading = false
+              await app.captureScreen(2)
             break
             case (app.videoStage2):
-              app.loading = true
-              app.loadingText = '截圖中'
-              await screenshot({ filename: './screen3.png' })
-              app.loading = false
+              await app.captureScreen(3)
             break
           }
         }, 1000);
@@ -532,7 +548,6 @@
     }
     $(document).ready(function () {
       var F_APPOINT = '';
-      var faceDetections = [];
       var scanEmpId = "";
       var scanEmpName = "";
       var gowork = $("#goWork");

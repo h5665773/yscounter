@@ -110,7 +110,6 @@
 </head>
 
 <body>
-
   <!-- Fixed navbar -->
   <div class="loadingMask"
     style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
@@ -248,13 +247,11 @@
     </div>
   </div>
   <script type="text/javascript">
-
     const screenshot = require('screenshot-desktop')
     var QRCode = require('qrcode')
     var exec = require('child_process').exec,
       child;
     const request = require("request");
-
     // With promises
     QRCode.toDataURL(currentCust)
       .then(url => {
@@ -281,7 +278,6 @@
         warnings: []
       }
     });
-
     $(document).ready(function () {
       var F_APPOINT = '';
       var empName = $("#empName");
@@ -371,13 +367,12 @@
         offwork.css("display", "none");
       }
       let targerUrl = config.ajaxOrder;
+      // let targerUrl = config.testURL;
         //測試
         // let targerUrl = config.testURL;
       $("#scanEmp").click(function () {
         var pointData = {};
-
         if ($(this).attr("disabled") == true) {
-          
           return false;
         }
         loadingText.text("請在20秒內掃描員工識別證!");
@@ -385,19 +380,16 @@
         loading.removeClass("rotateOut");
         loading.css("display", "block");
         loading.addClass("rotateIn");
-
         exec("node scan.js", function (err, data, c) {
           //測試
-          // data = 'T10738';
+          const ddd = new Date();
+          // data = 'T10725';
           // err = null;
-
           if (err == null && data.length > 0) {
             data = data.trim();
             var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
             scanEmpId = parse[1];
-            
-            
-            $.ajax({
+            var result = $.ajax({
               type: `post`,
               url: targerUrl,
               data: {
@@ -405,96 +397,73 @@
                 F_EMP_ID: scanEmpId,
                 F_CU_ID: currentCust
               },
-              dataType: `json`,
-              success: function (dataSet) {
-                empName.html(dataSet.data1[0]['F_EMP_NAME']);
-                scanEmpName = dataSet.data1[0]['F_EMP_NAME'];
-                F_APPOINT = dataSet.data1[0]['F_APPOINT'];
-                vueLoadingMask.warnings = dataSet.data2;
-                vueScheduleList.warnings = dataSet.data2;
-                
-                //刷員工證資料載入 > 檢查確認班表 > 執行打卡動作
-                CheckScheduleConfirm();
-              }
+              async: false,
+              dataType: `json`
             });
-            //console.log(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId);
-            //console.log(config.apiHost + 'api/pointByCust&empCurrentSchedule2/'+currentCust+'/000/'+scanEmpId);
-            //request(config.apiHost + 'api/empName&empWarnings/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
-            //var row = JSON.parse(body);
-            //empName.html(row['data1'][0]['F_EMP_NAME']);
-            //vueLoadingMask.warnings = row['data2']
-            //vueScheduleList.warnings = row['data2']
-            //});
-
-
-
-            function CheckScheduleConfirm(){
-              $.ajax({
+            if(result.responseJSON){
+              var dataSet = result.responseJSON
+              empName.html(dataSet.data1[0]['F_EMP_NAME']);
+              scanEmpName = dataSet.data1[0]['F_EMP_NAME'];
+              F_APPOINT = dataSet.data1[0]['F_APPOINT'];
+              vueLoadingMask.warnings = dataSet.data2;
+              vueScheduleList.warnings = dataSet.data2;
+              if(dataSet.data3.length>0){
+                // console.log(dataSet.data3)
+                if(dataSet.data3[0].arrange_count != dataSet.data3[0].attend_count){
+                  dataSet.data3[0].attend_count = dataSet.data3[0].attend_count === null ? 0 : dataSet.data3[0].attend_count
+                  var courseWarning = {
+                    F_SUMMAR: '教育訓練課程通知',
+                    F_DESCRIPTION: `目前應上課程: ${dataSet.data3[0].arrange_count}, 已上課程: ${dataSet.data3[0].attend_count}, 請安排時間上課`,
+                    PICTURE_NAME: ''
+                  }
+                  vueScheduleList.warnings.push(courseWarning)
+                }
+              }
+              //刷員工證資料載入 > 檢查確認班表 > 執行打卡動作
+            }
+            var result = $.ajax({
               type: 'post',
               url: targerUrl,
               data: {
                 Order: 'Get_CheckScheduleConfirm',
                 empid: scanEmpId
               },
-              dataType: 'json',
-              success: function (data) {
-                if (data.thisMonth == 'False' && F_APPOINT != 'Z8') {
-                  alert('尚未確認班表，將自動跳轉頁面!');
-                  location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
-                }
-                else{
-
-                }
-              }
+              async: false,
+              dataType: 'json'
             });
+            if(result.responseJSON){
+              var dataSet = result.responseJSON
+              if (dataSet.thisMonth == 'False' && F_APPOINT != 'Z8') {
+                alert('尚未確認班表，將自動跳轉頁面!');
+                location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
+              }
             }
-
-            // console.log(`${targerUrl}?Order=Get_SevenDaysSchedule&custid=${currentCust}&empid=${scanEmpId}`);
-            $.ajax({
+            var result = $.ajax({
               type: 'get',
               url: targerUrl,
+              async: false,
               data: {
                 Order: 'Get_SevenDaysSchedule',
                 custid: currentCust,
                 empid: scanEmpId
               },
-              dataType: `json`,
-              success: function (data) {
-                vueScheduleList.pointID = ``;
-                vueScheduleList.pointData = data.pointList;
-                pointData = data.pointList;
-                showPoint(pointData, scanEmpId);
-                delete data.pointList;
-                vueScheduleList.listObj = data;
-                var html = $("html");
-                $(window).scroll(function () {
-                  if ($(this).scrollTop()) {
-                    html.css("overflow", "visible");
-                  }
-                });
-              }
+              dataType: `json`
             });
-            // request(config.apiHost + 'api/pointByCust&empCurrentSchedule2/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
-            //   var rows = JSON.parse(body);
-            //   // console.log(rows);
-            //   if (error != null) {
-            //     // pointData = JSON.parse(fs.readFileSync(offlinePointFile));
-            //     // showPoint(pointData, scanEmpId);
-            //   } else {
-            //     // pointData = rows['data1'];
-            //     // showPoint(pointData, scanEmpId);
-            //   }
-            //   //設定vue data
-            //   if (typeof (rows['data2']) != 'undefined') {
-            //     // vueScheduleList.list = rows['data2'];
-            //     var html = $("html");
-            //     $(window).scroll(function () {
-            //       if ($(this).scrollTop()) {
-            //         html.css("overflow", "visible");
-            //       }
-            //     });
-            //   }
-            // });
+            if(result.responseJSON){
+              var data = result.responseJSON
+              vueScheduleList.pointID = ``;
+              vueScheduleList.pointData = data.pointList;
+              pointData = data.pointList;
+              showPoint(pointData, scanEmpId);
+              delete data.pointList;
+              vueScheduleList.listObj = data;
+              var html = $("html");
+              $(window).scroll(function () {
+                if ($(this).scrollTop()) {
+                  html.css("overflow", "visible");
+                }
+              });
+            }
           } else {
             loadingMask.css("display", "none");
             loading.css("display", "none");
