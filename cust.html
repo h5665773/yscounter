@@ -367,9 +367,9 @@
         offwork.css("display", "none");
       }
       let targerUrl = config.ajaxOrder;
+      //測試
       // let targerUrl = config.testURL;
-        //測試
-        // let targerUrl = config.testURL;
+
       $("#scanEmp").click(function () {
         var pointData = {};
         if ($(this).attr("disabled") == true) {
@@ -383,7 +383,7 @@
         exec("node scan.js", function (err, data, c) {
           //測試
           const ddd = new Date();
-          // data = 'T10725';
+          // data = 'H10019';
           // err = null;
           if (err == null && data.length > 0) {
             data = data.trim();
