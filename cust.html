@@ -507,7 +507,7 @@
       pointList.delegate(".list-group-item", "click", function () {
         var pointid = $(this).attr("pointid");
         vueScheduleList.list = vueScheduleList.listObj[pointid];
-        vueScheduleList.pointName = vueScheduleList.pointData.filter(x => x.F_POINT_ID == pointid)[0].F_POINT_NAME
+        vueScheduleList.pointName = vueScheduleList.pointData.filter(x => x.F_POINT_ID == pointid)[0].F_POINT_NAME;
         choosePoint = pointid;
         $("a.current").removeClass("current");
         $(this).addClass("current");
