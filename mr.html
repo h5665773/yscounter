@@ -377,7 +377,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(val,key) in checkin" v-if="val.DISPLAY_FLAG">
+              <tr v-for="(val,key) in checkin" v-if="val.DISPLAY_FLAG && classes[val.F_CLASS_ID]">
                 <td>{{val.F_CLASS_NAME}}</td>
                 <td>{{val.F_CF_TITLE}}</td>
                 <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} : <br>{{val.F_ITEM1_VALUE}}</td>
@@ -425,7 +425,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(val,key) in checkout" v-if="val.DISPLAY_FLAG">
+              <tr v-for="(val,key) in checkout" v-if="val.DISPLAY_FLAG && classes[val.F_CLASS_ID]">
                 <td>{{val.F_CLASS_NAME}}</td>
                 <td>{{val.F_CF_TITLE}}</td>
                 <td>{{classes[val.F_CLASS_ID].customForms[val.F_CF_ID].F_ITEM1_TITLE}} :<br> {{val.F_ITEM1_VALUE}}</td>
@@ -502,7 +502,9 @@
       data: {
         liverList: [],
         classes: [
-
+          {
+            customForms: {}
+          }
         ],
         subclasses: {
         },
