@@ -367,9 +367,9 @@
         offwork.css("display", "none");
       }
       let targerUrl = config.ajaxOrder;
+      //測試
       // let targerUrl = config.testURL;
-        //測試
-        // let targerUrl = config.testURL;
+
       $("#scanEmp").click(function () {
         var pointData = {};
         if ($(this).attr("disabled") == true) {
@@ -383,7 +383,7 @@
         exec("node scan.js", function (err, data, c) {
           //測試
           const ddd = new Date();
-          // data = 'T10725';
+          // data = 'H10019';
           // err = null;
           if (err == null && data.length > 0) {
             data = data.trim();
@@ -476,14 +476,15 @@
       pointList.delegate(".list-group-item", "click", function () {
         var pointid = $(this).attr("pointid");
         vueScheduleList.list = vueScheduleList.listObj[pointid];
-        vueScheduleList.pointName = vueScheduleList.pointData.filter(x => x.F_POINT_ID == pointid)[0].F_POINT_NAME
+        vueScheduleList.pointName = vueScheduleList.pointData.filter(x => x.F_POINT_ID == pointid)[0].F_POINT_NAME;
         choosePoint = pointid;
         $("a.current").removeClass("current");
         $(this).addClass("current");
-        if (vueScheduleList.list[1]["GO_WORKTIME"]) {
+        if (vueScheduleList.list[1]["GO_WORKTIME"] != null) {
           offwork.show();
-          if (vueScheduleList.list[1]["OFF_WORKTIME"] && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00')
+          if (vueScheduleList.list[1]["OFF_WORKTIME"] != null && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00'){
             offwork.attr('disabled', true);
+          } 
         } else {
           gowork.show();
         }
