@@ -368,7 +368,7 @@
       }
       let targerUrl = config.ajaxOrder;
       //測試
-      // let targerUrl = config.testURL;
+      // targerUrl = config.testURL;
 
       $("#scanEmp").click(function () {
         var pointData = {};
@@ -401,7 +401,7 @@
               dataType: `json`
             });
             if(result.responseJSON){
-              var dataSet = result.responseJSON
+              var dataSet = result.responseJSON;
               empName.html(dataSet.data1[0]['F_EMP_NAME']);
               scanEmpName = dataSet.data1[0]['F_EMP_NAME'];
               F_APPOINT = dataSet.data1[0]['F_APPOINT'];
@@ -450,7 +450,7 @@
               dataType: `json`
             });
             if(result.responseJSON){
-              var data = result.responseJSON
+              var data = result.responseJSON;
               vueScheduleList.pointID = ``;
               vueScheduleList.pointData = data.pointList;
               pointData = data.pointList;
