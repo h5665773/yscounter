@@ -289,6 +289,7 @@ $(document).ready(function () {
         }
         self.dateOptions.push(dateStr);
       }
+      
       loadingMask.css("display", "block");
       loading.removeClass("rotateOut");
       loading.css("display", "block");
@@ -324,6 +325,9 @@ $(document).ready(function () {
             }
           });
           loadAllData(null);
+          if(d1.getHours()<9){
+            $('#btnyyyymmdd_1').click();
+          }
         });
       });
 

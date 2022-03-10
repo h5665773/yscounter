@@ -98,7 +98,7 @@
                 </a>
               </li>
               <li style="float: right;margin-top: 7px;">
-                <button type="button" class="btn btn-default" :class="{'btn-success': currentDate==v}"
+                <button :id="'btnyyyymmdd_'+k" type="button" class="btn btn-default" :class="{'btn-success': currentDate==v}"
                   v-for="(v,k) in dateOptions" @click="dateChage(v)">{{v}}</button>
               </li>
             </ul>
