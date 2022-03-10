@@ -203,9 +203,33 @@
           </tbody>
         </table>
         <span class="list-group-item alert-warning">繼續工作四小時，依勞基法規定時間休息；但實行輪班制或其工作有連續性或緊急性者，得在工作時間內，另行調配其休息時間。</span>
+        <br>
+        <div id="RestTime" class="list-group-item alert-warning text-left" style="display:none">
+          <table style="width:100%;">
+            <tr>
+              <td style="font-size: large;">第一階段休息時間：<input id="F_REST_I_hh" type="text" style="width:45px;height:24px;" disabled><span>：</span>
+          <select id="F_REST_I_mm">
+            <option v-for="mm in minute">{{mm}}</option>
+          </select>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-size: large;">第二階段休息時間：<input id="F_REST_II_hh" type="text" style="width:45px;height:24px;" disabled><span>：</span>
+          <select id="F_REST_II_mm">
+            <option v-for="mm in minute">{{mm}}</option>
+          </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="text-right">
+                <button id="btnSaveRestTime" class="btn btn-primary">存檔</button>
+              </td>
+            </tr>
+          </table>
+        </div>
       </div>
 
-      <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px">
+      <div class="col-md-12" style="border-bottom: 1px dotted #778899;margin-bottom:20px;margin-top: 20px;">
       </div>
 
     </div>
@@ -247,6 +271,8 @@
     </div>
   </div>
   <script type="text/javascript">
+    var restTimeCheck = false;
+    var testData={};
     const screenshot = require('screenshot-desktop')
     var QRCode = require('qrcode')
     var exec = require('child_process').exec,
@@ -269,7 +295,18 @@
         pointID: ``,
         listObj: {},
         pointData: [],
-        pointName: ``
+        pointName: ``,
+        minute: [
+          '01','02','03','04','05','06','07','08','09','10',
+          '11','12','13','14','15','16','17','18','19','20',
+          '21','22','23','24','25','26','27','28','29','30',
+          '31','32','33','34','35','36','37','38','39','40',
+          '41','42','43','44','45','46','47','48','49','50',
+          '51','52','53','54','55','56','57','58','59'
+        ],
+        F_EMP_ID:'',
+        F_CU_ID: currentCust,
+        F_DISPATCH_RULE_ID:''
       },
     });
     var vueLoadingMask = new Vue({
@@ -293,6 +330,7 @@
       var choosePoint = "";
       var gowork = $("#goWork");
       var offwork = $("#offWork");
+      var btnSaveRestTime = $('#btnSaveRestTime');
       var offlinePointFile = "offlinePoint.json";
       var offlineCheckinFile = "offlineCheckin.json";
       var pointData = {};
@@ -352,6 +390,7 @@
         port: 80,
         path: ''
       };
+
       var showPoint = function (pointData, empId) {
         loadingMask.css("display", "none");
         loading.css("display", "none");
@@ -453,8 +492,10 @@
               var data = result.responseJSON;
               vueScheduleList.pointID = ``;
               vueScheduleList.pointData = data.pointList;
+              vueScheduleList.F_EMP_ID = scanEmpId;
               pointData = data.pointList;
               showPoint(pointData, scanEmpId);
+              showRestTime();
               delete data.pointList;
               vueScheduleList.listObj = data;
               var html = $("html");
@@ -472,7 +513,6 @@
           }
         });
       });
-
       pointList.delegate(".list-group-item", "click", function () {
         var pointid = $(this).attr("pointid");
         vueScheduleList.list = vueScheduleList.listObj[pointid];
@@ -494,38 +534,110 @@
         checkin("goWork");
       });
       offwork.click(function () {
+        //下班打卡流程 = 檢查休息時間 > 檢查值勤交接 > 檢查事件紀錄 > 執行打卡動作
+
+        //檢查休息時間
+        if(restTimeCheck == false && F_APPOINT != 'Z8'){
+          alert('請先確認休息時間並存檔。');
+          return;
+        }
+
         //檢查當天是否有填寫過值勤交接 check if T_SB_CUST_D2_WORK
         request(config.apiHost + 'api/workRecord/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
           var rows = JSON.parse(body);
-          if (error == null) {
-            if (rows.length < 1 && F_APPOINT != 'Z8') {
+          if (error == null && F_APPOINT != 'Z8') {
+            
+            if (rows.length < 1) {
+              //檢查值勤交接
               let alert_msg = confirm(`需先填寫值勤交接才能打卡!!是否跳轉頁面`);
               if (alert_msg) {
                 location.href = "./handover.html";
-              } else {
+              } 
+              else {
                 alert(`請先完成值勤交接`);
               }
-              //$(".alert_msg").show();
               return;
-            } else {
-              //下班打卡 > 檢查值勤交接 > 檢查事件紀錄 > 執行打卡動作
 
+            } 
+            else {
               //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
               //20210624 改成下班沒寫事件記錄就不給打卡
-              
-              if(F_APPOINT != 'Z8' && (F_APPOINT == 'W'|| F_APPOINT == 'S5')){
-              CheckEventList();
+              if(F_APPOINT == 'W'|| F_APPOINT == 'S5'){
+                CheckEventList();
               }
               else{
                 offwork.prop("disabled", true);
-                  checkin("offWork");
+                checkin("offWork");
               }
             }
           }
         });
 
       });
-      
+      btnSaveRestTime.click(function(){
+        saveRestTime();
+      });
+      function showRestTime(pointData, scanEmpId){
+          let F_CU_ID = vueScheduleList.F_CU_ID;
+          let F_POINT_ID = vueScheduleList.pointData[0].F_POINT_ID;
+          let F_EMP_ID = vueScheduleList.F_EMP_ID;
+
+          $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Get_RestTimeSetting',
+                F_CU_ID: F_CU_ID,
+                F_POINT_ID: F_POINT_ID,
+                F_EMP_ID:F_EMP_ID
+              },
+              success: function (data) {
+                let RestTimeData = JSON.parse(data);
+                $('#F_REST_I_hh').val(RestTimeData[0].F_REST_I_hh);
+                $('#F_REST_I_mm').val(RestTimeData[0].F_REST_I_mm);
+                $('#F_REST_II_hh').val(RestTimeData[0].F_REST_II_hh);
+                $('#F_REST_II_mm').val(RestTimeData[0].F_REST_II_mm);
+                vueScheduleList.F_DISPATCH_RULE_ID = RestTimeData[0].F_DISPATCH_RULE_ID;
+              }
+            });
+        $("#RestTime").show();
+      }
+      function saveRestTime(){
+        let F_CU_ID = vueScheduleList.F_CU_ID;
+        let F_POINT_ID = vueScheduleList.pointData[0].F_POINT_ID;
+        let F_EMP_ID = vueScheduleList.F_EMP_ID;
+        let F_DISPATCH_RULE_ID = vueScheduleList.F_DISPATCH_RULE_ID;
+        let F_REST_I_hh = $('#F_REST_I_hh').val();
+        let F_REST_I_mm = $('#F_REST_I_mm').val();
+        let F_REST_II_hh = $('#F_REST_II_hh').val();
+        let F_REST_II_mm = $('#F_REST_II_mm').val();
+        if(F_REST_I_hh == ''||F_REST_I_mm == null||F_REST_I_hh == ''||F_REST_I_mm == null){
+          alert('預設休息時間尚未設定，請聯繫主管。');
+          return;
+        }
+       
+        $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Add_RestTime',
+                F_CU_ID: F_CU_ID,
+                F_POINT_ID: F_POINT_ID,
+                F_EMP_ID:F_EMP_ID,
+                F_REST_I_hh:F_REST_I_hh,
+                F_REST_I_mm:F_REST_I_mm,
+                F_REST_II_hh:F_REST_II_hh,
+                F_REST_II_mm:F_REST_II_mm,
+                F_DISPATCH_RULE_ID:F_DISPATCH_RULE_ID
+              },
+              success: function (data) {
+                if(data == 'Success'){
+                  alert('存檔成功');
+                  restTimeCheck = true;
+                }
+              }
+            });
+      }
       function CheckEventList(){
               $.ajax({
               type: 'post',
