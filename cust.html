@@ -546,20 +546,19 @@
         request(config.apiHost + 'api/workRecord/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
           var rows = JSON.parse(body);
           if (error == null && F_APPOINT != 'Z8') {
-            
             if (rows.length < 1) {
               //檢查值勤交接
               let alert_msg = confirm(`需先填寫值勤交接才能打卡!!是否跳轉頁面`);
               if (alert_msg) {
                 location.href = "./handover.html";
-              } 
+              }
               else {
                 alert(`請先完成值勤交接`);
               }
               return;
-
-            } 
-            else {
+            }
+          }
+          else {
               //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
               //20210624 改成下班沒寫事件記錄就不給打卡
               if(F_APPOINT == 'W'|| F_APPOINT == 'S5'){
@@ -570,8 +569,7 @@
                 checkin("offWork");
               }
             }
-          }
-        });
+          });
 
       });
       btnSaveRestTime.click(function(){
@@ -588,7 +586,6 @@
               data: {
                 Order: 'Get_RestTimeSetting',
                 F_CU_ID: F_CU_ID,
-                F_POINT_ID: F_POINT_ID,
                 F_EMP_ID:F_EMP_ID
               },
               success: function (data) {
