@@ -27,8 +27,8 @@
 	    <style type="text/css">
 		  @media print {
 		      body{
-		          width: 21cm;
-		          height: 29.7cm;
+		          width: 105mm;
+		          height: 148mm;
 		          margin: 30mm 45mm 30mm 45mm; 
 		          /* change the margins as you want them to be. */
 		     } 
@@ -46,8 +46,8 @@
 		        -moz-box-sizing: border-box;
 		    }
 		    .page {
-		        width: 210mm;
-		        min-height: 297mm;
+		        width: 105mm;
+		        min-height: 148mm;
 		        padding: 0mm;
 		        margin: 10mm auto;
 		        border: 1px #D3D3D3 solid;
@@ -64,13 +64,13 @@
 		    }
 		    
 		    @page {
-		        size: A4;
+		        size: A6;
 		        margin: 0;
 		    }
 		    @media print {
 		        html, body {
-		            width: 210mm;
-		            height: 297mm;        
+		            width: 105mm;
+		            height: 148mm;
 		        }
 		        .page {
 		            margin: 0;
@@ -97,11 +97,19 @@
 		<div id="dataInfo"> 
 			<div class="page">
 				<div class="subpage">
-				<table class="table table-striped"> 
+				<table class="table table-bordered "> 
 					<tbody> 
 					<tr> 
-						<th colspan="2" class="alert-warning" align="center" style="text-align: center;">
+						<th colspan="2" class="alert-warning" align="center" style="text-align: center;position:relative;">
 							{{info.companyName}}
+              <span style="position:absolute;right:0px;bottom:0px;font-size:10px;">{{info.F_CU_ID}}{{info.F_START_TIME.substr(0,10).replace('-','')}}</span>
+						</th> 
+					</tr>	
+					<tr> 
+						<th colspan="2" class="alert-warning" align="center" style="text-align: center;position:relative">
+							{{info.F_CF_TITLE}}
+              <span style="position:absolute;right:0px;bottom:0px;">客戶聯</span>
+              <img src="images/park.png" style="position:absolute;left:0px;top:-35px;" v-show="info.F_CF_TITLE.indexOf('停車')>-1">
 						</th> 
 					</tr>	
 					<tr> 
@@ -173,21 +181,28 @@
 						<td width="60%">{{info.F_COST_MONEY}}</td> 
 					</tr> 
 					<tr> 
-						<th colspan="2" width="40%">客戶聯</th> 
-					</tr>  
+						<th scope="row" width="40%">收款人</th> 
+						<td width="60%"></td> 
+					</tr> 
 					</tbody> 
-				</table> 
-				</div>
-			</div>
-			<div class="page">
-				<div class="subpage">
-				<table class="table table-striped"> 
+				</table>
+        <div style="border-top: 2px dashed #000000;width: 100%;height:2px;">
+        </div>
+				<table class="table table-bordered "> 
 					<tbody>
 					<tr> 
-						<th colspan="2" class="alert-warning" align="center" style="text-align: center;">
+						<th colspan="2" class="alert-warning" align="center" style="text-align: center;position:relative">
 							{{info.companyName}}
+              <span style="position:absolute;right:0px;bottom:0px;font-size:10px;">{{info.F_CU_ID}}{{info.F_START_TIME.substr(0,10).replace('-','')}}</span>
 						</th> 
 					</tr>	 
+          <tr> 
+						<th colspan="2" class="alert-warning" align="center" style="text-align: center;position:relative">
+							{{info.F_CF_TITLE}}
+              <span style="position:absolute;right:0px;bottom:0px;">收執聯</span>
+              <img src="images/park.png" style="position:absolute;left:0px;top:-35px;" v-show="info.F_CF_TITLE.indexOf('停車')>-1">
+						</th> 
+					</tr>	
 					<tr> 
 						<th scope="row" width="40%" class="alert-warning">進場時間</th> 
 						<td width="60%" class="alert-warning">{{info.F_START_TIME}}</td> 
@@ -257,7 +272,8 @@
 						<td width="60%">{{info.F_COST_MONEY}}</td> 
 					</tr> 
 					<tr> 
-						<th colspan="2" width="40%">收執聯</th> 
+						<th scope="row" width="40%">收款人</th> 
+						<td width="60%"></td> 
 					</tr> 
 					</tbody> 
 				</table> 
