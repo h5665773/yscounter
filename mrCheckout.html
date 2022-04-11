@@ -108,7 +108,7 @@
               <th colspan="2" class="alert-warning" align="center" style="text-align: center;position:relative;">
                 {{info.companyName}}
                 <span style="position:absolute;right:0px;bottom:0px;font-size:10px;">
-                  {{info.F_CU_ID}}{{info.F_START_TIME.replace(/(-|:|\s)/g,'')}}
+                  {{info.F_CU_ID}}{{info.F_END_TIME.substr(0,10).replace(/(-|:|\s)/g,'')}}{{info.F_DAILY_SERIAL.padStart(3,'0')}}
                 </span>
               </th> 
             </tr>	
@@ -201,7 +201,7 @@
               <th colspan="2" class="alert-warning" align="center" style="text-align: center;position:relative">
                 {{info.companyName}}
                 <span style="position:absolute;right:0px;bottom:0px;font-size:10px;">
-                  {{info.F_CU_ID}}{{info.F_START_TIME.replace(/(-|:|\s)/g,'')}}
+                  {{info.F_CU_ID}}{{info.F_END_TIME.substr(0,10).replace(/(-|:|\s)/g,'')}}{{info.F_DAILY_SERIAL.padStart(3,'0')}}
                 </span>
               </th> 
             </tr>	 
