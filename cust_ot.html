@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../favicon.ico">
+      
+        <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+        <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/colorbox.css" />
+        <link rel="stylesheet" href="/css/main.css" />
+      
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+      
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="/css/bootstrap-theme.css">
+      
+        <script src="/js/jquery.js"></script>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/vue.js"></script>
+        <script src="/js/face-api.min.js"></script>
+        <link rel="stylesheet" href="/css/main.css">
+        <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+        <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+        <style>
+          html {
+            overflow: visible;
+          }
+      
+          h2 {
+            font-size: 24px;
+          }
+      
+          tr>td:nth-child(3) {
+            background-color: #41a6ee
+          }
+      
+          .point-schedule td,
+          .point-schedule th {
+            font-size: 12px;
+          }
+      
+          .point-schedule th {
+            padding: 3px;
+          }
+      
+          thead th {
+            background-color: #ccff;
+          }
+      
+          canvas {
+            position: absolute;
+            top: 39px;
+            left: 15px;
+          }
+      
+          #cameraArea {
+            position: relative;
+          }
+      
+          #canvas {
+            z-index: -99;
+            top: -9999px;
+            left: -9999px;
+          }
+      
+          .shotLine {
+            position: absolute;
+            display: block;
+            width: 80px;
+            height: 50px;
+          }
+      
+          .shotLine.leftTop {
+            border-right: 1px dotted #0000ff;
+            border-bottom: 1px dotted #0000ff;
+            top: 65px;
+            left: 0;
+          }
+      
+          .shotLine.rightTop {
+            border-left: 1px dotted #0000ff;
+            border-bottom: 1px dotted #0000ff;
+            top: 65px;
+            right: 0;
+          }
+      
+          .shotLine.leftBottom {
+            border-right: 1px dotted #0000ff;
+            border-top: 1px dotted #0000ff;
+            bottom: 35px;
+            left: 0;
+          }
+      
+          .shotLine.rightBottom {
+            border-left: 1px dotted #0000ff;
+            border-top: 1px dotted #0000ff;
+            bottom: 35px;
+            right: 0;
+          }
+        </style>
+        <script type="text/javascript" src="/js/Common.js"></script>
+      </head>
+      <body>
+        <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+        <header><nav class="navbar"></nav></header>
+
+          <div class="container main" id="scheduleList">
+            <div class="row">
+              <div class="col-lg-3" style="position:relative">
+                <p>
+                  <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
+                </p>
+                <div style="display:none" id="pointDetail">
+                  <div class="alert alert-success" style="width:200px" role="alert">
+                    您好
+                    <strong id="empName">
+        
+                    </strong>
+                  </div>
+                  <strong>請選擇駐點清單</strong>
+                  <div class="list-group pointList">
+                  </div>
+                </div>
+                <div align="center">
+                  <button type="button" class="btn btn-success" id="goWork"
+                    style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none"
+                    aria-haspopup="true" aria-expanded="false">上班打卡</button>
+                  <button type="button" class="btn btn-warning" id="offWork"
+                    style="width:100px;height:44px;line-height: 1;font-size: 20px;font-weight:bold;display:none"
+                    aria-haspopup="true" aria-expanded="false">下班打卡</button>
+                </div>
+                <h4 v-show="warnings.length >0">警告注意!</h4>
+        
+                <ul class="list-group">
+                  <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+                    <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME"
+                      target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file"
+                        aria-hidden="true"></span></a>
+                    <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}
+                    </h5>
+                    <span>{{v.F_DESCRIPTION}}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-lg-3" id="cameraArea" align="center">
+                <h4>攝影機畫面</h4>
+                <video id="video" width="270" height="270" autoplay></video>
+                <canvas id="canvas" width="270" height="270"></canvas>
+                <div class="shotLine leftTop"></div>
+                <div class="shotLine rightTop"></div>
+                <div class="shotLine leftBottom"></div>
+                <div class="shotLine rightBottom"></div>
+              </div>
+              <div class="col-lg-6 point-schedule">
+                <span v-if="list.length">加班打卡</span>
+                <table class="table table-bordered" v-if="list.length">
+                  <!-- v-for="(ps,pk) in list" -->
+                  <thead>
+                    <tr>
+                      <!-- {{ps.F_POINT_NAME}} -->
+                      <th colspan="8">{{pointName}}<span class="label label-warning">國 = 國定假日</span>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>日期</th>
+                      <td v-for="item in list" v-html="item.date"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">班別</th>
+                      <td v-for="item in list">{{item.classType}}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">應上班</th>
+                      <td v-for="item in list">{{item.sdt}}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">上班打卡</th>
+                      <td v-for="item in list">{{item.GO_WORKTIME}}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">應下班</th>
+                      <td v-for="item in list">{{item.edt}}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">下班打卡</th>
+                      <td v-for="item in list">{{item.OFF_WORKTIME}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <footer class="footer">
+            <div class="container">
+              <p class="text-muted">Place sticky footer content here.</p>
+            </div>
+          </footer>
+
+          <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
+            <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span id="loadingText">
+              請在20秒內掃描員工識別證</span>
+          </button>
+      </body>
+
+</html>
+<script type="text/javascript">
+    const screenshot = require('screenshot-desktop')
+    var exec = require('child_process').exec,
+      child;
+    const request = require("request");
+    // With promises
+    var vueScheduleList = new Vue({
+      el: '#scheduleList',
+      data: {
+        list: {},
+        warnings: [],
+        pointID: ``,
+        listObj: {},
+        pointData: [],
+        pointName: ``,
+        F_EMP_ID:'',
+        F_CU_ID: currentCust,
+        F_DISPATCH_RULE_ID:''
+      },
+    });
+    var vueLoadingMask = new Vue({
+      el: '#loading-mask',
+      data: {
+        warnings: []
+      }
+    });
+    $(document).ready(function () {
+      var F_APPOINT = '';
+      var empName = $("#empName");
+      var faceDetections = [];
+      var loading = $("#loading");
+      var loadingText = $("#loadingText");
+      var loadingMask = $(".loadingMask");
+      var pointList = $(".pointList");
+      var scanEmpId = "";
+      var scanEmpName = "";
+      var chooseCust = "";
+      var choosePoint = "";
+      var gowork = $("#goWork");
+      var offwork = $("#offWork");
+      var btnSaveRestTime = $('#btnSaveRestTime');
+      var offlinePointFile = "offlinePoint.json";
+      var offlineCheckinFile = "offlineCheckin.json";
+      var pointData = {};
+      var video = document.getElementById('video');
+      var d = new Date();
+      var mediaConfig = { video: true };
+      var body = $("html");
+      var showMask = function () {
+        loadingText.text("載入中!");
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+      }
+      var hideMask = function () {
+        loadingMask.css("display", "none");
+        loading.css("display", "none");
+        loading.removeClass("rotateIn");
+        loading.addClass("rotateOut");
+      }
+      var errBack = function (e) {
+        console.log('An error has occurred!', e)
+      };
+      Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri('/js'),
+        faceapi.nets.faceLandmark68Net.loadFromUri('/js'),
+        faceapi.nets.faceRecognitionNet.loadFromUri('/js'),
+        faceapi.nets.faceExpressionNet.loadFromUri('/js')
+      ]).then(startVideo)
+      function startVideo() {
+        navigator.getUserMedia(
+          { video: {} },
+          stream => video.srcObject = stream,
+          err => console.error(err)
+        )
+        video.addEventListener('play', () => {
+          const canvasF = faceapi.createCanvasFromMedia(video)
+          $("#cameraArea").append(canvasF)
+          const displaySize = { width: video.width, height: video.height }
+          faceapi.matchDimensions(canvasF, displaySize)
+          setInterval(async () => {
+            faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
+            const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
+            canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
+            faceapi.draw.drawDetections(canvasF, resizedDetections)
+          }, 200)
+        })
+      }
+
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var options = {
+        hostname: 'api.wyattst.com.tw',
+        port: 80,
+        path: ''
+      };
+
+      var showPoint = function (pointData, empId) {
+        loadingMask.css("display", "none");
+        loading.css("display", "none");
+        loading.removeClass("rotateIn");
+        loading.addClass("rotateOut");
+        pointList.empty();
+        var resEmpName = "";
+        for (var i in pointData) {
+          pointList.append('<a href="#" pointid="' + pointData[i].F_POINT_ID + '" class="list-group-item list-group-item-danger">' + pointData[i].F_POINT_NAME + '<span>(點選以打卡)</span></a>');
+        }
+        $("#pointDetail").show();
+        gowork.css("display", "none");
+        offwork.css("display", "none");
+      }
+      let targerUrl = config.ajaxOrder;
+      //測試
+      // targerUrl = config.testURL;
+
+      $("#scanEmp").click(function () {
+        var pointData = {};
+        if ($(this).attr("disabled") == true) {
+          return false;
+        }
+        loadingText.text("請在20秒內掃描員工識別證!");
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+        exec("node scan.js", function (err, data, c) {
+
+          //測試
+          // data = 'T10946';
+          // err = null;
+          
+          if (err == null && data.length > 0) {
+            data = data.trim();
+            var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
+            scanEmpId = parse[1];
+            var result = $.ajax({
+              type: `post`,
+              url: targerUrl,
+              data: {
+                Order: `Get_EmpNameAndEmpWarning`,
+                F_EMP_ID: scanEmpId,
+                F_CU_ID: currentCust
+              },
+              async: false,
+              dataType: `json`
+            });
+            if(result.responseJSON){
+              var dataSet = result.responseJSON;
+              empName.html(dataSet.data1[0]['F_EMP_NAME']);
+              scanEmpName = dataSet.data1[0]['F_EMP_NAME'];
+              F_APPOINT = dataSet.data1[0]['F_APPOINT'];
+              vueLoadingMask.warnings = dataSet.data2;
+              vueScheduleList.warnings = dataSet.data2;
+            }
+            var result = $.ajax({
+              type: 'get',
+              url: targerUrl,
+              async: false,
+              data: {
+                Order: 'Get_SevenDaysSchedule_ot',
+                custid: currentCust,
+                empid: scanEmpId
+              },
+              dataType: `json`
+            });
+            if(result.responseJSON){
+              var data = result.responseJSON;
+              vueScheduleList.pointID = ``;
+              vueScheduleList.pointData = data.pointList;
+              vueScheduleList.F_EMP_ID = scanEmpId;
+              pointData = data.pointList;
+              showPoint(pointData, scanEmpId);
+              delete data.pointList;
+              vueScheduleList.listObj = data;
+              var html = $("html");
+              $(window).scroll(function () {
+                if ($(this).scrollTop()) {
+                  html.css("overflow", "visible");
+                }
+              });
+            }
+          } else {
+            loadingMask.css("display", "none");
+            loading.css("display", "none");
+            loading.removeClass("rotateIn");
+            loading.addClass("rotateOut");
+          }
+        });
+      });
+      pointList.delegate(".list-group-item", "click", function () {
+        var pointid = $(this).attr("pointid");
+        vueScheduleList.list = vueScheduleList.listObj[pointid];
+        vueScheduleList.pointName = vueScheduleList.pointData.filter(x => x.F_POINT_ID == pointid)[0].F_POINT_NAME;
+        choosePoint = pointid;
+        $("a.current").removeClass("current");
+        $(this).addClass("current");
+        
+        if(vueScheduleList.list[1]["classType"] == ''){
+            if (vueScheduleList.list[1]["GO_WORKTIME"] != null) {
+          offwork.show();
+          if (vueScheduleList.list[1]["OFF_WORKTIME"] != null && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00'){
+            offwork.attr('disabled', true);
+          } 
+        } else {
+          gowork.show();
+        }
+    }
+      });
+      gowork.click(function () {
+        gowork.prop("disabled", true);
+        checkin("goWork");
+      });
+      offwork.click(function () {
+        offwork.prop("disabled", true);
+        checkin("offWork");
+      });
+      var checkin = async function (workType) {
+        await screenshot({ filename: './screen.png' })
+        showMask();
+        context.drawImage(video, 0, 0, 270, 270);
+        var imageData = canvas.toDataURL("image/png");
+        
+        // if (faceDetections.length == 0) {
+        //   alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
+        //   hideMask();
+        //   gowork.prop("disabled", false);
+        //   offwork.prop("disabled", false);
+        //   return false;
+        // }
+
+        if (scanEmpId != "" && choosePoint != "" && currentCust != "") {
+          var imageDir = `./public/coworkerImages`;
+          if (!fs.existsSync(imageDir)) {
+            fs.mkdirSync(imageDir, 0777);
+          }
+          var imageLocation = `${imageDir}/${d.getYear()}-${d.getMonth()}-${d.getDate()}-checkin-${workType}.png`;
+          imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
+          var buf = new Buffer(imageData, 'base64');
+          fs.appendFileSync(imageLocation, buf, { flag: 'w' });
+          var formData = {
+            checkin_image: fs.createReadStream(imageLocation),
+            screen: fs.createReadStream('./screen.png'),
+            Order: 'Checkin_ot',
+            workType: workType,
+            F_CU_ID: currentCust,
+            F_POINT_ID: choosePoint,
+            F_EMP_ID: scanEmpId
+          };
+
+          //_ot
+          request.post({url:targerUrl,formData: formData},function(error,httpResponse,body){
+            hideMask();
+            gowork.prop("disabled", false);
+            offwork.prop("disabled", false);
+            alert(String(body));
+            location.href = "index.html";
+          });
+        } else {
+          gowork.prop("disabled", false);
+          offwork.prop("disabled", false);
+          alert("資料有錯誤");
+        }
+      }
+    });
+  </script>
