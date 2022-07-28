@@ -533,7 +533,9 @@
             case (app.videoStage1-2):
             case (app.videoStage2-2):
             // case (app.videoEnd):
-              app.pauseVideo("即將截圖並上傳，請將頭像對準攝影機，以免截圖失敗")
+              if (player.getPlayerState() !== 2) {
+                app.pauseVideo("即將截圖並上傳，請將頭像對準攝影機，以免截圖失敗")
+              }
             break
           }
           switch (currentTime) {
