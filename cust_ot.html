@@ -341,7 +341,7 @@
         exec("node scan.js", function (err, data, c) {
 
           //測試
-          // data = 'T10946';
+          // data = 'T10080';
           // err = null;
           
           if (err == null && data.length > 0) {
@@ -410,8 +410,8 @@
         $("a.current").removeClass("current");
         $(this).addClass("current");
         
-        if(vueScheduleList.list[1]["classType"] == ''){
-            if (vueScheduleList.list[1]["GO_WORKTIME"] != null) {
+        if(vueScheduleList.list[1]["classType"] != ''&&vueScheduleList.list[1]["classType"] != null){
+          if (vueScheduleList.list[1]["GO_WORKTIME"] != null) {
           offwork.show();
           if (vueScheduleList.list[1]["OFF_WORKTIME"] != null && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00'){
             offwork.attr('disabled', true);
@@ -419,7 +419,7 @@
         } else {
           gowork.show();
         }
-    }
+      }
       });
       gowork.click(function () {
         gowork.prop("disabled", true);
