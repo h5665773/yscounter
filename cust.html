@@ -208,16 +208,32 @@
           <table style="width:100%;">
             <tr>
               <td style="font-size: large;">第一階段休息時間：<input id="F_REST_I_hh" type="text" style="width:45px;height:24px;" disabled><span>：</span>
-          <select id="F_REST_I_mm">
+          <select id="F_REST_I_mm" @change="restTimeChange()">
             <option v-for="mm in minute">{{mm}}</option>
           </select>
+          <span>~</span>
+          <input id="F_REST_I_EDT_hh" type="text" style="width:45px;height:24px;" disabled><span>：</span>
+          <input id="F_REST_I_EDT_mm" type="text" style="width:45px;height:24px;" disabled>
               </td>
             </tr>
             <tr>
               <td style="font-size: large;">第二階段休息時間：<input id="F_REST_II_hh" type="text" style="width:45px;height:24px;" disabled><span>：</span>
-          <select id="F_REST_II_mm">
+          <select id="F_REST_II_mm" @change="restTimeChange()">
             <option v-for="mm in minute">{{mm}}</option>
           </select>
+          <span>~</span>
+          <input id="F_REST_II_EDT_hh" type="text" style="width:45px;height:24px;" disabled><span>：</span>
+          <input id="F_REST_II_EDT_mm" type="text" style="width:45px;height:24px;" disabled>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-size: large;">第三階段休息時間：<input id="F_REST_III_hh" type="text" style="width:45px;height:24px;" disabled><span>：</span>
+          <select id="F_REST_III_mm" @change="restTimeChange()">
+            <option v-for="mm in minute">{{mm}}</option>
+          </select>
+          <span>~</span>
+          <input id="F_REST_III_EDT_hh" type="text" style="width:45px;height:24px;" disabled><span>：</span>
+          <input id="F_REST_III_EDT_mm" type="text" style="width:45px;height:24px;" disabled>
               </td>
             </tr>
             <tr>
@@ -242,8 +258,7 @@
         <img src="images/scan3.png" alt="..." align="center">
       </div>
       <div class="col-md-4">
-        <img id="qrcodeImage" src=""></img>
-        <p style="color:#999999">社區QR code</p>
+        <!-- <p style="color:#999999">社區QR code</p> -->
       </div>
     </div>
   </div>
@@ -272,21 +287,14 @@
   </div>
   <script type="text/javascript">
     var restTimeCheck = false;
+    var F_REST_TYPE = '';
     var testData={};
     const screenshot = require('screenshot-desktop')
-    var QRCode = require('qrcode')
     var exec = require('child_process').exec,
       child;
     const request = require("request");
     // With promises
-    QRCode.toDataURL(currentCust)
-      .then(url => {
-        console.log(url)
-        $("#qrcodeImage").attr("src", url);
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    
     var vueScheduleList = new Vue({
       el: '#scheduleList',
       data: {
@@ -308,6 +316,11 @@
         F_CU_ID: currentCust,
         F_DISPATCH_RULE_ID:''
       },
+      methods: {
+        restTimeChange: function(){
+          restTimeChange();
+        }
+      }
     });
     var vueLoadingMask = new Vue({
       el: '#loading-mask',
@@ -422,8 +435,9 @@
         exec("node scan.js", function (err, data, c) {
           //測試
           const ddd = new Date();
-          // data = 'H10019';
+          // data = 'T10946';
           // err = null;
+
           if (err == null && data.length > 0) {
             data = data.trim();
             var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
@@ -603,11 +617,17 @@
                 $('#F_REST_I_mm').val(RestTimeData[0].F_REST_I_mm);
                 $('#F_REST_II_hh').val(RestTimeData[0].F_REST_II_hh);
                 $('#F_REST_II_mm').val(RestTimeData[0].F_REST_II_mm);
+                $('#F_REST_III_hh').val(RestTimeData[0].F_REST_III_hh);
+                $('#F_REST_III_mm').val(RestTimeData[0].F_REST_III_mm);
+                F_REST_TYPE = RestTimeData[0].F_REST_TYPE;
                 vueScheduleList.F_DISPATCH_RULE_ID = RestTimeData[0].F_DISPATCH_RULE_ID;
+
+                restTimeChange();
               }
             });
         $("#RestTime").show();
       }
+      
       function saveRestTime(){
         let F_CU_ID = vueScheduleList.F_CU_ID;
         let F_POINT_ID = vueScheduleList.pointData[0].F_POINT_ID;
@@ -615,9 +635,17 @@
         let F_DISPATCH_RULE_ID = vueScheduleList.F_DISPATCH_RULE_ID;
         let F_REST_I_hh = $('#F_REST_I_hh').val();
         let F_REST_I_mm = $('#F_REST_I_mm').val();
+        let F_REST_I_EDT_hh = $('#F_REST_I_EDT_hh').val();
+        let F_REST_I_EDT_mm = $('#F_REST_I_EDT_mm').val();
         let F_REST_II_hh = $('#F_REST_II_hh').val();
         let F_REST_II_mm = $('#F_REST_II_mm').val();
-        if(F_REST_I_hh == ''||F_REST_I_mm == ''||F_REST_II_hh == ''||F_REST_II_mm == ''){
+        let F_REST_II_EDT_hh = $('#F_REST_II_EDT_hh').val();
+        let F_REST_II_EDT_mm = $('#F_REST_II_EDT_mm').val();
+        let F_REST_III_hh = $('#F_REST_III_hh').val();
+        let F_REST_III_mm = $('#F_REST_III_mm').val();
+        let F_REST_III_EDT_hh = $('#F_REST_III_EDT_hh').val();
+        let F_REST_III_EDT_mm = $('#F_REST_III_EDT_mm').val();
+        if(F_REST_I_hh == ''||F_REST_I_mm == ''||F_REST_II_hh == ''||F_REST_II_mm == ''||F_REST_III_hh == ''||F_REST_III_mm == ''){
           alert('預設休息時間尚未設定，請聯繫主管。');
           return;
         }
@@ -634,6 +662,14 @@
                 F_REST_I_mm:F_REST_I_mm,
                 F_REST_II_hh:F_REST_II_hh,
                 F_REST_II_mm:F_REST_II_mm,
+                F_REST_III_hh:F_REST_III_hh,
+                F_REST_III_mm:F_REST_III_mm,
+                F_REST_I_EDT_hh:F_REST_I_EDT_hh,
+                F_REST_I_EDT_mm:F_REST_I_EDT_mm,
+                F_REST_II_EDT_hh:F_REST_II_EDT_hh,
+                F_REST_II_EDT_mm:F_REST_II_EDT_mm,
+                F_REST_III_EDT_hh:F_REST_III_EDT_hh,
+                F_REST_III_EDT_mm:F_REST_III_EDT_mm,
                 F_DISPATCH_RULE_ID:F_DISPATCH_RULE_ID
               },
               success: function (data) {
@@ -754,6 +790,65 @@
         }
       }
     });
+    function restTimeChange(){
+        let F_REST_I_EDT_hh = $('#F_REST_I_hh').val() == null?0:parseInt($('#F_REST_I_hh').val());
+        let F_REST_I_EDT_mm = $('#F_REST_I_mm').val() == null?0:parseInt($('#F_REST_I_mm').val());
+        let F_REST_II_EDT_hh = $('#F_REST_II_hh').val() == null?0:parseInt($('#F_REST_II_hh').val());
+        let F_REST_II_EDT_mm = $('#F_REST_II_mm').val() == null?0:parseInt($('#F_REST_II_mm').val());
+        let F_REST_III_EDT_hh = $('#F_REST_III_hh').val() == null?0:parseInt($('#F_REST_III_hh').val());
+        let F_REST_III_EDT_mm = $('#F_REST_III_mm').val() == null?0:parseInt($('#F_REST_III_mm').val());
+        if(F_REST_TYPE == 'A'){
+                  F_REST_I_EDT_mm+=30;
+                  F_REST_II_EDT_mm+=30;
+                  F_REST_III_EDT_mm+=30;
+
+                  if(F_REST_I_EDT_mm>=60){
+                    F_REST_I_EDT_mm-=60;
+                    F_REST_I_EDT_hh+=1;
+                    if(F_REST_I_EDT_hh >=24){
+                      F_REST_I_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_II_EDT_mm>=60){
+                    F_REST_II_EDT_mm-=60;
+                    F_REST_II_EDT_hh+=1;
+                    if(F_REST_II_EDT_hh >=24){
+                      F_REST_II_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_III_EDT_mm>=60){
+                    F_REST_III_EDT_mm-=60;
+                    F_REST_III_EDT_hh+=1;
+                    if(F_REST_III_EDT_hh >=24){
+                      F_REST_III_EDT_hh-=24;
+                    }
+                  }
+                }
+                else if(F_REST_TYPE == 'B'){
+                  F_REST_I_EDT_hh+=1;
+                  F_REST_II_EDT_hh+=1;
+                  F_REST_III_EDT_hh+=1;
+
+
+                    if(F_REST_I_EDT_hh >=24){
+                      F_REST_I_EDT_hh-=24;
+                    }
+
+                    if(F_REST_II_EDT_hh >=24){
+                      F_REST_II_EDT_hh-=24;
+                    }
+
+                    if(F_REST_III_EDT_hh >=24){
+                      F_REST_III_EDT_hh-=24;
+                    }
+                }
+                $('#F_REST_I_EDT_hh').val(F_REST_I_EDT_hh);
+                $('#F_REST_I_EDT_mm').val(F_REST_I_EDT_mm);
+                $('#F_REST_II_EDT_hh').val(F_REST_II_EDT_hh);
+                $('#F_REST_II_EDT_mm').val(F_REST_II_EDT_mm);
+                $('#F_REST_III_EDT_hh').val(F_REST_III_EDT_hh);
+                $('#F_REST_III_EDT_mm').val(F_REST_III_EDT_mm);
+      }
   </script>
 
   <div class="alert alert-danger alert-dismissible alert_msg" style="display:none;" role="alert">

@@ -1,11 +1,15 @@
+<div style="display: flex;float: right;">
+<img id="qrcodeImage" style="width: 63px;"></img>
 <ul class="nav navbar-right top-nav">
-	<li><a>
+	<li>
+		<a>
 			客戶名稱 : <span id="companyName">連接網路中</span></a>
 	</li>
 	<li id="globalTimer" style="text-align: right;margin-right: 20px;">
 
 	</li>
 </ul>
+</div>
 <div class="logo">
 	<img src="/images/logo.jpg">
 </div>
@@ -108,3 +112,14 @@
 				style="color:#cc0011;font-weight:700;">更新程式</a></li>
 	</ul>
 </div>
+<script>
+	var QRCode = require('qrcode');
+	QRCode.toDataURL(currentCust)
+      .then(url => {
+        console.log(url)
+        $("#qrcodeImage").attr("src", url);
+      })
+      .catch(err => {
+        console.error(err)
+      });
+</script>
