@@ -422,6 +422,12 @@
       //測試
       // targerUrl = config.testURL;
 
+      let params = new URLSearchParams(location.search);
+      let requestF_EMP_ID = params.get('F_EMP_ID');
+      if(requestF_EMP_ID!=null){
+        loadData(requestF_EMP_ID);
+      }
+
       $("#scanEmp").click(function () {
         var pointData = {};
         if ($(this).attr("disabled") == true) {
@@ -433,13 +439,90 @@
         loading.css("display", "block");
         loading.addClass("rotateIn");
         exec("node scan.js", function (err, data, c) {
+          
           //測試
-          const ddd = new Date();
           // data = 'T10946';
           // err = null;
 
           if (err == null && data.length > 0) {
-            data = data.trim();
+            loadData(data);
+          } else {
+            loadingMask.css("display", "none");
+            loading.css("display", "none");
+            loading.removeClass("rotateIn");
+            loading.addClass("rotateOut");
+          }
+        });
+      });
+      pointList.delegate(".list-group-item", "click", function () {
+        var pointid = $(this).attr("pointid");
+        vueScheduleList.list = vueScheduleList.listObj[pointid];
+        vueScheduleList.pointName = vueScheduleList.pointData.filter(x => x.F_POINT_ID == pointid)[0].F_POINT_NAME;
+        choosePoint = pointid;
+        $("a.current").removeClass("current");
+        $(this).addClass("current");
+        if (vueScheduleList.list[1]["GO_WORKTIME"] != null) {
+          offwork.show();
+          if (vueScheduleList.list[1]["OFF_WORKTIME"] != null && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00'){
+            offwork.attr('disabled', true);
+          } 
+        } else {
+          gowork.show();
+        }
+      });
+      gowork.click(function () {
+        gowork.prop("disabled", true);
+        checkin("goWork");
+      });
+      offwork.click(function () {
+        //下班打卡流程 = 檢查休息時間 > 檢查值勤交接 > 檢查事件紀錄 > 執行打卡動作
+
+        //檢查休息時間
+        if(restTimeCheck == false && F_APPOINT != 'Z8'){
+          alert('請先確認休息時間並存檔。');
+          return;
+        }
+
+        //檢查當天是否有填寫過值勤交接 check if T_SB_CUST_D2_WORK
+        request(config.apiHost + 'api/workRecord/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
+          var rows = JSON.parse(body);
+          
+          if (error == null && F_APPOINT != 'Z8') {
+
+            //檢查值勤交接
+            if (rows.length < 1) {
+              let alert_msg = confirm(`需先填寫值勤交接才能打卡!!是否跳轉頁面`);
+              if (alert_msg) {
+                location.href = "./handover.html";
+              }
+              else {
+                alert(`請先完成值勤交接`);
+                return;
+              }
+            }
+            //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
+            //20210624 改成下班沒寫事件記錄就不給打卡
+            if(F_APPOINT == 'W'|| F_APPOINT == 'S5'){
+               CheckEventList();
+             }
+             else{
+               offwork.prop("disabled", true);
+               checkin("offWork");
+             }
+             
+          }
+          else {
+            offwork.prop("disabled", true);
+            checkin("offWork");
+            }
+          });
+
+      });
+      btnSaveRestTime.click(function(){
+        saveRestTime();
+      });
+      function loadData(data){
+        data = data.trim();
             var parse = data.match(/([A-Z]{1}[0-9]+)([A-Z]?)/);
             scanEmpId = parse[1];
             var result = $.ajax({
@@ -523,81 +606,7 @@
                 }
               });
             }
-          } else {
-            loadingMask.css("display", "none");
-            loading.css("display", "none");
-            loading.removeClass("rotateIn");
-            loading.addClass("rotateOut");
-          }
-        });
-      });
-      pointList.delegate(".list-group-item", "click", function () {
-        var pointid = $(this).attr("pointid");
-        vueScheduleList.list = vueScheduleList.listObj[pointid];
-        vueScheduleList.pointName = vueScheduleList.pointData.filter(x => x.F_POINT_ID == pointid)[0].F_POINT_NAME;
-        choosePoint = pointid;
-        $("a.current").removeClass("current");
-        $(this).addClass("current");
-        if (vueScheduleList.list[1]["GO_WORKTIME"] != null) {
-          offwork.show();
-          if (vueScheduleList.list[1]["OFF_WORKTIME"] != null && vueScheduleList.list[1]["OFF_WORKTIME"] != '00:00:00'){
-            offwork.attr('disabled', true);
-          } 
-        } else {
-          gowork.show();
-        }
-      });
-      gowork.click(function () {
-        gowork.prop("disabled", true);
-        checkin("goWork");
-      });
-      offwork.click(function () {
-        //下班打卡流程 = 檢查休息時間 > 檢查值勤交接 > 檢查事件紀錄 > 執行打卡動作
-
-        //檢查休息時間
-        if(restTimeCheck == false && F_APPOINT != 'Z8'){
-          alert('請先確認休息時間並存檔。');
-          return;
-        }
-
-        //檢查當天是否有填寫過值勤交接 check if T_SB_CUST_D2_WORK
-        request(config.apiHost + 'api/workRecord/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
-          var rows = JSON.parse(body);
-          
-          if (error == null && F_APPOINT != 'Z8') {
-
-            //檢查值勤交接
-            if (rows.length < 1) {
-              let alert_msg = confirm(`需先填寫值勤交接才能打卡!!是否跳轉頁面`);
-              if (alert_msg) {
-                location.href = "./handover.html";
-              }
-              else {
-                alert(`請先完成值勤交接`);
-                return;
-              }
-            }
-            //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
-            //20210624 改成下班沒寫事件記錄就不給打卡
-            if(F_APPOINT == 'W'|| F_APPOINT == 'S5'){
-               CheckEventList();
-             }
-             else{
-               offwork.prop("disabled", true);
-               checkin("offWork");
-             }
-             
-          }
-          else {
-            offwork.prop("disabled", true);
-            checkin("offWork");
-            }
-          });
-
-      });
-      btnSaveRestTime.click(function(){
-        saveRestTime();
-      });
+      }
       function showRestTime(pointData, scanEmpId){
           let F_CU_ID = vueScheduleList.F_CU_ID;
           let F_POINT_ID = vueScheduleList.pointData[0].F_POINT_ID;
@@ -627,7 +636,6 @@
             });
         $("#RestTime").show();
       }
-      
       function saveRestTime(){
         let F_CU_ID = vueScheduleList.F_CU_ID;
         let F_POINT_ID = vueScheduleList.pointData[0].F_POINT_ID;

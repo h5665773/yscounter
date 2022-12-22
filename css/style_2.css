@@ -1,0 +1,636 @@
+﻿@import "http://fonts.googleapis.com/css?family=Raleway";
+.txtReadOnly
+{
+    FONT-SIZE: 10pt;
+    BORDER-RIGHT: 1px solid; 
+	BORDER-TOP: 1px solid; 
+	BORDER-LEFT: 1px solid; 
+	BORDER-BOTTOM: 1px solid;
+    background-color: #F6F6F6;
+    border-color:#C0C0C0;
+    cursor:default;
+    color:#000000;
+}
+
+.txtDate
+{
+    FONT-SIZE: 10pt;
+    border: 1px solid #C0C0C0;
+    cursor:default;
+    color:#0000ff;
+}
+
+.txtAreaReadOnly
+{
+    FONT-SIZE: 10pt;
+    background-color: #F6F6F6;
+    cursor:default;
+    color:#000000;
+	border: 1px solid #C0C0C0;
+}
+
+.txtEdit
+{
+    border: 1px solid #666666;
+	FONT-SIZE: 10pt;
+	BACKGROUND-COLOR: #ffffff;
+	cursor:text;
+	color:#0000ff;
+}
+
+.txtEditRight
+{
+    border: 1px solid #666666;
+	FONT-SIZE: 10pt;
+	BACKGROUND-COLOR: #ffffff;
+	text-align: right;
+	cursor:text;
+	color:#0000ff;
+}
+
+.txtEditCenter
+{
+    border: 1px solid #666666;
+	FONT-SIZE: 10pt;
+	BACKGROUND-COLOR: #ffffff;
+	text-align: center;
+	cursor:text;
+	color:#0000ff;
+}
+/*******************************************************************************************************************/
+.xTD_secTitle {
+	FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #e0e0e0; COLOR: #333333
+}
+.xTD_Text0 {
+	FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #ffffff; COLOR: #333333; PADDING-LEFT: 4px;
+}
+.xTD_Text1 {
+	FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #e6e6e6; COLOR: #333333; PADDING-LEFT: 4px;
+}
+.xTD_Text2 {
+	FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #ffffcc; COLOR: #333333; PADDING-LEFT: 4px;
+}
+/***Grid樣式********************************************************************************************************/
+.nTD_mTitle {
+	FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #336699; COLOR: #ffffff
+}
+.nTD_sTitle {
+	FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #e0e0e0; COLOR: #333333
+}
+.nTD_Text0 {
+	FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #ffffff; COLOR: #333333
+}
+.nTD_Text1 {
+	FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #e6e6e6; COLOR: #333333
+}
+/*另一種grid樣式****************************************************************************************************/
+.gTR_mTitle {
+	text-align: center; BACKGROUND-COLOR: #336699
+}
+.gTD_mTitle{
+	BORDER-RIGHT: #CCCCCC 1px solid; BORDER-TOP: #CCCCCC 1px solid; BORDER-LEFT: #CCCCCC 1px solid; BORDER-BOTTOM: #CCCCCC 1px solid; PADDING-LEFT: 2px; PADDING-BOTTOM: 4px; PADDING-TOP: 6px; COLOR: #ffffff; FONT-SIZE: 12px
+}
+.gTR_Text0 {
+    BACKGROUND-COLOR: #FFFFFF
+}
+.gTR_Text1 {
+    BACKGROUND-COLOR: #e6e6e6
+}
+.gTR_Text8 { /*選取*/
+    BACKGROUND-COLOR: #FFCC99
+}
+.gTR_Text9 { /*光棒*/
+    BACKGROUND-COLOR: #CCCCFF
+}
+.gTD_Text0Hand {
+    BORDER-RIGHT: #eeeeee 1px solid; BORDER-TOP: #eeeeee 1px dotted; BORDER-LEFT: #eeeeee 1px solid; BORDER-BOTTOM: #eeeeee 1px dotted; PADDING-LEFT: 2px; PADDING-BOTTOM: 4px; PADDING-TOP: 6px; COLOR: #111111; FONT-SIZE: 12px; cursor: hand; FONT-FAMILY: "Verdana", "Arial", "Helvetica", "sans-serif"
+}
+.gTD_Text1Hand {
+    BORDER-RIGHT: #eeeeee 1px dotted; BORDER-TOP: #eeeeee 1px dotted; BORDER-LEFT: #eeeeee 1px dotted; BORDER-BOTTOM: #eeeeee 1px dotted; PADDING-LEFT: 2px; PADDING-BOTTOM: 4px; PADDING-TOP: 6px; COLOR: #111111; FONT-SIZE: 12px; cursor: hand; FONT-FAMILY: "Verdana", "Arial", "Helvetica", "sans-serif"
+}
+.gTD_Text0 {
+	BORDER-RIGHT: #eeeeee 1px solid; BORDER-TOP: #eeeeee 1px dotted; BORDER-LEFT: #eeeeee 1px solid; BORDER-BOTTOM: #eeeeee 1px dotted; PADDING-LEFT: 2px; PADDING-BOTTOM: 4px; PADDING-TOP: 6px; COLOR: #111111; FONT-SIZE: 12px; FONT-FAMILY: "Verdana", "Arial", "Helvetica", "sans-serif"
+}
+.gTD_Text1 {
+	BORDER-RIGHT: #eeeeee 1px dotted; BORDER-TOP: #eeeeee 1px dotted; BORDER-LEFT: #eeeeee 1px dotted; BORDER-BOTTOM: #eeeeee 1px dotted; PADDING-LEFT: 2px; PADDING-BOTTOM: 4px; PADDING-TOP: 6px; COLOR: #111111; FONT-SIZE: 12px; FONT-FAMILY: "Verdana", "Arial", "Helvetica", "sans-serif"
+}
+.gTD_Text0Del {
+	text-decoration: line-through; BORDER-RIGHT: #eeeeee 1px dotted; BORDER-TOP: #eeeeee 1px dotted; BORDER-LEFT: #eeeeee 1px dotted; BORDER-BOTTOM: #eeeeee 1px dotted; PADDING-LEFT: 2px; PADDING-BOTTOM: 6px; PADDING-TOP: 6px; COLOR: #111111; FONT-SIZE: 12px; FONT-FAMILY: "Verdana", "Arial", "Helvetica", "sans-serif"
+}
+.gTD_Text1Del {
+	text-decoration: line-through; BORDER-RIGHT: #eeeeee 1px dotted; BORDER-TOP: #eeeeee 1px dotted; BORDER-LEFT: #eeeeee 1px dotted; BORDER-BOTTOM: #eeeeee 1px dotted; PADDING-LEFT: 2px; PADDING-BOTTOM: 6px; PADDING-TOP: 6px; COLOR: #111111; FONT-SIZE: 12px; FONT-FAMILY: "Verdana", "Arial", "Helvetica", "sans-serif"
+}
+/*******************************************************************************************************************/
+/*搜尋介面的grid使用樣式********************************************************************************************/
+.nGrid_Select_Color0 {
+	CURSOR: hand; FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #ffffff; COLOR: #333333
+}
+.nGrid_Select_Color1 {
+	CURSOR: hand; FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #e6e6e6; COLOR: #333333
+}
+.nGrid_Select_Color9 {
+	CURSOR: hand; FONT-SIZE: 12px; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; LIST-STYLE-TYPE: disc; BACKGROUND-COLOR: #FFFF66; COLOR: #333333
+}
+/*******************************************************************************************************************/
+/* 頁籤 使用 */
+.nTab_Selected{
+    CURSOR: hand; border-left: 1px solid #808080; border-right: 1px solid #808080; border-top: 1px solid #808080; 
+	color: green; font-weight: bold; font-size: 13px; padding-top: 2px; padding-bottom: 2px
+}
+.nTab_UnSelected{
+    CURSOR: hand; border-left: 1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC; border-bottom: 1px solid #808080; 
+	padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 1px; background-color: #E0E0E0; 
+	font-size: 12px; color:#999999
+}
+.nTab_ShowLink{
+    CURSOR: hand; border-left: 1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC; border-bottom: 1px solid #808080; 
+	padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 1px; background-color:gold; 
+	font-size: 12px; color:purple;
+}
+.nTab_Spare{
+    border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom: 1px solid #808080
+}
+.nTab_Body{
+    border-left: 1px solid #808080; border-right: 1px solid #808080; border-bottom: 1px solid #808080; 
+	padding-top: 2px; padding-bottom: 2px; padding-left: 2px; padding-right: 2px
+}
+/*******************************************************************************************************************/
+/* Message Grid */
+.mTD_mTitle {
+	BACKGROUND-COLOR: #cfe4fb
+}
+.mTR_ShowText {
+    BACKGROUND-COLOR: #ffffff;
+    display: ;
+}
+.mTR_HiddenText {
+    BACKGROUND-COLOR: #ffffff;
+    display: none
+}
+.mTD_Text {
+	COLOR: #333333
+}
+/*******************************************************************************************************************/
+/* 輸入畫面的樣式 */
+.iTD_mTitle {
+	font-size: 13px; color:#ffffff; FONT-FAMILY: Verdana, Arial; text-align: center; PADDING-TOP: 4px; LIST-STYLE-TYPE: disc; border:1px solid #C0C0C0; BACKGROUND-COLOR: #336699
+}
+.iTD_PIC {
+	PADDING-RIGHT: 4px; PADDING-LEFT: 4px; PADDING-BOTTOM: 1px; COLOR: #006699; PADDING-TOP: 1px; border: #808080 3px dotted
+}
+.iTD_Header {
+	PADDING-RIGHT: 4px; PADDING-LEFT: 4px; PADDING-BOTTOM: 5px; COLOR: #006699; PADDING-TOP: 5px; BORDER-BOTTOM: #808080 3px dotted
+}
+.iTD_Text0 {
+	PADDING-LEFT: 2px; BACKGROUND-COLOR: #ffffff;
+}
+.iTD_Text1 {
+	PADDING-LEFT: 2px; BACKGROUND-COLOR: #e9e9e9
+}
+.iText_Edit {
+	color:#000000; FONT-FAMILY: Verdana, Arial; BORDER-RIGHT: 0px; BORDER-TOP: 0px; BORDER-LEFT: 0px; LINE-HEIGHT: 15px; BORDER-BOTTOM: #333333 1px solid; BACKGROUND-COLOR: transparent;vertical-align: middle;
+}
+.iText_EditReadOnly {
+    color:#777777; FONT-FAMILY: Verdana, Arial; BORDER-RIGHT: 0px; BORDER-TOP: 0px; BORDER-LEFT: 0px; LINE-HEIGHT: 15px; BORDER-BOTTOM: #999999 1px solid; BACKGROUND-COLOR: transparent
+}
+.iText_ReadOnly {
+	color:#777777; FONT-FAMILY: Verdana, Arial; BORDER-RIGHT: 0px; BORDER-TOP: 0px; BORDER-LEFT: 0px; LINE-HEIGHT: 15px; BORDER-BOTTOM: 0px; BACKGROUND-COLOR: transparent;
+}
+.iTextArea_Edit {
+    color:#000000; FONT-FAMILY: Verdana, Arial; border: 1px solid #333333; background-color: #ffffff
+}
+.iTextArea_ReadOnly {
+    color:#777777; FONT-FAMILY: Verdana, Arial; border: 1px solid #C0C0C0; background-color: #F3F3F3
+}
+.iTD_F_P {
+	font-size: 13px; color:#000000; FONT-FAMILY: Verdana, Arial; text-align: center; PADDING-TOP: 4px; LIST-STYLE-TYPE: disc; border:1px solid #C0C0C0; BACKGROUND-COLOR: #CCFFFF
+}
+.iTD_F_M {
+	font-size: 13px; color:#000000; FONT-FAMILY: Verdana, Arial; text-align: center; PADDING-TOP: 4px; LIST-STYLE-TYPE: disc; border:1px solid #C0C0C0; BACKGROUND-COLOR: #FFFFCC
+}
+/*******************************************************************************************************************/
+input[maxlength='40'] {
+  width: 120px;
+}
+input[maxlength='10'] {
+  width: 90px;
+}
+.frItems > div{
+	padding-bottom:5px;
+	padding-top:5px;
+	border-bottom:1px dotted #000000
+}
+.removeFRItem,.removeMFeeItem{
+	padding-left: 4px;
+  	border: 1px solid #66aa66;
+  	padding-right: 4px;
+  	margin-left: 4px;
+  	cursor: pointer;	
+}
+.printSpendSummons,.printIncomeSummons{
+	cursor: pointer;
+}
+.clearClass{
+	cursor:pointer;
+}
+.work_status{
+	font-family: Airal;
+}
+.disabled{
+	opacity: 0.35; 
+  	cursor: not-allowed;
+}
+.btnOpenClass{
+	border: 1px outset #666666;
+    padding-left: 16px;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    height: 22px;
+    cursor: pointer;
+    background: url(../images/icon/icon_cd.gif) center left no-repeat;
+    background-color: #e6e6e6;
+}
+.point_pay_point{
+	font-size: 12px;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    list-style-type: disc;
+    background-color: #6699bb;
+    color: #ffffff;
+}
+.pp_point_count {
+    font-size: 12px;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    list-style-type: disc;
+    background-color: #bb99bb;
+    color: #ffffff;
+}
+.pp_cust_count {
+    font-size: 12px;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    list-style-type: disc;
+    background-color: #bbbb99;
+    color: #ffffff;
+}
+.empty_line{
+	width: 100%;
+    height: 17px;
+    background-color: #ffffff;
+}
+
+/*----------------------------------------------
+CSS settings for HTML div Exact Center
+------------------------------------------------*/
+#summonsItemDetail #abc {
+    width:100%;
+    height:100%;
+    opacity:.95;
+    top:0;
+    left:0;
+    display:none;
+    position:fixed;
+    background-color:#313131;
+    overflow:auto
+}
+#summonsItemDetail img#close {
+    position:absolute;
+    right:-14px;
+    top:-14px;
+    cursor:pointer
+}
+
+#summonsItemDetail p {
+    margin-top:30px
+}
+#summonsItemDetail h2 {
+    background-color:#FEFFED;
+    padding:20px 35px;
+    margin:-10px -50px;
+    text-align:center;
+    border-radius:10px 10px 0 0
+}
+#summonsItemDetail hr {
+    margin:10px -50px;
+    border:0;
+    border-top:1px solid #ccc
+}
+#summonsItemDetail input[type=text] {
+    width: 60%;
+    padding: 5px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    padding-left: 10px;
+    font-size: 16px;
+    font-family: raleway;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 20px;
+}
+#summonsItemDetail select {
+    padding: 5px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    padding-left: 10px;
+    font-size: 16px;
+    font-family: raleway;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+#summonsItemDetail textarea {
+    background-image:url(../images/msg.png);
+    background-repeat:no-repeat;
+    background-position:5px 7px;
+    resize:none;
+    margin-top:10px;
+    margin-left:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+    font-family:raleway;
+}
+#summonsItemDetail #submit {
+    text-decoration:none;
+    width:100%;
+    text-align:center;
+    display:block;
+    background-color:#FFBC00;
+    color:#fff;
+    border:1px solid #FFCB00;
+    padding:10px 0;
+    font-size:20px;
+    cursor:pointer;
+    border-radius:5px;
+    margin-top:15px;
+    cursor: pointer;
+}
+#summonsItemDetail span {
+    color:red;
+    font-weight:700
+}
+#summonsItemDetail button {
+    width: 50px;
+    height: 30px;
+    border-radius: 3px;
+    background-color: #3f85cd;
+    color: #fff;
+    font-family: 'Raleway',sans-serif;
+    cursor: pointer;
+}
+
+#BanListPopup td{
+    font-size:16px;
+}
+#BanListPopup th{
+    font-size:16px;
+}
+#BanListPopup table{
+    width: 100%;
+}
+#BanListPopup h1{
+    text-align: center;
+}
+.point_note{
+    border: 1px solid #333333;
+    width: 280px;
+    height: 20px;
+    vertical-align: middle;
+    background: #ffffff;
+}
+.summonsSpendItems select,.summonsIncomeItems select{
+    width:100%;
+}
+.printincomeSummons,.printspendSummons{
+    cursor: pointer;
+}
+#chargeRecordDetail #abc {
+    width:100%;
+    height:100%;
+    opacity:.95;
+    top:0;
+    left:0;
+    display:none;
+    position:fixed;
+    background-color:#313131;
+    overflow:auto
+}
+#chargeRecordDetail img#close {
+    position:absolute;
+    right:-14px;
+    top:-14px;
+    cursor:pointer
+}
+
+#chargeRecordDetail p {
+    margin-top:30px
+}
+#chargeRecordDetail h2 {
+    background-color:#FEFFED;
+    padding:20px 35px;
+    margin:-10px -50px;
+    text-align:center;
+    border-radius:10px 10px 0 0
+}
+#chargeRecordDetail hr {
+    margin:10px -50px;
+    border:0;
+    border-top:1px solid #ccc
+}
+#chargeRecordDetail input[type=text] {
+    width: 60%;
+    padding: 5px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    padding-left: 10px;
+    font-size: 16px;
+    font-family: raleway;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 20px;
+}
+#chargeRecordDetail select {
+    width: 60%;
+    padding: 5px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    padding-left: 10px;
+    font-size: 16px;
+    font-family: raleway;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+#chargeRecordDetail textarea {
+    background-image:url(../images/msg.png);
+    background-repeat:no-repeat;
+    background-position:5px 7px;
+    resize:none;
+    margin-top:10px;
+    margin-left:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+    font-family:raleway;
+}
+#chargeRecordDetail #submit {
+    text-decoration:none;
+    width:100%;
+    text-align:center;
+    display:block;
+    background-color:#FFBC00;
+    color:#fff;
+    border:1px solid #FFCB00;
+    padding:10px 0;
+    font-size:20px;
+    cursor:pointer;
+    border-radius:5px;
+    margin-top:15px;
+    cursor: pointer;
+}
+#chargeRecordDetail span {
+    color:red;
+    font-weight:700
+}
+#chargeRecordDetail button {
+    width: 50px;
+    height: 30px;
+    border-radius: 3px;
+    background-color: #3f85cd;
+    color: #fff;
+    font-family: 'Raleway',sans-serif;
+    cursor: pointer;
+}
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+.table-striped{
+    width:100%;
+}
+.table-striped th{
+    background: #ffffcc ;
+    padding:5px;
+    color:#000000;
+}
+.table-striped td{
+    vertical-align: middle;
+    padding:5px;
+}
+.pointer{
+    cursor:pointer;
+    text-decoration: underline;
+}
+#mouseout-mask{
+    display: none;
+    z-index: -1;
+    position:fixed;
+    width:100%;
+    height:100%;
+    background: transparent;
+    top:0;
+    left:0;
+    background: rgba(0,0,0,0.6)
+}
+
+#Detail #abc {
+    width:100%;
+    height:100%;
+    opacity:.95;
+    top:0;
+    left:0;
+    display:none;
+    position:fixed;
+    background-color:#313131;
+    overflow:auto
+}
+#Detail img#close {
+    position:absolute;
+    right:-14px;
+    top:-14px;
+    cursor:pointer
+}
+
+#Detail p {
+    margin-top:30px
+}
+#Detail h2 {
+    /*background-color:#FEFFED;*/
+    padding:20px 35px;
+    /*margin:-10px -50px;*/
+    text-align:center;
+    border-radius:10px 10px 0 0
+}
+#Detail hr {
+    margin:5px -10px;
+    border:0;
+    border-top:1px solid #ccc
+}
+#Detail input[type=text] {
+    width: 60%;
+    padding: 5px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    padding-left: 10px;
+    font-size: 16px;
+    font-family: raleway;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 20px;
+}
+#Detail select {
+    width: 60%;
+    padding: 5px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    padding-left: 10px;
+    font-size: 16px;
+    font-family: raleway;
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+#Detail textarea {
+    background-image:url(../images/msg.png);
+    background-repeat:no-repeat;
+    background-position:5px 7px;
+    resize:none;
+    margin-top:10px;
+    margin-left:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+    font-family:raleway;
+}
+#Detail #submit_1 {
+    text-decoration:none;
+    width:100%;
+    text-align:center;
+    display:block;
+    background-color:#FFBC00;
+    color:#fff;
+    border:1px solid #FFCB00;
+    padding:10px 0;
+    font-size:20px;
+    cursor:pointer;
+    border-radius:5px;
+    margin-top:15px;
+    cursor: pointer;
+}
+#Detail span {
+    color:red;
+    font-weight:700
+}
+#Detail button {
+    width: 50px;
+    height: 30px;
+    border-radius: 3px;
+    background-color: #3f85cd;
+    color: #fff;
+    font-family: 'Raleway',sans-serif;
+    cursor: pointer;
+}
+::-webkit-inner-spin-button {
+    visibility: hidden;
+}
+::-webkit-clear-button{
+    visibility: hidden;
+}
+input::-webkit-datetime-edit-ampm-field[disabled]{}
