@@ -182,6 +182,8 @@ $(document).ready(function () {
         alert("存檔完成");
       },
       saveWork: function (type, key, status) {
+        if (!this.checkCurrentEmpId()) return;
+
         let workData = {};
         if (type == "other") {
           workData = this.otherRecord[key];
@@ -228,6 +230,8 @@ $(document).ready(function () {
         loadAllData(null);
       },
       updateDeliver(deliver) {
+        if (!this.checkCurrentEmpId()) return;
+
         $.ajax({
           type: `post`,
           url: config.CMSOrder,
@@ -265,6 +269,14 @@ $(document).ready(function () {
             console.log(a, b, c);
           }
         });
+      },
+      checkCurrentEmpId(){
+        if (this.currentEmpId === "" || this.currentEmpId === undefined || this.currentEmpId === null) {
+          alert("員工編號錯誤");
+          location.href = "index.html";
+          return false;
+        }
+        return true
       }
     },
     mounted: function () {
@@ -301,14 +313,12 @@ $(document).ready(function () {
         loading.css("display", "none");
         loading.removeClass("rotateIn");
         loading.addClass("rotateOut");
-        if (err == true) {
-          alert("員工編號錯誤");
-          location.href = "index.html";
-        }
 
-        this.currentEmpId = empId;
-        this.pointEmpid = empId;
-        this.getDeliveryList();
+        if (!err) {
+          this.currentEmpId = empId;
+          this.pointEmpid = empId;
+          this.getDeliveryList();
+        }
         request(config.apiHost + 'api/pointByCust&liverList/' + currentCust + '/000/000', (error, response, body) => {
           let rows = JSON.parse(body);
           let pointList = rows['data1'];
@@ -331,6 +341,15 @@ $(document).ready(function () {
         });
       });
 
+    },
+    computed:{
+      isEmpView(){
+        return (
+          this.currentEmpId !== "" &&
+          this.currentEmpId !== null &&
+          this.currentEmpId !== undefined
+        );
+      }
     }
   })
   var otherTypeList = [];
