@@ -210,10 +210,10 @@
                         </div>
                       </td>
                       <td>
-                        <button class="btn btn-default" :disabled="sopList.F_WORK_STATUS!=null || !isEmpView"
+                        <button class="btn btn-default" :disabled="sopList.F_WORK_STATUS!=null"
                           :class="{'btn-success': sopList.F_WORK_STATUS=='done'}" @click="saveWork('normal',slk,'done')"
                           type="button">完成</button>
-                        <button class="btn btn-default" :disabled="sopList.F_WORK_STATUS!=null || !isEmpView"
+                        <button class="btn btn-default" :disabled="sopList.F_WORK_STATUS!=null"
                           :class="{'btn-danger': sopList.F_WORK_STATUS=='fail'}" @click="saveWork('normal',slk,'fail')"
                           type="button">異常</button>
                       </td>
@@ -235,7 +235,7 @@
                     <th colspan="6">
                       <span> 其它</span>
                       <div style="float: right">
-                        <button type="button" @click="addOtherJob" id="addOtherJob" :disabled="!isEmpView">
+                        <button type="button" @click="addOtherJob" id="addOtherJob">
                           新增
                         </button>
                       </div>
@@ -280,10 +280,10 @@
                       </select>
                     </td>
                     <td>
-                      <button class="btn btn-default" :disabled="rec.F_WORK_STATUS!=null || !isEmpView"
+                      <button class="btn btn-default" :disabled="rec.F_WORK_STATUS!=null"
                         :class="{'btn-success': rec.F_WORK_STATUS=='done'}" @click="saveWork('other',recKey,'done')"
                         type="button">完成</button>
-                      <button class="btn btn-default" :disabled="rec.F_WORK_STATUS!=null || !isEmpView"
+                      <button class="btn btn-default" :disabled="rec.F_WORK_STATUS!=null"
                         :class="{'btn-danger': rec.F_WORK_STATUS=='fail'}" @click="saveWork('other',recKey,'fail')"
                         type="button">異常</button>
                     </td>
@@ -302,7 +302,7 @@
                     <th colspan="6">
                       <span> 注意事項</span>
                       <div style="float: right">
-                        <button type="button" @click="addPrecaution" :disabled="!isEmpView">
+                        <button type="button" @click="addPrecaution">
                           新增
                         </button>
                       </div>
@@ -328,10 +328,10 @@
                       </div>
                     </td>
                     <td>
-                      <button class="btn btn-primary" @click="savePrecaution(pk)" type="button" :disabled="!isEmpView">
+                      <button class="btn btn-primary" @click="savePrecaution(pk)" type="button">
                         存檔
                       </button>
-                      <button class="btn btn-danger" @click="deletePrecaution(pk)" type="button" :disabled="!isEmpView">
+                      <button class="btn btn-danger" @click="deletePrecaution(pk)" type="button">
                         刪除
                       </button>
                     </td>
@@ -378,7 +378,7 @@
                         </div>
                       </td>
                       <td>
-                        <button class="btn btn-default" :disabled="deliver.CarryOut=='Y' || !isEmpView"
+                        <button class="btn btn-default" :disabled="deliver.CarryOut=='Y'"
                           :class="{'btn-success': deliver.CarryOut=='Y'}" type="button"
                           @click="updateDeliver(deliver)">完成</button>
                       </td>
