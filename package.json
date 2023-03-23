@@ -10,7 +10,7 @@
     "icon": "images/ys_favicon.png"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nw"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +26,7 @@
     "html-to-xlsx": "^1.1.1",
     "jade": "1.11.0",
     "lodash": "^4.17.21",
+    "nw": "^0.38.0-sdk",
     "qrcode": "^1.4.4",
     "qrcode-reader": "^1.0.4",
     "request": "^2.88.0",
