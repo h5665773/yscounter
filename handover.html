@@ -57,6 +57,10 @@
       background-color: #d9edf7 !important;
       color: #31708f !important;
     }
+    .alert-info-tab{
+      background-color: #ce201e !important;
+      color: white !important;
+    }
   </style>
 </head>
 
@@ -78,22 +82,22 @@
             </h3>
             <ul class="nav nav-tabs">
               <li class="active pointer editMode">
-                <a class="pointTab pointer" :class="{'alert-info': editMode=='d'}" @click="changeMode('d')">
+                <a class="pointTab pointer" :class="{'alert-info-tab': editMode=='d'}" @click="changeMode('d')">
                   交辦事項
                 </a>
               </li>
               <li class="active pointer editMode">
-                <a class="pointTab pointer" :class="{'alert-info': editMode=='a'}" @click="changeMode('a')">
+                <a class="pointTab pointer" :class="{'alert-info-tab': editMode=='a'}" @click="changeMode('a')">
                   標準值勤
                 </a>
               </li>
               <li class="active pointer editMode">
-                <a class="pointTab pointer" :class="{'alert-info': editMode=='b'}" @click="changeMode('b')">
+                <a class="pointTab pointer" :class="{'alert-info-tab': editMode=='b'}" @click="changeMode('b')">
                   其他項目
                 </a>
               </li>
               <li class="active pointer editMode">
-                <a class="pointTab pointer" :class="{'alert-info': editMode=='c'}" @click="changeMode('c')">
+                <a class="pointTab pointer" :class="{'alert-info-tab': editMode=='c'}" @click="changeMode('c')">
                   注意事項
                 </a>
               </li>
