@@ -73,6 +73,10 @@ $(document).ready(function () {
         this.precautionList[pKey]['owner'] = liverRow['F_OWNER_NAME']
       },
       addOtherJob: function () {
+        if (!this.checkCurrentEmpId()) {
+          return this.empScan()
+        }
+
         logs(this.otherTypes);
         this.otherRecord.push({
           done: false,
@@ -87,6 +91,10 @@ $(document).ready(function () {
         });
       },
       addPrecaution: function () {
+        if (!this.checkCurrentEmpId()) {
+          return this.empScan()
+        }
+
         this.precautionList.push({
           liverKey: 0,
           liverId: this.liverList[0]["F_LIVER_ID"],
@@ -98,6 +106,9 @@ $(document).ready(function () {
         });
       },
       deletePrecaution: function (k) {
+        if (!this.checkCurrentEmpId()) {
+          return this.empScan()
+        }
         this.precautionList.splice(k, 1);
         this.savePrecaution();
       },
@@ -156,6 +167,10 @@ $(document).ready(function () {
         });
       },
       savePrecaution: function () {
+        if (!this.checkCurrentEmpId()) {
+          return this.empScan()
+        }
+
         let newPrecaution = [];
         if (this.precautionList.length < 1) {
           return;
@@ -182,7 +197,9 @@ $(document).ready(function () {
         alert("存檔完成");
       },
       saveWork: function (type, key, status) {
-        if (!this.checkCurrentEmpId()) return;
+        if (!this.checkCurrentEmpId()) {
+          return this.empScan()
+        }
 
         let workData = {};
         if (type == "other") {
@@ -230,7 +247,9 @@ $(document).ready(function () {
         loadAllData(null);
       },
       updateDeliver(deliver) {
-        if (!this.checkCurrentEmpId()) return;
+        if (!this.checkCurrentEmpId()) {
+          return this.empScan()
+        }
 
         $.ajax({
           type: `post`,
@@ -271,12 +290,47 @@ $(document).ready(function () {
         });
       },
       checkCurrentEmpId(){
-        if (this.currentEmpId === "" || this.currentEmpId === undefined || this.currentEmpId === null) {
-          alert("員工編號錯誤");
-          location.href = "index.html";
-          return false;
-        }
-        return true
+        return !(this.currentEmpId === "" || this.currentEmpId === undefined || this.currentEmpId === null)
+      },
+      empScan(){
+        let self = this;
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+        scan((empId, err) => {
+          loadingMask.css("display", "none");
+          loading.css("display", "none");
+          loading.removeClass("rotateIn");
+          loading.addClass("rotateOut");
+  
+          if (!err) {
+            self.currentEmpId = empId;
+            self.pointEmpid = empId;
+            self.getDeliveryList();
+          }
+          request(config.apiHost + 'api/pointByCust&liverList/' + currentCust + '/000/000', (error, response, body) => {
+            let rows = JSON.parse(body);
+            let pointList = rows['data1'];
+            let liverList = rows["data2"];
+            self.liverList = liverList;
+            self.tabs = pointList;
+            console.log(rows);
+  
+            pointList.map(function (v, k) {
+              if (v.F_EMP_ID == empId) {
+                self.currentTabKey = k;
+                self.currentPointid = v.F_POINT_ID;
+                self.currentEmpName = v.F_EMP_NAME;
+              }
+            });
+            loadAllData(null);
+            const d1 = new Date();
+            if(d1.getHours()<9){
+              $('#btnyyyymmdd_1').click();
+            }
+          });
+        });
       }
     },
     mounted: function () {
@@ -301,45 +355,8 @@ $(document).ready(function () {
         }
         self.dateOptions.push(dateStr);
       }
+      this.empScan()
       
-      loadingMask.css("display", "block");
-      loading.removeClass("rotateOut");
-      loading.css("display", "block");
-      loading.addClass("rotateIn");
-      scan((empId, err) => {
-        //err = false;
-        //empId = "T10220";
-        loadingMask.css("display", "none");
-        loading.css("display", "none");
-        loading.removeClass("rotateIn");
-        loading.addClass("rotateOut");
-
-        if (!err) {
-          this.currentEmpId = empId;
-          this.pointEmpid = empId;
-          this.getDeliveryList();
-        }
-        request(config.apiHost + 'api/pointByCust&liverList/' + currentCust + '/000/000', (error, response, body) => {
-          let rows = JSON.parse(body);
-          let pointList = rows['data1'];
-          let liverList = rows["data2"];
-          self.liverList = liverList;
-          self.tabs = pointList;
-          console.log(rows);
-
-          pointList.map(function (v, k) {
-            if (v.F_EMP_ID == empId) {
-              self.currentTabKey = k;
-              self.currentPointid = v.F_POINT_ID;
-              self.currentEmpName = v.F_EMP_NAME;
-            }
-          });
-          loadAllData(null);
-          if(d1.getHours()<9){
-            $('#btnyyyymmdd_1').click();
-          }
-        });
-      });
 
     },
     computed:{
