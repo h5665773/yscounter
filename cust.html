@@ -832,6 +832,60 @@
                     }
                   }
                 }
+                else if(F_REST_TYPE == 'C'){
+                  F_REST_I_EDT_mm+=15;
+                  F_REST_II_EDT_mm+=15;
+                  F_REST_III_EDT_mm+=15;
+
+                  if(F_REST_I_EDT_mm>=60){
+                    F_REST_I_EDT_mm-=60;
+                    F_REST_I_EDT_hh+=1;
+                    if(F_REST_I_EDT_hh >=24){
+                      F_REST_I_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_II_EDT_mm>=60){
+                    F_REST_II_EDT_mm-=60;
+                    F_REST_II_EDT_hh+=1;
+                    if(F_REST_II_EDT_hh >=24){
+                      F_REST_II_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_III_EDT_mm>=60){
+                    F_REST_III_EDT_mm-=60;
+                    F_REST_III_EDT_hh+=1;
+                    if(F_REST_III_EDT_hh >=24){
+                      F_REST_III_EDT_hh-=24;
+                    }
+                  }
+                }
+                else if(F_REST_TYPE == 'D'){
+                  F_REST_I_EDT_mm+=45;
+                  F_REST_II_EDT_mm+=45;
+                  F_REST_III_EDT_mm+=45;
+
+                  if(F_REST_I_EDT_mm>=60){
+                    F_REST_I_EDT_mm-=60;
+                    F_REST_I_EDT_hh+=1;
+                    if(F_REST_I_EDT_hh >=24){
+                      F_REST_I_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_II_EDT_mm>=60){
+                    F_REST_II_EDT_mm-=60;
+                    F_REST_II_EDT_hh+=1;
+                    if(F_REST_II_EDT_hh >=24){
+                      F_REST_II_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_III_EDT_mm>=60){
+                    F_REST_III_EDT_mm-=60;
+                    F_REST_III_EDT_hh+=1;
+                    if(F_REST_III_EDT_hh >=24){
+                      F_REST_III_EDT_hh-=24;
+                    }
+                  }
+                }
                 else if(F_REST_TYPE == 'B'){
                   F_REST_I_EDT_hh+=1;
                   F_REST_II_EDT_hh+=1;
