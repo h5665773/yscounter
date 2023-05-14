@@ -41,6 +41,7 @@ $(document).ready(function () {
       selectDate: "",
       selectedLiver: "",
       pointEmpid: '',
+      pointNotice: [],
       tabs: [],
       times: [],
       deliverUpdateKey: ``,
@@ -385,9 +386,31 @@ $(document).ready(function () {
             callback(null, []);
           }
         });
+      },
+      pointNotice: function (callback) {
+        //request post config.ajaxOrder
+        // post data: {F_CU_ID: currentCust}
+        request.post({
+          url: config.ajaxOrder, 
+          formData: {
+            Order: 'Get_PointNotice',
+            F_CU_ID: currentCust
+          },
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }, function (error, response, body) {
+          console.log(body, typeof body);
+          if (error == null) {
+            callback(null, JSON.parse(body));
+          } else {
+            callback(null, []);
+          }
+        }); 
       }
     }, function (err, results) {
       console.log(results);
+      pointPanel.pointNotice = results.pointNotice;
       var otherType = [];
       var workRecord = [];
       let otl = results.pointSop.otherTypeList;

@@ -1,22 +1,14 @@
-const request = require('request')
-function doRequest(url) {
-  return new Promise(function (resolve, reject) {
-    request(url, function (error, res, body) {
-      if (!error && res.statusCode == 200) {
-        resolve(body.substr(0,10));
-      } else {
-        reject(error);
-      }
-    });
-  });
-}
+const { SerialPort } = require('serialport')
+const port = new SerialPort({ path: 'COM3', baudRate: 9600 })
 
-// Usage:
+port.write('main screen turn on', function(err) {
+  if (err) {
+    return console.log('Error on write: ', err.message)
+  }
+  console.log('message written')
+})
 
-async function main() {
-  let res = await doRequest('https://www.google.com');
-  console.log(res);
-  console.log(123)
-}
-
-main();
+// Open errors will be emitted as an error event
+port.on('error', function(err) {
+  console.log('Error: ', err.message)
+})

@@ -101,6 +101,11 @@
                   注意事項
                 </a>
               </li>
+              <li class="active pointer editMode">
+                <a class="pointTab pointer" :class="{'alert-info-tab': editMode=='e'}" @click="changeMode('e')">
+                  哨點注意事項
+                </a>
+              </li>
               <li style="float: right;margin-top: 7px;">
                 <button :id="'btnyyyymmdd_'+k" type="button" class="btn btn-default" :class="{'btn-success': currentDate==v}"
                   v-for="(v,k) in dateOptions" @click="dateChage(v)">{{v}}</button>
@@ -385,6 +390,33 @@
                         <button class="btn btn-default" :disabled="deliver.CarryOut=='Y'"
                           :class="{'btn-success': deliver.CarryOut=='Y'}" type="button"
                           @click="updateDeliver(deliver)">完成</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div v-show="editMode=='e'" class="col-md-12" style="padding-left: 0;">
+                <h4 class="text-primary">哨點注意事項</h4>
+                <hr>
+                <div class="col-md-3 text-warning"
+                  style="border-radius: 5px;border:1px solid #555555;padding: 5px;margin-bottom: 10px;margin-right: 10px;"
+                  v-show="pointNotice.length == 0">
+                  暫無資料
+                </div>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th width="150">哨點名稱</th>
+                      <th>注意事項</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(pn,pk) in pointNotice">
+                      <td>
+                        {{pn.F_POINT_NAME}}
+                      </td>
+                      <td>
+                        {{pn.F_OT_ATTINFO}}
                       </td>
                     </tr>
                   </tbody>

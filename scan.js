@@ -1,11 +1,13 @@
-const SerialPort = require('serialport');
+// const SerialPort = require('serialport');
+const { SerialPort } = require('serialport')
 const fs = require("fs");
 var com = fs.readFileSync('./public/comport.txt').toString()
 var d = new Date()
 var end = new Date()
 const startSec = d.getTime()
 var returnStr = "";
-const port = new SerialPort('com' + com);
+// const port = new SerialPort('com' + com);
+const port = new SerialPort({path: 'COM' + com, baudRate: 9600});
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 var checkClose = function () {
 	//console.log(e.getTime() + "-" +startSec + " = " + (e.getTime()-startSec));

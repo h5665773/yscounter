@@ -31,7 +31,7 @@
     "qrcode-reader": "^1.0.4",
     "request": "^2.88.0",
     "screenshot-desktop": "^1.12.1",
-    "serialport": "^8.0.5",
+    "serialport": "^11.0.0",
     "unzipper": "*",
     "url-download": "0.0.4",
     "youtube-player": "^5.5.2"
