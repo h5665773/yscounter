@@ -61,7 +61,8 @@ $(document).ready(function () {
                     }
                 });
                 //測試用
-                // this_Vue.empid = 'T10011';
+                // this_Vue.empid = 'T10946';
+                // this_Vue.endScanSec = 0;
                 // callback();
             },
             async getData() {
