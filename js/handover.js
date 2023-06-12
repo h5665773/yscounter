@@ -48,10 +48,12 @@ $(document).ready(function () {
       deliverList: []
     },
     methods: {
-      clickTab: function (tabKey, pointid, empid) {
+      clickTab: function (tabKey, pointid, empid, empname) {
         this.currentPointid = pointid;
         this.currentTabKey = tabKey;
-        this.pointEmpid = empid
+        this.pointEmpid = empid;
+        this.currentEmpId = empid;
+        this.currentEmpName = empname;
         loadAllData(null);
       },
       changeMode: function (m) {
