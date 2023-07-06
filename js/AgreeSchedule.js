@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    var wait = false;
+    var autoCheck = true;
     const url = require('./config.js').ajaxOrder;
     // const url = require('./config.js').testURL;
 
@@ -183,6 +185,17 @@ $(document).ready(function () {
                     faceapi.matchDimensions(canvasF, displaySize)
                     setInterval(async () => {
                         let faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }));
+
+                        if(faceDetections.length > 0 && wait == false){
+                            // console.log(faceDetections[0].classScore);
+                            if(faceDetections[0].classScore > 0.75 && autoCheck == true){
+                                if($('#btnAgreeSchedule')[0]!=undefined){
+                                    wait = true;
+                                    $('#btnAgreeSchedule')[0].click();
+                                }
+                            }
+                          }
+
                         const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
                         canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
                         faceapi.draw.drawDetections(canvasF, resizedDetections)
@@ -280,4 +293,20 @@ $(document).ready(function () {
             ]).then(this.setVideo());
         }
     });
+
+    $('.btn-toggle').click(function() {
+        $(this).find('.btn').toggleClass('active');  
+        
+        if ($(this).find('.btn-primary').size()>0) {
+            $(this).find('.btn').toggleClass('btn-primary');
+        }
+        
+        $(this).find('.btn').toggleClass('btn-default');
+           if(autoCheck == true){
+            autoCheck = false;
+           }
+           else{
+            autoCheck = true;
+           }
+          });
 });

@@ -130,12 +130,18 @@
         <div class="container main">
             <div class="row">
                 <div class="col-lg-3" style="position:relative">
+                    <p>人臉偵測打卡:</p>
+        <div class="btn-group btn-toggle"> 
+          <button class="btn btn-default">手動</button>
+          <button class="btn btn-primary active">自動</button>
+        </div>
+        <hr>
                     <p>
                         <a class="btn btn-default" href="#" role="button"
                             @click="startScan(getData)">開始讀取員工條碼&raquo;</a>
                     </p>
                     <p v-if="showContent">
-                        <a class="btn btn-success" href="#" role="button" :disabled="checked"
+                        <a id="btnAgreeSchedule" class="btn btn-success" href="#" role="button" :disabled="checked"
                             @click="submitData(ym.year+'-'+ym.month)">確認班表&raquo;</a>
                         <a class="btn btn-danger" href="#" role="button" :disabled="checked"
                             @click="disagreeSchedule()">不同意班表&raquo;</a>

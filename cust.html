@@ -122,6 +122,12 @@
   <div class="container main" id="scheduleList">
     <div class="row">
       <div class="col-lg-3" style="position:relative">
+        <p>人臉偵測打卡:</p>
+        <div class="btn-group btn-toggle"> 
+          <button class="btn btn-default">手動</button>
+          <button class="btn btn-primary active">自動</button>
+        </div>
+        <hr>
         <p>
           <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
         </p>
@@ -286,6 +292,8 @@
     </div>
   </div>
   <script type="text/javascript">
+    var wait = false;
+    var autoCheck = true;
     var restTimeCheck = false;
     var F_REST_TYPE = '';
     var testData={};
@@ -387,6 +395,19 @@
           setInterval(async () => {
             //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
             faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
+            if(faceDetections.length > 0 && wait == false){
+              // console.log(faceDetections[0].classScore);
+              if(faceDetections[0].classScore > 0.75 && autoCheck == true){
+                if($('#goWork').css('display') != 'none'){
+                  wait = true;
+                  $('#goWork').click();
+                }else if($('#offWork').css('display') != 'none'){
+                  wait = true;
+                  $('#offWork').click();
+                }
+            }
+            }
+            
             //console.log(detections);
             const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
             canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
@@ -729,7 +750,7 @@
         if (scanEmpId != "" && choosePoint != "" && currentCust != "") {
           var imageDir = `./public/coworkerImages`;
           if (!fs.existsSync(imageDir)) {
-            fs.mkdirSync(imageDir, 0777);
+            fs.mkdirSync(imageDir, '0777');
           }
           var imageLocation = `${imageDir}/${d.getYear()}-${d.getMonth()}-${d.getDate()}-checkin-${workType}.png`;
           imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
@@ -911,6 +932,22 @@
                 $('#F_REST_III_EDT_hh').val(F_REST_III_EDT_hh);
                 $('#F_REST_III_EDT_mm').val(F_REST_III_EDT_mm);
       }
+      
+      $('.btn-toggle').click(function() {
+    $(this).find('.btn').toggleClass('active');  
+    
+    if ($(this).find('.btn-primary').size()>0) {
+    	$(this).find('.btn').toggleClass('btn-primary');
+    }
+    
+    $(this).find('.btn').toggleClass('btn-default');
+       if(autoCheck == true){
+        autoCheck = false;
+       }
+       else{
+        autoCheck = true;
+       }
+      });
   </script>
 
   <div class="alert alert-danger alert-dismissible alert_msg" style="display:none;" role="alert">
