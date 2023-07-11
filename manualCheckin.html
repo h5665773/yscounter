@@ -283,33 +283,57 @@
               </div>
               <div>
                   休&nbsp;息&nbsp;一&nbsp;:
-                  <select v-model="PopupData.F_REST_I_hh">
+                  <select v-model="PopupData.F_REST_I_hh" disabled>
                     <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
                   </select>
                   :
-                  <select v-model="PopupData.F_REST_I_mm">
+                  <select v-model="PopupData.F_REST_I_mm" onchange="restTimeChange()">
+                    <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
+                  </select>
+                  ~
+                  <select v-model="PopupData.F_REST_I_EDT_hh" disabled>
+                    <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.F_REST_I_EDT_mm" disabled>
                     <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
                   </select>
               </div>
               <div>
                   休&nbsp;息&nbsp;二&nbsp;:
-                  <select v-model="PopupData.F_REST_II_hh">
+                  <select v-model="PopupData.F_REST_II_hh" disabled>
                     <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
                   </select>
                   :
-                  <select v-model="PopupData.F_REST_II_mm">
+                  <select v-model="PopupData.F_REST_II_mm" onchange="restTimeChange()">
+                    <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
+                  </select>
+                  ~
+                  <select v-model="PopupData.F_REST_II_EDT_hh" disabled>
+                    <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.F_REST_II_EDT_mm" disabled>
                     <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
                   </select>
               </div>
                   <div>
                     休&nbsp;息&nbsp;三&nbsp;:
-                    <select v-model="PopupData.F_REST_III_hh">
+                    <select v-model="PopupData.F_REST_III_hh" disabled>
                       <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
                     </select>
                     :
-                    <select v-model="PopupData.F_REST_III_mm">
+                    <select v-model="PopupData.F_REST_III_mm" onchange="restTimeChange()">
                       <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
                     </select>
+                    ~
+                  <select v-model="PopupData.F_REST_III_EDT_hh" disabled>
+                    <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.F_REST_III_EDT_mm" disabled>
+                    <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
+                  </select>
                 </div>
                   </div>
               <hr />
@@ -388,6 +412,13 @@
           F_REST_II_mm:'',
           F_REST_III_hh:'',
           F_REST_III_mm:'',
+          F_REST_I_EDT_hh:'',
+          F_REST_I_EDT_mm:'',
+          F_REST_II_EDT_hh:'',
+          F_REST_II_EDT_mm:'',
+          F_REST_III_EDT_hh:'',
+          F_REST_III_EDT_mm:'',
+          F_REST_TYPE:'',
           isAdd:'',
           idx:''
       },
@@ -495,8 +526,9 @@
           vueScheduleList.PopupData.F_REST_II_mm = vueScheduleList.list[idx].F_REST_II_mm;
           vueScheduleList.PopupData.F_REST_III_hh = vueScheduleList.list[idx].F_REST_III_hh;
           vueScheduleList.PopupData.F_REST_III_mm = vueScheduleList.list[idx].F_REST_III_mm;
+          vueScheduleList.PopupData.F_REST_TYPE = vueScheduleList.list[idx].F_REST_TYPE;
           vueScheduleList.PopupData.idx = idx;
-          
+          restTimeChange();
           $.magnificPopup.open({ items: { src: "#pop-add", type: "inline" } });
         },
         setData: function(idx){
@@ -514,6 +546,13 @@
           vueScheduleList.list[idx].F_REST_II_mm = vueScheduleList.PopupData.F_REST_II_mm;
           vueScheduleList.list[idx].F_REST_III_hh = vueScheduleList.PopupData.F_REST_III_hh;
           vueScheduleList.list[idx].F_REST_III_mm = vueScheduleList.PopupData.F_REST_III_mm;
+          vueScheduleList.list[idx].F_REST_I_EDT_hh = vueScheduleList.PopupData.F_REST_I_EDT_hh;
+          vueScheduleList.list[idx].F_REST_I_EDT_mm = vueScheduleList.PopupData.F_REST_I_EDT_mm;
+          vueScheduleList.list[idx].F_REST_II_EDT_hh = vueScheduleList.PopupData.F_REST_II_EDT_hh;
+          vueScheduleList.list[idx].F_REST_II_EDT_mm = vueScheduleList.PopupData.F_REST_II_EDT_mm;
+          vueScheduleList.list[idx].F_REST_III_EDT_hh = vueScheduleList.PopupData.F_REST_III_EDT_hh;
+          vueScheduleList.list[idx].F_REST_III_EDT_mm = vueScheduleList.PopupData.F_REST_III_EDT_mm;
+          vueScheduleList.list[idx].F_REST_TYPE = vueScheduleList.PopupData.F_REST_TYPE;
           vueScheduleList.list[idx].isAdd = 'Y';
 
           if(GO_WORKTIME_hh!=null&&GO_WORKTIME_mm!=null){
@@ -535,7 +574,7 @@
           var imageData = canvas.toDataURL("image/png");
           var imageDir = `./public/coworkerImages`;
           if (!fs.existsSync(imageDir)) {
-            fs.mkdirSync(imageDir, 0777);
+            fs.mkdirSync(imageDir, '0777');
           }
           var imageLocation = `${imageDir}/${d.getYear()}-${d.getMonth()}-${d.getDate()}-checkin-manual.png`;
           imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
@@ -561,8 +600,6 @@
       var F_APPOINT = '';
       var empName = $("#empName");
       var faceDetections = [];
-      
-
       var pointList = $(".pointList");
       var scanEmpId = "";
       var scanEmpName = "";
@@ -722,7 +759,7 @@
         if (scanEmpId != "" && choosePoint != "" && currentCust != "") {
           var imageDir = `./public/coworkerImages`;
           if (!fs.existsSync(imageDir)) {
-            fs.mkdirSync(imageDir, 0777);
+            fs.mkdirSync(imageDir, '0777');
           }
           var imageLocation = `${imageDir}/${d.getYear()}-${d.getMonth()}-${d.getDate()}-checkin-${workType}.png`;
           imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
@@ -749,4 +786,119 @@
         }
       }
     });
+    function restTimeChange(){
+      let F_REST_TYPE = vueScheduleList.PopupData.F_REST_TYPE;
+        let F_REST_I_EDT_hh = vueScheduleList.PopupData.F_REST_I_hh == null?0:parseInt(vueScheduleList.PopupData.F_REST_I_hh);
+        let F_REST_I_EDT_mm = vueScheduleList.PopupData.F_REST_I_mm == null?0:parseInt(vueScheduleList.PopupData.F_REST_I_mm);
+        let F_REST_II_EDT_hh = vueScheduleList.PopupData.F_REST_II_hh == null?0:parseInt(vueScheduleList.PopupData.F_REST_II_hh);
+        let F_REST_II_EDT_mm = vueScheduleList.PopupData.F_REST_II_mm == null?0:parseInt(vueScheduleList.PopupData.F_REST_II_mm);
+        let F_REST_III_EDT_hh = vueScheduleList.PopupData.F_REST_III_hh == null?0:parseInt(vueScheduleList.PopupData.F_REST_III_hh);
+        let F_REST_III_EDT_mm = vueScheduleList.PopupData.F_REST_III_mm == null?0:parseInt(vueScheduleList.PopupData.F_REST_III_mm);
+
+        if(F_REST_TYPE == 'A'){
+                  F_REST_I_EDT_mm+=30;
+                  F_REST_II_EDT_mm+=30;
+                  F_REST_III_EDT_mm+=30;
+
+                  if(F_REST_I_EDT_mm>=60){
+                    F_REST_I_EDT_mm-=60;
+                    F_REST_I_EDT_hh+=1;
+                    if(F_REST_I_EDT_hh >=24){
+                      F_REST_I_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_II_EDT_mm>=60){
+                    F_REST_II_EDT_mm-=60;
+                    F_REST_II_EDT_hh+=1;
+                    if(F_REST_II_EDT_hh >=24){
+                      F_REST_II_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_III_EDT_mm>=60){
+                    F_REST_III_EDT_mm-=60;
+                    F_REST_III_EDT_hh+=1;
+                    if(F_REST_III_EDT_hh >=24){
+                      F_REST_III_EDT_hh-=24;
+                    }
+                  }
+                }
+                else if(F_REST_TYPE == 'C'){
+                  F_REST_I_EDT_mm+=15;
+                  F_REST_II_EDT_mm+=15;
+                  F_REST_III_EDT_mm+=15;
+
+                  if(F_REST_I_EDT_mm>=60){
+                    F_REST_I_EDT_mm-=60;
+                    F_REST_I_EDT_hh+=1;
+                    if(F_REST_I_EDT_hh >=24){
+                      F_REST_I_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_II_EDT_mm>=60){
+                    F_REST_II_EDT_mm-=60;
+                    F_REST_II_EDT_hh+=1;
+                    if(F_REST_II_EDT_hh >=24){
+                      F_REST_II_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_III_EDT_mm>=60){
+                    F_REST_III_EDT_mm-=60;
+                    F_REST_III_EDT_hh+=1;
+                    if(F_REST_III_EDT_hh >=24){
+                      F_REST_III_EDT_hh-=24;
+                    }
+                  }
+                }
+                else if(F_REST_TYPE == 'D'){
+                  F_REST_I_EDT_mm+=45;
+                  F_REST_II_EDT_mm+=45;
+                  F_REST_III_EDT_mm+=45;
+
+                  if(F_REST_I_EDT_mm>=60){
+                    F_REST_I_EDT_mm-=60;
+                    F_REST_I_EDT_hh+=1;
+                    if(F_REST_I_EDT_hh >=24){
+                      F_REST_I_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_II_EDT_mm>=60){
+                    F_REST_II_EDT_mm-=60;
+                    F_REST_II_EDT_hh+=1;
+                    if(F_REST_II_EDT_hh >=24){
+                      F_REST_II_EDT_hh-=24;
+                    }
+                  }
+                  if(F_REST_III_EDT_mm>=60){
+                    F_REST_III_EDT_mm-=60;
+                    F_REST_III_EDT_hh+=1;
+                    if(F_REST_III_EDT_hh >=24){
+                      F_REST_III_EDT_hh-=24;
+                    }
+                  }
+                }
+                else if(F_REST_TYPE == 'B'){
+                  F_REST_I_EDT_hh+=1;
+                  F_REST_II_EDT_hh+=1;
+                  F_REST_III_EDT_hh+=1;
+
+
+                    if(F_REST_I_EDT_hh >=24){
+                      F_REST_I_EDT_hh-=24;
+                    }
+
+                    if(F_REST_II_EDT_hh >=24){
+                      F_REST_II_EDT_hh-=24;
+                    }
+
+                    if(F_REST_III_EDT_hh >=24){
+                      F_REST_III_EDT_hh-=24;
+                    }
+                }
+                vueScheduleList.PopupData.F_REST_I_EDT_hh=F_REST_I_EDT_hh;
+                vueScheduleList.PopupData.F_REST_I_EDT_mm=F_REST_I_EDT_mm;
+                vueScheduleList.PopupData.F_REST_II_EDT_hh=F_REST_II_EDT_hh;
+                vueScheduleList.PopupData.F_REST_II_EDT_mm=F_REST_II_EDT_mm;
+                vueScheduleList.PopupData.F_REST_III_EDT_hh=F_REST_III_EDT_hh;
+                vueScheduleList.PopupData.F_REST_III_EDT_mm=F_REST_III_EDT_mm;
+              }
   </script>
