@@ -51,9 +51,9 @@ $(document).ready(function () {
                     }
                 }, 20000);
                 require('child_process').exec("node scan.js", function (err, data, c) {
-                    const regex = RegExp(/[A-Z][0-9]*[A-Z]?/);
+                    const regex = RegExp(/[A-Z]{1,2}[0-9]*[A-Z]?/);
                     if (regex.test(data) && data.toUpperCase().indexOf(`ERROR`) == -1) {
-                        this_Vue.empid = data.match(/[A-Z][0-9]*[A-Z]?/)[0];
+                        this_Vue.empid = data.match(/[A-Z]{1,2}[0-9]*[A-Z]?/)[0];
                         this_Vue.endScanSec = 0;
                         if (callback) {
                             callback();
