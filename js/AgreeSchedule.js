@@ -62,11 +62,18 @@ $(document).ready(function () {
                         this_Vue.startScan(callback);
                     }
                 });
+
                 //測試用
-                // this_Vue.empid = 'T10946';
-                // this_Vue.endScanSec = 0;
-                // callback();
-            },
+                // let testID = 'YS0014';
+                // const regex_test = RegExp(/[A-Z]{1,2}[0-9]*[A-Z]?/);
+                // console.log(regex_test.test(testID));
+                // console.log(testID.toUpperCase().indexOf(`ERROR`));
+                //     if (regex_test.test(testID) && testID.toUpperCase().indexOf(`ERROR`) == -1) {
+                //         this_Vue.empid = testID.match(/[A-Z]{1,2}[0-9]*[A-Z]?/)[0];
+                //         this_Vue.endScanSec = 0;
+                //         callback();
+                //     }
+                },
             async getData() {
                 let that = this;
                 await $.ajax({
