@@ -230,8 +230,6 @@
                         <input type="text" v-model="item.F_REST_I_mm">
                         <input type="text" v-model="item.F_REST_II_hh">
                         <input type="text" v-model="item.F_REST_II_mm">
-                        <input type="text" v-model="item.F_REST_III_hh">
-                        <input type="text" v-model="item.F_REST_III_mm">
                         <input type="text" v-model="item.isAdd">
                       </td>
                     </tr>
@@ -240,7 +238,7 @@
                 </table>
                 <div class="text-right">
                   <input type="button" class="btn btn-warning btnResize" value="再想一下" @click="back(F_EMP_ID);">
-                  <input type="button" class="btn btn-success btnResize" value="填完送出" @click="postData();">
+                  <input type="button" class="btn btn-success btnResize" value="送出(人臉自動偵測)" onclick="autoCheck=true;" style="width:auto;">
                 </div>
               </div>
             </div>
@@ -317,24 +315,6 @@
                     <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
                   </select>
               </div>
-                  <div>
-                    休&nbsp;息&nbsp;三&nbsp;:
-                    <select v-model="PopupData.F_REST_III_hh" disabled>
-                      <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
-                    </select>
-                    :
-                    <select v-model="PopupData.F_REST_III_mm" onchange="restTimeChange()">
-                      <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
-                    </select>
-                    ~
-                  <select v-model="PopupData.F_REST_III_EDT_hh" disabled>
-                    <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
-                  </select>
-                  :
-                  <select v-model="PopupData.F_REST_III_EDT_mm" disabled>
-                    <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
-                  </select>
-                </div>
                   </div>
               <hr />
               <center>
@@ -355,6 +335,8 @@
       </body>
 </html>
 <script type="text/javascript">
+    var wait = false;
+    var autoCheck = false;
     var loading = $("#loading");
     var loadingText = $("#loadingText");
     var loadingMask = $(".loadingMask");
@@ -410,15 +392,13 @@
           F_REST_I_mm:'',
           F_REST_II_hh:'',
           F_REST_II_mm:'',
-          F_REST_III_hh:'',
-          F_REST_III_mm:'',
           F_REST_I_EDT_hh:'',
           F_REST_I_EDT_mm:'',
           F_REST_II_EDT_hh:'',
           F_REST_II_EDT_mm:'',
-          F_REST_III_EDT_hh:'',
-          F_REST_III_EDT_mm:'',
           F_REST_TYPE:'',
+          F_REST_TIME_I:'',
+          F_REST_TIME_II:'',
           isAdd:'',
           idx:''
       },
@@ -521,12 +501,12 @@
           vueScheduleList.PopupData.OFF_WORKTIME_hh = vueScheduleList.list[idx].OFF_WORKTIME_hh;
           vueScheduleList.PopupData.OFF_WORKTIME_mm = vueScheduleList.list[idx].OFF_WORKTIME_mm;
           vueScheduleList.PopupData.F_REST_I_hh = vueScheduleList.list[idx].F_REST_I_hh;
-          vueScheduleList.PopupData.F_REST_I_mm = vueScheduleList.list[idx].F_REST_I_mm;
+          vueScheduleList.PopupData.F_REST_I_mm = Math.floor(Math.random()*60);
           vueScheduleList.PopupData.F_REST_II_hh = vueScheduleList.list[idx].F_REST_II_hh;
-          vueScheduleList.PopupData.F_REST_II_mm = vueScheduleList.list[idx].F_REST_II_mm;
-          vueScheduleList.PopupData.F_REST_III_hh = vueScheduleList.list[idx].F_REST_III_hh;
-          vueScheduleList.PopupData.F_REST_III_mm = vueScheduleList.list[idx].F_REST_III_mm;
+          vueScheduleList.PopupData.F_REST_II_mm = Math.floor(Math.random()*60);
           vueScheduleList.PopupData.F_REST_TYPE = vueScheduleList.list[idx].F_REST_TYPE;
+          vueScheduleList.PopupData.F_REST_TIME_I = vueScheduleList.list[idx].F_REST_TIME_I;
+          vueScheduleList.PopupData.F_REST_TIME_II = vueScheduleList.list[idx].F_REST_TIME_II;
           vueScheduleList.PopupData.idx = idx;
           restTimeChange();
           $.magnificPopup.open({ items: { src: "#pop-add", type: "inline" } });
@@ -544,15 +524,13 @@
           vueScheduleList.list[idx].F_REST_I_mm = vueScheduleList.PopupData.F_REST_I_mm;
           vueScheduleList.list[idx].F_REST_II_hh = vueScheduleList.PopupData.F_REST_II_hh;
           vueScheduleList.list[idx].F_REST_II_mm = vueScheduleList.PopupData.F_REST_II_mm;
-          vueScheduleList.list[idx].F_REST_III_hh = vueScheduleList.PopupData.F_REST_III_hh;
-          vueScheduleList.list[idx].F_REST_III_mm = vueScheduleList.PopupData.F_REST_III_mm;
           vueScheduleList.list[idx].F_REST_I_EDT_hh = vueScheduleList.PopupData.F_REST_I_EDT_hh;
           vueScheduleList.list[idx].F_REST_I_EDT_mm = vueScheduleList.PopupData.F_REST_I_EDT_mm;
           vueScheduleList.list[idx].F_REST_II_EDT_hh = vueScheduleList.PopupData.F_REST_II_EDT_hh;
           vueScheduleList.list[idx].F_REST_II_EDT_mm = vueScheduleList.PopupData.F_REST_II_EDT_mm;
-          vueScheduleList.list[idx].F_REST_III_EDT_hh = vueScheduleList.PopupData.F_REST_III_EDT_hh;
-          vueScheduleList.list[idx].F_REST_III_EDT_mm = vueScheduleList.PopupData.F_REST_III_EDT_mm;
           vueScheduleList.list[idx].F_REST_TYPE = vueScheduleList.PopupData.F_REST_TYPE;
+          vueScheduleList.list[idx].F_REST_TIME_I = vueScheduleList.PopupData.F_REST_TIME_I;
+          vueScheduleList.list[idx].F_REST_TIME_II = vueScheduleList.PopupData.F_REST_TIME_II;
           vueScheduleList.list[idx].isAdd = 'Y';
 
           if(GO_WORKTIME_hh!=null&&GO_WORKTIME_mm!=null){
@@ -635,6 +613,14 @@
           faceapi.matchDimensions(canvasF, displaySize)
           setInterval(async () => {
             faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
+
+            if(faceDetections.length > 0 && wait == false){
+              if(faceDetections[0].classScore > 0.75 && autoCheck == true){
+                wait = true;
+                vueScheduleList.postData();
+            }
+            }
+
             const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
             canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
             faceapi.draw.drawDetections(canvasF, resizedDetections)
@@ -786,119 +772,37 @@
         }
       }
     });
+
+
     function restTimeChange(){
-      let F_REST_TYPE = vueScheduleList.PopupData.F_REST_TYPE;
         let F_REST_I_EDT_hh = vueScheduleList.PopupData.F_REST_I_hh == null?0:parseInt(vueScheduleList.PopupData.F_REST_I_hh);
         let F_REST_I_EDT_mm = vueScheduleList.PopupData.F_REST_I_mm == null?0:parseInt(vueScheduleList.PopupData.F_REST_I_mm);
         let F_REST_II_EDT_hh = vueScheduleList.PopupData.F_REST_II_hh == null?0:parseInt(vueScheduleList.PopupData.F_REST_II_hh);
         let F_REST_II_EDT_mm = vueScheduleList.PopupData.F_REST_II_mm == null?0:parseInt(vueScheduleList.PopupData.F_REST_II_mm);
-        let F_REST_III_EDT_hh = vueScheduleList.PopupData.F_REST_III_hh == null?0:parseInt(vueScheduleList.PopupData.F_REST_III_hh);
-        let F_REST_III_EDT_mm = vueScheduleList.PopupData.F_REST_III_mm == null?0:parseInt(vueScheduleList.PopupData.F_REST_III_mm);
+        let F_REST_TIME_I = parseInt(vueScheduleList.PopupData.F_REST_TIME_I);
+        let F_REST_TIME_II = parseInt(vueScheduleList.PopupData.F_REST_TIME_II);
 
-        if(F_REST_TYPE == 'A'){
-                  F_REST_I_EDT_mm+=30;
-                  F_REST_II_EDT_mm+=30;
-                  F_REST_III_EDT_mm+=30;
+        F_REST_I_EDT_mm+=F_REST_TIME_I;
+        F_REST_II_EDT_mm+=F_REST_TIME_II;
 
-                  if(F_REST_I_EDT_mm>=60){
-                    F_REST_I_EDT_mm-=60;
-                    F_REST_I_EDT_hh+=1;
-                    if(F_REST_I_EDT_hh >=24){
-                      F_REST_I_EDT_hh-=24;
-                    }
-                  }
-                  if(F_REST_II_EDT_mm>=60){
-                    F_REST_II_EDT_mm-=60;
-                    F_REST_II_EDT_hh+=1;
-                    if(F_REST_II_EDT_hh >=24){
-                      F_REST_II_EDT_hh-=24;
-                    }
-                  }
-                  if(F_REST_III_EDT_mm>=60){
-                    F_REST_III_EDT_mm-=60;
-                    F_REST_III_EDT_hh+=1;
-                    if(F_REST_III_EDT_hh >=24){
-                      F_REST_III_EDT_hh-=24;
-                    }
-                  }
-                }
-                else if(F_REST_TYPE == 'C'){
-                  F_REST_I_EDT_mm+=15;
-                  F_REST_II_EDT_mm+=15;
-                  F_REST_III_EDT_mm+=15;
+        if(F_REST_I_EDT_mm>=60){
+          F_REST_I_EDT_mm-=60;
+          F_REST_I_EDT_hh+=1;
+          if(F_REST_I_EDT_hh >=24){
+            F_REST_I_EDT_hh-=24;
+          }
+        }
+        if(F_REST_II_EDT_mm>=60){
+          F_REST_II_EDT_mm-=60;
+          F_REST_II_EDT_hh+=1;
+          if(F_REST_II_EDT_hh >=24){
+            F_REST_II_EDT_hh-=24;
+          }
+        }
 
-                  if(F_REST_I_EDT_mm>=60){
-                    F_REST_I_EDT_mm-=60;
-                    F_REST_I_EDT_hh+=1;
-                    if(F_REST_I_EDT_hh >=24){
-                      F_REST_I_EDT_hh-=24;
-                    }
-                  }
-                  if(F_REST_II_EDT_mm>=60){
-                    F_REST_II_EDT_mm-=60;
-                    F_REST_II_EDT_hh+=1;
-                    if(F_REST_II_EDT_hh >=24){
-                      F_REST_II_EDT_hh-=24;
-                    }
-                  }
-                  if(F_REST_III_EDT_mm>=60){
-                    F_REST_III_EDT_mm-=60;
-                    F_REST_III_EDT_hh+=1;
-                    if(F_REST_III_EDT_hh >=24){
-                      F_REST_III_EDT_hh-=24;
-                    }
-                  }
-                }
-                else if(F_REST_TYPE == 'D'){
-                  F_REST_I_EDT_mm+=45;
-                  F_REST_II_EDT_mm+=45;
-                  F_REST_III_EDT_mm+=45;
-
-                  if(F_REST_I_EDT_mm>=60){
-                    F_REST_I_EDT_mm-=60;
-                    F_REST_I_EDT_hh+=1;
-                    if(F_REST_I_EDT_hh >=24){
-                      F_REST_I_EDT_hh-=24;
-                    }
-                  }
-                  if(F_REST_II_EDT_mm>=60){
-                    F_REST_II_EDT_mm-=60;
-                    F_REST_II_EDT_hh+=1;
-                    if(F_REST_II_EDT_hh >=24){
-                      F_REST_II_EDT_hh-=24;
-                    }
-                  }
-                  if(F_REST_III_EDT_mm>=60){
-                    F_REST_III_EDT_mm-=60;
-                    F_REST_III_EDT_hh+=1;
-                    if(F_REST_III_EDT_hh >=24){
-                      F_REST_III_EDT_hh-=24;
-                    }
-                  }
-                }
-                else if(F_REST_TYPE == 'B'){
-                  F_REST_I_EDT_hh+=1;
-                  F_REST_II_EDT_hh+=1;
-                  F_REST_III_EDT_hh+=1;
-
-
-                    if(F_REST_I_EDT_hh >=24){
-                      F_REST_I_EDT_hh-=24;
-                    }
-
-                    if(F_REST_II_EDT_hh >=24){
-                      F_REST_II_EDT_hh-=24;
-                    }
-
-                    if(F_REST_III_EDT_hh >=24){
-                      F_REST_III_EDT_hh-=24;
-                    }
-                }
-                vueScheduleList.PopupData.F_REST_I_EDT_hh=F_REST_I_EDT_hh;
-                vueScheduleList.PopupData.F_REST_I_EDT_mm=F_REST_I_EDT_mm;
-                vueScheduleList.PopupData.F_REST_II_EDT_hh=F_REST_II_EDT_hh;
-                vueScheduleList.PopupData.F_REST_II_EDT_mm=F_REST_II_EDT_mm;
-                vueScheduleList.PopupData.F_REST_III_EDT_hh=F_REST_III_EDT_hh;
-                vueScheduleList.PopupData.F_REST_III_EDT_mm=F_REST_III_EDT_mm;
-              }
+        vueScheduleList.PopupData.F_REST_I_EDT_hh=F_REST_I_EDT_hh;
+        vueScheduleList.PopupData.F_REST_I_EDT_mm=F_REST_I_EDT_mm;
+        vueScheduleList.PopupData.F_REST_II_EDT_hh=F_REST_II_EDT_hh;
+        vueScheduleList.PopupData.F_REST_II_EDT_mm=F_REST_II_EDT_mm;
+      }
   </script>
