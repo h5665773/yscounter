@@ -731,17 +731,51 @@
       });
 
       var checkin = async function (workType) {
+
+        //檢查事件紀錄
+        if(F_APPOINT == 'W'|| F_APPOINT == 'S5'){
+          if(true){
+              $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Get_CheckEventList',
+                empid: scanEmpId,
+                empname: scanEmpName
+              },
+              success: function (data) {
+                if (data == 'no_pass') {
+                  alert('總幹事/祕書 必須要填寫5筆事件紀錄才能補打卡!');
+                  window.open('http://admin.wyattst.com.tw/CMS/Maintain/MaintainLogin');
+                  location.href = `./cust.html`;
+                }
+              }
+            });
+          }
+
+          //檢查確認班表
+          var result = $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Get_CheckScheduleConfirm',
+                empid: scanEmpId
+              },
+              async: false,
+              dataType: 'json'
+            });
+            if(result.responseJSON){
+              var dataSet = result.responseJSON
+              if (dataSet.thisMonth == 'False') {
+                alert('尚未確認班表，將自動跳轉頁面!');
+                location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
+              }
+            }
+
         await screenshot({ filename: './screen.png' })
         showMask();
         context.drawImage(video, 0, 0, 270, 270);
         var imageData = canvas.toDataURL("image/png");
-        
-        // if (faceDetections.length == 0) {
-        //   alert("未偵測到員工人臉或辨識度不足0.75，請重新對準!");
-        //   hideMask();
-        //   return false;
-        // }
-
         if (scanEmpId != "" && choosePoint != "" && currentCust != "") {
           var imageDir = `./public/coworkerImages`;
           if (!fs.existsSync(imageDir)) {
