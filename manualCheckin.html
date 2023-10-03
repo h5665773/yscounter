@@ -262,7 +262,7 @@
               <div>
                 上哨時間:
                 <select v-model="PopupData.GO_WORKTIME_hh">
-                    <option v-for="hh in hours">{{hh.text}}</option>
+                    <option v-for="hh in hours_go">{{hh.text}}</option>
                   </select>
                   :
                   <select v-model="PopupData.GO_WORKTIME_mm">
@@ -272,7 +272,7 @@
               <div>
                   下哨時間:
                   <select v-model="PopupData.OFF_WORKTIME_hh">
-                    <option v-for="hh in hours">{{hh.text}}</option>
+                    <option v-for="hh in hours_off">{{hh.text}}</option>
                   </select>
                   :
                   <select v-model="PopupData.OFF_WORKTIME_mm">
@@ -490,9 +490,28 @@
           22:{text:'22',val:'22'},
           23:{text:'23',val:'23'}
         },
+        hours_go:[],
+        hours_off:[]
       },
       methods:{
         ToPopup: function(idx){
+          let sdt = parseInt(vueScheduleList.list[idx].sdt);
+          let edt = parseInt(vueScheduleList.list[idx].edt);
+          let sdt_prev = sdt-1;
+          let edt_next = edt+1;
+          if(sdt_prev<0){
+            sdt_prev = 23;
+          }
+          if(edt_next>23){
+            edt_next = 0;
+          }
+          vueScheduleList.hours_go = [];
+          vueScheduleList.hours_off = [];
+          vueScheduleList.hours_go.push({text: sdt_prev,val: sdt_prev});
+          vueScheduleList.hours_go.push({text: sdt,val: sdt});
+          vueScheduleList.hours_off.push({text: edt,val: edt});
+          vueScheduleList.hours_off.push({text: edt_next,val: edt_next});
+
           vueScheduleList.PopupData.REC_DATE = vueScheduleList.list[idx].REC_DATE;
           vueScheduleList.PopupData.F_EMP_NAME = vueScheduleList.list[idx].F_EMP_NAME;
           vueScheduleList.PopupData.F_POINT_NAME = vueScheduleList.list[idx].F_POINT_NAME;
@@ -661,8 +680,8 @@
         exec("node scan.js", function (err, data, c) {
 
           //測試
-          // data = 'T10946';
-          // err = null;
+          data = 'T10946';
+          err = null;
           
           if (err == null && data.length > 0) {
             data = data.trim();
