@@ -388,7 +388,7 @@
             faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
             if(faceDetections.length > 0 && wait == false){
               // console.log(faceDetections[0].classScore);
-              if(faceDetections[0].classScore > 0.9 && autoCheck == true){
+              if(faceDetections[0].classScore > 0.95 && autoCheck == true){
                 if($('#goWork').css('display') != 'none'){
                   wait = true;
                   $('#goWork').click();
