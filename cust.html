@@ -387,8 +387,10 @@
             //const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
             faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
             if(faceDetections.length > 0 && wait == false){
-              // console.log(faceDetections[0].classScore);
-              if(faceDetections[0].classScore > 0.95 && autoCheck == true){
+
+              console.log(faceDetections[0].classScore);
+
+              if(faceDetections[0].classScore > 0.99 && autoCheck == true){
                 if($('#goWork').css('display') != 'none'){
                   wait = true;
                   $('#goWork').click();
@@ -722,7 +724,7 @@
             }
       var checkin = async function (workType) {
         await screenshot({ filename: './screen.png' })
-        showMask();
+        setTimeout(showMask, 3000);
         context.drawImage(video, 0, 0, 270, 270);
         var imageData = canvas.toDataURL("image/png");
         //logs(new faceapi.TinyFaceDetectorOptions({scoreThreshold: 0.72}))
