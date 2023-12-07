@@ -404,6 +404,7 @@ $(document).ready(function () {
         }, function (error, response, body) {
           console.log(body, typeof body);
           if (error == null) {
+            pointPanel.pointNotice = JSON.parse(body);
             callback(null, JSON.parse(body));
           } else {
             callback(null, []);
@@ -411,8 +412,6 @@ $(document).ready(function () {
         }); 
       }
     }, function (err, results) {
-      console.log(results);
-      pointPanel.pointNotice = results.pointNotice;
       var otherType = [];
       var workRecord = [];
       let otl = results.pointSop.otherTypeList;
