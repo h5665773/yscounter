@@ -634,7 +634,7 @@
             faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
 
             if(faceDetections.length > 0 && wait == false){
-              if(faceDetections[0].classScore > 0.75 && autoCheck == true){
+              if(faceDetections[0].classScore > 0.99 && autoCheck == true){
                 wait = true;
                 vueScheduleList.postData();
             }
