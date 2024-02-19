@@ -487,7 +487,7 @@
         }
       });
       gowork.click(function () {
-        if (faceDetections.length == 0) {
+        if (faceDetections.length == 0 && F_APPOINT != 'Z8') {
           alert("未偵測到員工人臉或辨識度不足，請重新對準!");
           hideMask();
           gowork.prop("disabled", false);
@@ -498,7 +498,7 @@
         }
       });
       offwork.click(function () {
-        if (faceDetections.length == 0) {
+        if (faceDetections.length == 0 && F_APPOINT != 'Z8') {
           alert("未偵測到員工人臉或辨識度不足，請重新對準!");
           hideMask();
           gowork.prop("disabled", false);
