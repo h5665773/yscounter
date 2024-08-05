@@ -455,7 +455,6 @@
         loading.css("display", "block");
         loading.addClass("rotateIn");
         exec("node scan.js", function (err, data, c) {
-          
           //測試
           // data = 'T10946';
           // err = null;
@@ -463,6 +462,8 @@
           if (err == null && data.length > 0) {
             loadData(data);
           } else {
+            console.log('scan.js error', err);
+            alert('掃描錯誤，請檢查設定')
             loadingMask.css("display", "none");
             loading.css("display", "none");
             loading.removeClass("rotateIn");

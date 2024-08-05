@@ -56,10 +56,16 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="container " style="position:relative">
       <footer>
         <p>&copy; 2016 悅盛保全, Inc.</p>
       </footer>
+      <div class="comPortList" style="position:absolute; right:10px; bottom: 10px;">
+        切換COM Port:
+        <select id="comPortList" >
+          <option value="">請選擇</option>
+        </select>
+      </div>
     </div> <!-- /container -->
     <script type="text/javascript">
       var pointSop = $(".pointSop");
@@ -67,8 +73,27 @@
       var offlinePointFile = "offlinePoint.json";
       var offlineCheckinFile ="offlineCheckin.json";
       const request = require("request");
+      const { execSync } = require('child_process');
       var newsHtml;
+      const comportFile = "./public/comport.txt";
       $(document).ready(function(){
+        const currentComport = 'COM' + fs.readFileSync(comportFile).toString();
+        console.log('currentComport', currentComport)
+        const comPortList = $("#comPortList");
+        // set current comport
+        
+        const comPortData = JSON.parse(execSync('node listComport.js'));
+        console.log('comPortData', comPortData)
+        comPortData.map(function(v,k){
+          console.log('append')
+          comPortList.append("<option value='"+v+"'>"+v+"</option>");
+        });
+        comPortList.val(currentComport).change();
+        comPortList.on("change",function(){
+          const comPort = $(this).val();
+          const setComportResult = execSync('node setComport.js '+comPort.replace('COM', ''), {encoding: 'utf8'});
+          console.log('setComportResult', setComportResult)
+        });
         /* 全區新聞 */
         request(config.apiHost + 'api/news/0/0/0', function (error, response, body) {
           var news = JSON.parse(body);
