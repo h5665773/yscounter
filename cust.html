@@ -488,26 +488,38 @@
         }
       });
       gowork.click(function () {
-        if (faceDetections.length == 0 && F_APPOINT != 'Z8') {
-          alert("未偵測到員工人臉或辨識度不足，請重新對準!");
-          hideMask();
-          gowork.prop("disabled", false);
-          offwork.prop("disabled", false);
-        }
-        else{
-          goworkChekin();
-        }
+        loadingText.text("辨識中!");
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+        const faceCheckInterval = setInterval(function(){
+          if (faceDetections.length > 0) {
+            goworkChekin();
+            clearInterval(faceCheckInterval);
+            loadingMask.css("display", "none");
+            loading.css("display", "none");
+            loading.removeClass("rotateIn");
+            loading.addClass("rotateOut");
+          }
+        }, 200);
       });
       offwork.click(function () {
-        if (faceDetections.length == 0 && F_APPOINT != 'Z8') {
-          alert("未偵測到員工人臉或辨識度不足，請重新對準!");
-          hideMask();
-          gowork.prop("disabled", false);
-          offwork.prop("disabled", false);
-        }
-        else{
-          offworkChekin();
-        }
+        loadingText.text("辨識中!");
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+        const faceCheckInterval = setInterval(function(){
+          if (faceDetections.length > 0) {
+            offworkChekin();
+            clearInterval(faceCheckInterval);
+            loadingMask.css("display", "none");
+            loading.css("display", "none");
+            loading.removeClass("rotateIn");
+            loading.addClass("rotateOut");
+          }
+        }, 200);
       });
       btnSaveRestTime.click(function(){
         saveRestTime();
