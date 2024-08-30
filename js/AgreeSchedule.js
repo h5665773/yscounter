@@ -232,8 +232,8 @@ $(document).ready(function () {
             'face-camera': {
                 template: `<div class="col-lg-3" align="center">
                 <h4>攝影機畫面</h4>
-                <video ref="video" width="270" height="270" autoplay></video>
-                <canvas id="canvas" width="270" height="270"></canvas>
+                <video ref="video" width="193" height="193" autoplay></video>
+                <canvas id="canvas" width="193" height="193"></canvas>
                 <div class="shotLine leftTop"></div>
                 <div class="shotLine rightTop"></div>
                 <div class="shotLine leftBottom"></div>
