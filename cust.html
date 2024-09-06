@@ -329,6 +329,7 @@
     });
     $(document).ready(function () {
       var F_APPOINT = '';
+      var F_FACT_JOB = '';
       var empName = $("#empName");
       var faceDetections = [];
       var loading = $("#loading");
@@ -562,7 +563,7 @@
             //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
             //20210624 改成下班沒寫事件記錄就不給打卡
             //20240823 總幹事/祕書 必須要填寫工作日誌才能打卡
-            if(F_APPOINT == 'W'|| F_APPOINT == 'S5'){
+            if(F_FACT_JOB == 'C'|| F_FACT_JOB == 'D'|| F_FACT_JOB == 'J'){
                CheckEventList();
              }
              else{
@@ -597,6 +598,7 @@
               empName.html(dataSet.data1[0]['F_EMP_NAME']);
               scanEmpName = dataSet.data1[0]['F_EMP_NAME'];
               F_APPOINT = dataSet.data1[0]['F_APPOINT'];
+              F_FACT_JOB = dataSet.data1[0]['F_FACT_JOB'];
               vueLoadingMask.warnings = dataSet.data2;
               vueScheduleList.warnings = dataSet.data2;
               if(dataSet.data3.length>0){
