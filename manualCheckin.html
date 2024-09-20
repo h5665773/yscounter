@@ -594,6 +594,7 @@
       }
     });
     $(document).ready(function () {
+      var F_FACT_JOB = '';
       var F_APPOINT = '';
       var empName = $("#empName");
       var faceDetections = [];
@@ -636,8 +637,31 @@
             if(faceDetections.length > 0 && wait == false){
               if(faceDetections[0].classScore > 0.85 && autoCheck == true){
                 wait = true;
-                vueScheduleList.postData();
-            }
+                //檢查工作日誌
+        if(F_FACT_JOB == 'C'|| F_FACT_JOB == 'D'|| F_FACT_JOB == 'J'){
+              $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Get_CheckEventList',
+                empid: scanEmpId,
+                empname: scanEmpName
+              },
+              success: function (data) {
+                if (data == 'no_pass') {
+                  alert('總幹事/祕書 必須要填寫工作日誌才能打卡');
+                  window.open('http://admin.wyattst.com.tw/CMS/Maintain/MaintainLogin');
+                  location.href = `./cust.html`;
+                }
+                else{
+                  vueScheduleList.postData();
+                }
+              }
+            });
+        }else{
+          vueScheduleList.postData();
+        }
+      }
             }
 
             const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
@@ -703,6 +727,7 @@
               empName.html(dataSet.data1[0]['F_EMP_NAME']);
               scanEmpName = dataSet.data1[0]['F_EMP_NAME'];
               F_APPOINT = dataSet.data1[0]['F_APPOINT'];
+              F_FACT_JOB = dataSet.data1[0]['F_FACT_JOB'];
               vueScheduleList.warnings = dataSet.data2;
             }
             var result = $.ajax({
@@ -750,29 +775,6 @@
       });
 
       var checkin = async function (workType) {
-
-        //檢查工作日誌
-        if(F_APPOINT == 'W'|| F_APPOINT == 'S5'){
-          if(true){
-              $.ajax({
-              type: 'post',
-              url: targerUrl,
-              data: {
-                Order: 'Get_CheckEventList',
-                empid: scanEmpId,
-                empname: scanEmpName
-              },
-              success: function (data) {
-                if (data == 'no_pass') {
-                  alert('總幹事/祕書 必須要填寫工作日誌才能打卡');
-                  window.open('http://admin.wyattst.com.tw/CMS/Maintain/MaintainLogin');
-                  location.href = `./cust.html`;
-                }
-              }
-            });
-          }
-        }
-
           //檢查確認班表
           var result = $.ajax({
               type: 'post',
