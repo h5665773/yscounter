@@ -335,6 +335,8 @@
       </body>
 </html>
 <script type="text/javascript">
+    var choosePoint = "";
+    var scanEmpId = "";
     var wait = false;
     var autoCheck = false;
     var loading = $("#loading");
@@ -599,10 +601,8 @@
       var empName = $("#empName");
       var faceDetections = [];
       var pointList = $(".pointList");
-      var scanEmpId = "";
       var scanEmpName = "";
       var chooseCust = "";
-      var choosePoint = "";
       var btnSaveRestTime = $('#btnSaveRestTime');
       var offlinePointFile = "offlinePoint.json";
       var offlineCheckinFile = "offlineCheckin.json";
@@ -637,8 +637,23 @@
             if(faceDetections.length > 0 && wait == false){
               if(faceDetections[0].classScore > 0.85 && autoCheck == true){
                 wait = true;
-                //檢查工作日誌
-        if(F_FACT_JOB == 'C'|| F_FACT_JOB == 'D'|| F_FACT_JOB == 'J'){
+
+                $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Check_PulishOpen',
+                F_EMP_ID: scanEmpId,
+                F_POINT_ID: choosePoint,
+                F_CU_ID:currentCust
+              },
+              success: function (data) {
+                if (data == 'no_pass') {
+                  alert('班表尚未開放發行');
+                }
+                else{
+                  //檢查工作日誌
+                if(F_FACT_JOB == 'C'|| F_FACT_JOB == 'D'|| F_FACT_JOB == 'J'){
               $.ajax({
               type: 'post',
               url: targerUrl,
@@ -661,6 +676,11 @@
         }else{
           vueScheduleList.postData();
         }
+
+                }
+              }
+            });
+                
       }
             }
 
