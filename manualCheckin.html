@@ -638,20 +638,21 @@
               if(faceDetections[0].classScore > 0.85 && autoCheck == true){
                 wait = true;
 
-                $.ajax({
-              type: 'post',
-              url: targerUrl,
-              data: {
-                Order: 'Check_PulishOpen',
-                F_EMP_ID: scanEmpId,
-                F_POINT_ID: choosePoint,
-                F_CU_ID:currentCust
-              },
-              success: function (data) {
-                if (data == 'no_pass') {
-                  alert('班表尚未開放發行');
-                }
-                else{
+              //   $.ajax({
+              // type: 'post',
+              // url: targerUrl,
+              // data: {
+              //   Order: 'Check_PulishOpen',
+              //   F_EMP_ID: scanEmpId,
+              //   F_POINT_ID: choosePoint,
+              //   F_CU_ID:currentCust
+              // },
+              // success: function (data) {
+              //   if (data == 'no_pass') {
+              //     alert('班表尚未開放發行');
+              //   }
+              //   else{
+              
                   //檢查工作日誌
                 if(F_FACT_JOB == 'C'|| F_FACT_JOB == 'D'|| F_FACT_JOB == 'J'){
               $.ajax({
@@ -677,9 +678,9 @@
           vueScheduleList.postData();
         }
 
-                }
-              }
-            });
+            //     }
+            //   }
+            // });
                 
       }
             }
