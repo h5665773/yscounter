@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../favicon.ico">
+      
+        <title>悅盛保全 - 櫃台服務系統 - 客戶名稱</title>
+        <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/colorbox.css" />
+        <link rel="stylesheet" href="/css/main.css" />
+      
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+      
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="/css/bootstrap-theme.css">
+      
+        <script src="/js/jquery.js"></script>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/vue.js"></script>
+        <script src="/js/face-api.min.js"></script>
+        <link rel="stylesheet" href="/css/main.css">
+        <!--<script type="text/javascript" src="/js/jquery.colorbox-min.js"></script>-->
+        <script type="text/javascript" src="/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+        <link rel="stylesheet" href="/css/magnific-popup.css">
+        <script type="text/javascript" src="/js/jquery.magnific-popup.min.js"></script>
+        <link rel="stylesheet" href="/css/style_2.css">
+        <style>
+          html {
+            overflow: visible;
+          }
+      
+          h2 {
+            font-size: 24px;
+          }
+      
+          .point-schedule td,
+          .point-schedule th {
+            font-size: 12px;
+          }
+      
+          .point-schedule th {
+            padding: 3px;
+          }
+
+          tbody tr:nth-child(even){
+            background-color: antiquewhite;
+          }
+      
+          .Title {
+            background-color: #ccff;
+            text-align: center;
+          }
+          .Column {
+            background-color: orange;
+            text-align: center;
+          }
+      
+          canvas {
+            position: absolute;
+            top: 39px;
+            left: 15px;
+          }
+      
+          #cameraArea {
+            position: relative;
+          }
+      
+          #canvas {
+            z-index: -99;
+            top: -9999px;
+            left: -9999px;
+          }
+      
+          .shotLine {
+            position: absolute;
+            display: block;
+            width: 80px;
+            height: 50px;
+          }
+      
+          .shotLine.leftTop {
+            border-right: 1px dotted #0000ff;
+            border-bottom: 1px dotted #0000ff;
+            top: 65px;
+            left: 0;
+          }
+      
+          .shotLine.rightTop {
+            border-left: 1px dotted #0000ff;
+            border-bottom: 1px dotted #0000ff;
+            top: 65px;
+            right: 0;
+          }
+      
+          .shotLine.leftBottom {
+            border-right: 1px dotted #0000ff;
+            border-top: 1px dotted #0000ff;
+            bottom: 35px;
+            left: 0;
+          }
+      
+          .shotLine.rightBottom {
+            border-left: 1px dotted #0000ff;
+            border-top: 1px dotted #0000ff;
+            bottom: 35px;
+            right: 0;
+          }
+
+          .redText{
+            color: red;
+    border: 1px solid red;
+    font-size: x-large;
+          }
+          .btnResize{
+            width:100px;
+            height:44px;
+            line-height: 1;
+            font-size: 20px;
+            font-weight:bold;
+          }
+        </style>
+        <script type="text/javascript" src="/js/Common.js"></script>
+      </head>
+      <body>
+        <div class="loadingMask" style="width:100%;height:100%;position:fixed;background: rgba(0,0,0,0.3);z-index:1111;display: none"></div>
+        <header><nav class="navbar"></nav></header>
+
+        <div class="container main" id="scheduleList">
+            <div class="row">
+              <div class="col-lg-3" style="position:relative">
+                <p>
+                  <a class="btn btn-default" id="scanEmp" href="#" role="button">開始讀取員工條碼&raquo;</a>
+                </p>
+        
+                <ul class="list-group">
+                  <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+                    <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME"
+                      target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file"
+                        aria-hidden="true"></span></a>
+                    <h5 style="border-bottom: 1px dotted #aaaaaa;    padding-bottom: 5px;    margin-bottom: 0;">{{v.F_SUMMAR}}
+                    </h5>
+                    <span>{{v.F_DESCRIPTION}}</span>
+                  </li>
+                </ul>
+
+                <div id="cameraArea" align="center">
+                    <video id="video" width="270" height="270" autoplay></video>
+                    <canvas id="canvas" width="270" height="270"></canvas>
+                    <div class="shotLine leftTop"></div>
+                    <div class="shotLine rightTop"></div>
+                    <div class="shotLine leftBottom"></div>
+                    <div class="shotLine rightBottom"></div>
+                  </div>
+              </div>
+
+              <div class="col-lg-9 point-schedule" v-if="list.length">
+                <span class="redText">※如班表有誤請聯繫勤務幹部修正</span>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th colspan="7" class="Title">補打卡清單({{F_FACT_JOB_NAME}})</th>
+                    </tr>
+                    <tr>
+                      <th class="Column">日期</th>
+                      <th class="Column">案場名稱</th>
+                      <th class="Column">哨點</th>
+                      <th class="Column">班別</th>
+                      <th class="Column">上班打卡</th>
+                      <th class="Column">下班打卡</th>
+                      <th class="Column">工作紀錄</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item,idx) in list" class="text-center">
+                      <td>{{item.date}}</td>
+                      <td>{{item.F_CU_SNAME}}</td>
+                      <td>{{item.F_POINT_NAME}}</td>
+                      <td>{{item.classType}}</td>
+                      <td>
+                        <span v-show="item.GO_WORKTIME != null && item.isAdd == 'N'">{{item.GO_WORKTIME}}</span>
+                        <span class="text-danger" v-show="item.GO_WORKTIME != null && item.isAdd == 'Y'">{{item.GO_WORKTIME}}</span>
+                        <div v-show="item.GO_WORKTIME == null">
+                          <input v-if="item.JobTracking=='Y' || (F_FACT_JOB !='C' && F_FACT_JOB !='D' && F_FACT_JOB !='J')" 
+                          type="button" value="補打卡" @click="ToPopup(idx);">
+                          <input v-else type="button" value="補打卡" disabled>
+                        </div>
+                      </td>
+                      <td>
+                        <span v-show="item.OFF_WORKTIME != null && item.isAdd == 'N'">{{item.OFF_WORKTIME}}</span>
+                        <span  class="text-danger" v-show="item.OFF_WORKTIME != null && item.isAdd == 'Y'">{{item.OFF_WORKTIME}}</span>
+                        <div v-show="item.OFF_WORKTIME == null">
+                          <input v-if="item.JobTracking=='Y' || (F_FACT_JOB !='C' && F_FACT_JOB !='D' && F_FACT_JOB !='J')" 
+                          type="button" value="補打卡" @click="ToPopup(idx);">
+                          <input v-else type="button" value="補打卡" disabled>
+                        </div>
+                      </td>
+                        <td v-if="item.JobTracking=='Y'">已完成</td>
+                        <td v-else style="color: red;">未完成</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="text-right">
+                  <input type="button" class="btn btn-warning btnResize" value="再想一下" @click="back(F_EMP_ID);">
+                  <input type="button" class="btn btn-success btnResize" value="送出(人臉自動偵測)" onclick="autoCheck=true;" style="width:auto;">
+                </div>
+              </div>
+            </div>
+
+            <div id="pop-add" class="white-popup mfp-hide">
+              <center><h2><b>新增</b></h2></center>
+              <hr />
+              <div id="summonsItemDetail">
+              <div>
+                  日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期:
+                  <input type="text" maxlength="7" readonly="readonly" v-model="PopupData.REC_DATE" />
+              </div>
+              <div>
+                  姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:
+                  <input type="text" readonly="readonly" v-model="PopupData.F_EMP_NAME" />
+              </div>
+              <div>
+                  案場名稱:
+                  <input type="text" readonly="readonly" v-model="PopupData.F_POINT_NAME" />
+              </div>
+              <div>
+                上哨時間:
+                <select v-model="PopupData.GO_WORKTIME_hh">
+                    <option v-for="hh in hours_go">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.GO_WORKTIME_mm">
+                    <option v-for="mm in minutes">{{mm.text}}</option>
+                  </select>
+              </div>
+              <div>
+                  下哨時間:
+                  <select v-model="PopupData.OFF_WORKTIME_hh">
+                    <option v-for="hh in hours_off">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.OFF_WORKTIME_mm">
+                    <option v-for="mm in minutes">{{mm.text}}</option>
+                  </select>
+              </div>
+              <div>
+                  休&nbsp;息&nbsp;一&nbsp;:
+                  <select v-model="PopupData.F_REST_I_hh" disabled>
+                    <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.F_REST_I_mm" onchange="restTimeChange()">
+                    <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
+                  </select>
+                  ~
+                  <select v-model="PopupData.F_REST_I_EDT_hh" disabled>
+                    <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.F_REST_I_EDT_mm" disabled>
+                    <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
+                  </select>
+              </div>
+              <div>
+                  休&nbsp;息&nbsp;二&nbsp;:
+                  <select v-model="PopupData.F_REST_II_hh" disabled>
+                    <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.F_REST_II_mm" onchange="restTimeChange()">
+                    <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
+                  </select>
+                  ~
+                  <select v-model="PopupData.F_REST_II_EDT_hh" disabled>
+                    <option v-for="hh in hours" :value="hh.val">{{hh.text}}</option>
+                  </select>
+                  :
+                  <select v-model="PopupData.F_REST_II_EDT_mm" disabled>
+                    <option v-for="mm in minutes" :value="mm.val">{{mm.text}}</option>
+                  </select>
+              </div>
+                  </div>
+              <hr />
+              <center>
+                <input type="button" class="btn btn-warning btnResize" value="存檔" @click="setData(PopupData.idx);">
+              </center>
+          </div>
+          </div>
+
+        <footer class="footer">
+            <div class="container">
+              <p class="text-muted">Place sticky footer content here.</p>
+            </div>
+          </footer>
+            <button class="btn btn-lg btn-warning" id="loading" style="display:none;">
+              <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span><span id="loadingText">
+                請在20秒內掃描員工識別證</span>
+            </button>
+      </body>
+</html>
+<script type="text/javascript">
+    var scanEmpId = "";
+    var wait = false;
+    var autoCheck = false;
+    var loading = $("#loading");
+    var loadingText = $("#loadingText");
+    var loadingMask = $(".loadingMask");
+    var showMask = function () {
+        loadingText.text("載入中!");
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+    };
+    var hideMask = function () {
+        loadingMask.css("display", "none");
+        loading.css("display", "none");
+        loading.removeClass("rotateIn");
+        loading.addClass("rotateOut");
+    };
+
+    let targerUrl = config.ajaxOrder;
+    //測試
+    // targerUrl = config.testURL;
+
+    const screenshot = require('screenshot-desktop')
+    var exec = require('child_process').exec,
+      child;
+    const request = require("request");
+    var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+    // With promises
+    var vueScheduleList = new Vue({
+      el: '#scheduleList',
+      data: {
+        list: {},
+        warnings: [],
+        F_EMP_ID:'',
+        F_FACT_JOB:'',
+        F_FACT_JOB_NAME:'',
+        F_CU_ID: currentCust,
+        F_DISPATCH_RULE_ID:'',
+        PopupData:{
+          REC_DATE:'',
+          F_EMP_ID:'',
+          F_EMP_NAME:'',
+          F_CU_ID:'',
+          F_POINT_ID:'',
+          F_POINT_NAME:'',
+          GO_WORKTIME_hh:'',
+          GO_WORKTIME_mm:'',
+          OFF_WORKTIME_hh:'',
+          OFF_WORKTIME_mm:'',
+          F_REST_I_hh:'',
+          F_REST_I_mm:'',
+          F_REST_II_hh:'',
+          F_REST_II_mm:'',
+          F_REST_I_EDT_hh:'',
+          F_REST_I_EDT_mm:'',
+          F_REST_II_EDT_hh:'',
+          F_REST_II_EDT_mm:'',
+          F_REST_TYPE:'',
+          F_REST_TIME_I:'',
+          F_REST_TIME_II:'',
+          isAdd:'',
+          idx:''
+      },
+      minutes: {
+        0:{text:'00',val:'0'},
+          1:{text:'01',val:'1'},
+          2:{text:'02',val:'2'},
+          3:{text:'03',val:'3'},
+          4:{text:'04',val:'4'},
+          5:{text:'05',val:'5'},
+          6:{text:'06',val:'6'},
+          7:{text:'07',val:'7'},
+          8:{text:'08',val:'8'},
+          9:{text:'09',val:'9'},
+          10:{text:'10',val:'10'},
+          11:{text:'11',val:'11'},
+          12:{text:'12',val:'12'},
+          13:{text:'13',val:'13'},
+          14:{text:'14',val:'14'},
+          15:{text:'15',val:'15'},
+          16:{text:'16',val:'16'},
+          17:{text:'17',val:'17'},
+          18:{text:'18',val:'18'},
+          19:{text:'19',val:'19'},
+          20:{text:'20',val:'20'},
+          21:{text:'21',val:'21'},
+          22:{text:'22',val:'22'},
+          23:{text:'23',val:'23'},
+          24:{text:'24',val:'24'},
+          25:{text:'25',val:'25'},
+          26:{text:'26',val:'26'},
+          27:{text:'27',val:'27'},
+          28:{text:'28',val:'28'},
+          29:{text:'29',val:'29'},
+          30:{text:'30',val:'30'},
+          31:{text:'31',val:'31'},
+          32:{text:'32',val:'32'},
+          33:{text:'33',val:'33'},
+          34:{text:'34',val:'34'},
+          35:{text:'35',val:'35'},
+          36:{text:'36',val:'36'},
+          37:{text:'37',val:'37'},
+          38:{text:'38',val:'38'},
+          39:{text:'39',val:'39'},
+          40:{text:'40',val:'40'},
+          41:{text:'41',val:'41'},
+          42:{text:'42',val:'42'},
+          43:{text:'43',val:'43'},
+          44:{text:'44',val:'44'},
+          45:{text:'45',val:'45'},
+          46:{text:'46',val:'46'},
+          47:{text:'47',val:'47'},
+          48:{text:'48',val:'48'},
+          49:{text:'49',val:'49'},
+          50:{text:'50',val:'50'},
+          51:{text:'51',val:'51'},
+          52:{text:'52',val:'52'},
+          53:{text:'53',val:'53'},
+          54:{text:'54',val:'54'},
+          55:{text:'55',val:'55'},
+          56:{text:'56',val:'56'},
+          57:{text:'57',val:'57'},
+          58:{text:'58',val:'58'},
+          59:{text:'59',val:'59'},
+      },
+        hours:{
+          0:{text:'00',val:'0'},
+          1:{text:'01',val:'1'},
+          2:{text:'02',val:'2'},
+          3:{text:'03',val:'3'},
+          4:{text:'04',val:'4'},
+          5:{text:'05',val:'5'},
+          6:{text:'06',val:'6'},
+          7:{text:'07',val:'7'},
+          8:{text:'08',val:'8'},
+          9:{text:'09',val:'9'},
+          10:{text:'10',val:'10'},
+          11:{text:'11',val:'11'},
+          12:{text:'12',val:'12'},
+          13:{text:'13',val:'13'},
+          14:{text:'14',val:'14'},
+          15:{text:'15',val:'15'},
+          16:{text:'16',val:'16'},
+          17:{text:'17',val:'17'},
+          18:{text:'18',val:'18'},
+          19:{text:'19',val:'19'},
+          20:{text:'20',val:'20'},
+          21:{text:'21',val:'21'},
+          22:{text:'22',val:'22'},
+          23:{text:'23',val:'23'}
+        },
+        hours_go:[],
+        hours_off:[]
+      },
+      methods:{
+        ToPopup: function(idx){
+          let sdt = parseInt(vueScheduleList.list[idx].sdt);
+          let edt = parseInt(vueScheduleList.list[idx].edt);
+          let sdt_prev = sdt-1;
+          let edt_next = edt+1;
+          if(sdt_prev<0){
+            sdt_prev = 23;
+          }
+          if(edt_next>23){
+            edt_next = 0;
+          }
+          vueScheduleList.hours_go = [];
+          vueScheduleList.hours_off = [];
+          vueScheduleList.hours_go.push({text: sdt_prev,val: sdt_prev});
+          vueScheduleList.hours_go.push({text: sdt,val: sdt});
+          vueScheduleList.hours_off.push({text: edt,val: edt});
+          vueScheduleList.hours_off.push({text: edt_next,val: edt_next});
+
+          vueScheduleList.PopupData.REC_DATE = vueScheduleList.list[idx].REC_DATE;
+          vueScheduleList.PopupData.F_EMP_NAME = vueScheduleList.list[idx].F_EMP_NAME;
+          vueScheduleList.PopupData.F_POINT_NAME = vueScheduleList.list[idx].F_POINT_NAME;
+          vueScheduleList.PopupData.GO_WORKTIME_hh = vueScheduleList.list[idx].GO_WORKTIME_hh;
+          vueScheduleList.PopupData.GO_WORKTIME_mm = vueScheduleList.list[idx].GO_WORKTIME_mm;
+          vueScheduleList.PopupData.OFF_WORKTIME_hh = vueScheduleList.list[idx].OFF_WORKTIME_hh;
+          vueScheduleList.PopupData.OFF_WORKTIME_mm = vueScheduleList.list[idx].OFF_WORKTIME_mm;
+          vueScheduleList.PopupData.F_REST_I_hh = vueScheduleList.list[idx].F_REST_I_hh;
+          vueScheduleList.PopupData.F_REST_I_mm = Math.floor(Math.random()*60);
+          vueScheduleList.PopupData.F_REST_II_hh = vueScheduleList.list[idx].F_REST_II_hh;
+          vueScheduleList.PopupData.F_REST_II_mm = Math.floor(Math.random()*60);
+          vueScheduleList.PopupData.F_REST_TYPE = vueScheduleList.list[idx].F_REST_TYPE;
+          vueScheduleList.PopupData.F_REST_TIME_I = vueScheduleList.list[idx].F_REST_TIME_I;
+          vueScheduleList.PopupData.F_REST_TIME_II = vueScheduleList.list[idx].F_REST_TIME_II;
+          vueScheduleList.PopupData.idx = idx;
+          restTimeChange();
+          $.magnificPopup.open({ items: { src: "#pop-add", type: "inline" } });
+        },
+        setData: function(idx){
+          let GO_WORKTIME_hh = vueScheduleList.PopupData.GO_WORKTIME_hh;
+          let GO_WORKTIME_mm = vueScheduleList.PopupData.GO_WORKTIME_mm;
+          let OFF_WORKTIME_hh = vueScheduleList.PopupData.OFF_WORKTIME_hh;
+          let OFF_WORKTIME_mm = vueScheduleList.PopupData.OFF_WORKTIME_mm;
+          vueScheduleList.list[idx].GO_WORKTIME_hh = GO_WORKTIME_hh;
+          vueScheduleList.list[idx].GO_WORKTIME_mm = GO_WORKTIME_mm;
+          vueScheduleList.list[idx].OFF_WORKTIME_hh = OFF_WORKTIME_hh;
+          vueScheduleList.list[idx].OFF_WORKTIME_mm = OFF_WORKTIME_mm;
+          vueScheduleList.list[idx].F_REST_I_hh = vueScheduleList.PopupData.F_REST_I_hh;
+          vueScheduleList.list[idx].F_REST_I_mm = vueScheduleList.PopupData.F_REST_I_mm;
+          vueScheduleList.list[idx].F_REST_II_hh = vueScheduleList.PopupData.F_REST_II_hh;
+          vueScheduleList.list[idx].F_REST_II_mm = vueScheduleList.PopupData.F_REST_II_mm;
+          vueScheduleList.list[idx].F_REST_I_EDT_hh = vueScheduleList.PopupData.F_REST_I_EDT_hh;
+          vueScheduleList.list[idx].F_REST_I_EDT_mm = vueScheduleList.PopupData.F_REST_I_EDT_mm;
+          vueScheduleList.list[idx].F_REST_II_EDT_hh = vueScheduleList.PopupData.F_REST_II_EDT_hh;
+          vueScheduleList.list[idx].F_REST_II_EDT_mm = vueScheduleList.PopupData.F_REST_II_EDT_mm;
+          vueScheduleList.list[idx].F_REST_TYPE = vueScheduleList.PopupData.F_REST_TYPE;
+          vueScheduleList.list[idx].F_REST_TIME_I = vueScheduleList.PopupData.F_REST_TIME_I;
+          vueScheduleList.list[idx].F_REST_TIME_II = vueScheduleList.PopupData.F_REST_TIME_II;
+          vueScheduleList.list[idx].isAdd = 'Y';
+
+          if(GO_WORKTIME_hh!=null&&GO_WORKTIME_mm!=null){
+            vueScheduleList.list[idx].GO_WORKTIME = `${GO_WORKTIME_hh}:${GO_WORKTIME_mm}`;
+          }
+          if(OFF_WORKTIME_hh!=null&&OFF_WORKTIME_mm!=null){
+            vueScheduleList.list[idx].OFF_WORKTIME = `${OFF_WORKTIME_hh}:${OFF_WORKTIME_mm}`;
+          }
+
+          $.magnificPopup.close({ items: { src: "#pop-add", type: "inline" } });
+        },
+        back: function(F_EMP_ID){
+          location.href = `cust.html?F_EMP_ID=${F_EMP_ID}`;
+        },
+        postData: async function(){
+          await screenshot({ filename: './screen.png' })
+          showMask();
+          context.drawImage(video, 0, 0, 270, 270);
+          var imageData = canvas.toDataURL("image/png");
+          var imageDir = `./public/coworkerImages`;
+          if (!fs.existsSync(imageDir)) {
+            fs.mkdirSync(imageDir, '0777');
+          }
+          var imageLocation = `${imageDir}/${d.getYear()}-${d.getMonth()}-${d.getDate()}-checkin-manual.png`;
+          imageData = imageData.replace(/^data:image\/\w+;base64,/, "");
+          var buf = new Buffer(imageData, 'base64');
+          fs.appendFileSync(imageLocation, buf, { flag: 'w' });
+
+          let formData = {
+            Order: 'Checkin_manual',
+            listData: JSON.stringify(vueScheduleList.list),
+            // checkin_image: fs.createReadStream(imageLocation),
+            screen: fs.createReadStream('./screen.png')
+          };
+
+          //_manual
+          request.post({url:targerUrl,formData: formData},function(error,httpResponse,body){
+            hideMask();
+            alert(String(body));
+          });
+        }
+      }
+    });
+    $(document).ready(function () {
+      var F_APPOINT = '';
+      var empName = $("#empName");
+      var faceDetections = [];
+      var scanEmpName = "";
+      var chooseCust = "";
+      var btnSaveRestTime = $('#btnSaveRestTime');
+      var offlinePointFile = "offlinePoint.json";
+      var offlineCheckinFile = "offlineCheckin.json";
+      var video = document.getElementById('video');
+      var d = new Date();
+      var mediaConfig = { video: true };
+      var body = $("html");
+      var errBack = function (e) {
+        console.log('An error has occurred!', e)
+      };
+      Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri('/js'),
+        faceapi.nets.faceLandmark68Net.loadFromUri('/js'),
+        faceapi.nets.faceRecognitionNet.loadFromUri('/js'),
+        faceapi.nets.faceExpressionNet.loadFromUri('/js')
+      ]).then(startVideo)
+      function startVideo() {
+        navigator.getUserMedia(
+          { video: {} },
+          stream => video.srcObject = stream,
+          err => console.error(err)
+        )
+        video.addEventListener('play', () => {
+          const canvasF = faceapi.createCanvasFromMedia(video)
+          $("#cameraArea").append(canvasF)
+          const displaySize = { width: video.width, height: video.height }
+          faceapi.matchDimensions(canvasF, displaySize)
+          setInterval(async () => {
+            faceDetections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ scoreThreshold: 0.90 }))
+
+            if(faceDetections.length > 0 && wait == false){
+              if(faceDetections[0].classScore > 0.85 && autoCheck == true){
+                wait = true;
+                vueScheduleList.postData(); 
+              }
+            }
+
+            const resizedDetections = faceapi.resizeResults(faceDetections, displaySize)
+            canvasF.getContext('2d').clearRect(0, 0, canvasF.width, canvasF.height)
+            faceapi.draw.drawDetections(canvasF, resizedDetections)
+          }, 200)
+        })
+      }
+
+      
+      var options = {
+        hostname: 'api.wyattst.com.tw',
+        port: 80,
+        path: ''
+      };
+
+      $("#scanEmp").click(function () {
+        if ($(this).attr("disabled") == true) {
+          return false;
+        }
+        loadingText.text("請在20秒內掃描員工識別證!");
+        loadingMask.css("display", "block");
+        loading.removeClass("rotateOut");
+        loading.css("display", "block");
+        loading.addClass("rotateIn");
+        exec("node scan.js", function (err, data, c) {
+
+          //測試
+          // data = 'T11765';
+          // err = null;
+          
+          if (err == null && data.length > 0) {
+            data = data.trim();
+            var parse = data.match(/([A-Z]{1,2}[0-9]+)([A-Z]?)/);
+            scanEmpId = parse[1];
+            var result = $.ajax({
+              type: `post`,
+              url: targerUrl,
+              data: {
+                Order: `Get_EmpNameAndEmpWarning`,
+                F_EMP_ID: scanEmpId,
+                F_CU_ID: currentCust
+              },
+              async: false,
+              dataType: `json`
+            });
+            if(result.responseJSON){
+              var dataSet = result.responseJSON;
+              empName.html(dataSet.data1[0]['F_EMP_NAME']);
+              scanEmpName = dataSet.data1[0]['F_EMP_NAME'];
+              F_APPOINT = dataSet.data1[0]['F_APPOINT'];
+              vueScheduleList.F_FACT_JOB = dataSet.data1[0]['F_FACT_JOB'];
+              vueScheduleList.F_FACT_JOB_NAME = dataSet.data1[0]['F_FACT_JOB_NAME'];
+              vueScheduleList.warnings = dataSet.data2;
+            }
+            var result = $.ajax({
+              type: 'get',
+              url: targerUrl,
+              async: false,
+              data: {
+                Order: 'Get_PublishSchedule_manual',
+                empid: scanEmpId
+              },
+              dataType: `json`
+            });
+            console.log(result);
+            if(result.responseText == 'NoPubilsh'){
+              alert('班表尚未發行');
+            }
+            else if(result.responseJSON){
+              var data = result.responseJSON;
+              vueScheduleList.F_EMP_ID = scanEmpId;
+              vueScheduleList.list = data.List;
+
+              var html = $("html");
+              $(window).scroll(function () {
+                if ($(this).scrollTop()) {
+                  html.css("overflow", "visible");
+                }
+              });
+            }
+          }
+
+          loadingMask.css("display", "none");
+          loading.css("display", "none");
+          loading.removeClass("rotateIn");
+          loading.addClass("rotateOut");
+        });
+      });
+    });
+
+
+    function restTimeChange(){
+        let F_REST_I_EDT_hh = vueScheduleList.PopupData.F_REST_I_hh == null?0:parseInt(vueScheduleList.PopupData.F_REST_I_hh);
+        let F_REST_I_EDT_mm = vueScheduleList.PopupData.F_REST_I_mm == null?0:parseInt(vueScheduleList.PopupData.F_REST_I_mm);
+        let F_REST_II_EDT_hh = vueScheduleList.PopupData.F_REST_II_hh == null?0:parseInt(vueScheduleList.PopupData.F_REST_II_hh);
+        let F_REST_II_EDT_mm = vueScheduleList.PopupData.F_REST_II_mm == null?0:parseInt(vueScheduleList.PopupData.F_REST_II_mm);
+        let F_REST_TIME_I = parseInt(vueScheduleList.PopupData.F_REST_TIME_I);
+        let F_REST_TIME_II = parseInt(vueScheduleList.PopupData.F_REST_TIME_II);
+
+        F_REST_I_EDT_mm+=F_REST_TIME_I;
+        F_REST_II_EDT_mm+=F_REST_TIME_II;
+
+        if(F_REST_I_EDT_mm>=60){
+          F_REST_I_EDT_mm-=60;
+          F_REST_I_EDT_hh+=1;
+          if(F_REST_I_EDT_hh >=24){
+            F_REST_I_EDT_hh-=24;
+          }
+        }
+        if(F_REST_II_EDT_mm>=60){
+          F_REST_II_EDT_mm-=60;
+          F_REST_II_EDT_hh+=1;
+          if(F_REST_II_EDT_hh >=24){
+            F_REST_II_EDT_hh-=24;
+          }
+        }
+
+        vueScheduleList.PopupData.F_REST_I_EDT_hh=F_REST_I_EDT_hh;
+        vueScheduleList.PopupData.F_REST_I_EDT_mm=F_REST_I_EDT_mm;
+        vueScheduleList.PopupData.F_REST_II_EDT_hh=F_REST_II_EDT_hh;
+        vueScheduleList.PopupData.F_REST_II_EDT_mm=F_REST_II_EDT_mm;
+      }
+  </script>
