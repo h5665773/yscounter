@@ -56,12 +56,16 @@
       </div>
     </div>
 
-    <div class="container " style="position:relative">
+    <div class="container " style="position:relative;height:40px;">
       <footer>
+        <br>
         <p>&copy; 2016 悅盛保全, Inc.</p>
       </footer>
       <div class="comPortList" style="position:absolute; right:10px; bottom: 10px;">
-        切換COM Port:
+        <span class="text-primary">COM Port預設值:</span>
+        <span id="defaultComport" class="text-danger"></span>
+        <br>
+        <span>切換COM Port:</span>
         <select id="comPortList" >
           <option value="">請選擇</option>
         </select>
@@ -78,6 +82,7 @@
       const comportFile = "./public/comport.txt";
       $(document).ready(function(){
         const currentComport = 'COM' + fs.readFileSync(comportFile).toString();
+        $('#defaultComport').text(currentComport);
         console.log('currentComport', currentComport)
         const comPortList = $("#comPortList");
         // set current comport
