@@ -144,8 +144,8 @@
         </div>
         <h4 v-show="warnings.length >0">警告注意!</h4>
 
-        <ul class="list-group">
-          <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+        <ul class="list-group" v-for="(v,k) in warnings">
+          <li class="list-group-item alert-warning">
             <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME"
               target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file"
                 aria-hidden="true"></span></a>
@@ -272,8 +272,8 @@
     style="position:fixed;width: 100%;height:100%;background-color: rgba(0,0,0,0.5);z-index: 999;display: none;top:0;left:0;overflow:scroll">
     <div style="padding: 15px;background: rgb(255, 255, 255);width: 500px;position: relative;left: 30%;top: 10%;">
       <h4>警告注意!</h4>
-      <ul class="list-group">
-        <li class="list-group-item alert-warning" v-for="(v,k) in warnings">
+      <ul class="list-group" v-for="(v,k) in warnings">
+        <li class="list-group-item alert-warning">
           <a :href="'http://admin.wyattst.com.tw/ysweb/WEBFORM/DropBoxShareLink.aspx?folder=EP0001&file='+v.PICTURE_NAME"
             target="_blank" v-show="v.PICTURE_NAME!=''" style="float:right;"><span class="glyphicon glyphicon-file"
               aria-hidden="true"></span></a>
@@ -332,6 +332,7 @@
       }
     });
     $(document).ready(function () {
+      var TR_Warnin = false;
       var F_APPOINT = '';
       var F_FACT_JOB = '';
       var empName = $("#empName");
@@ -570,10 +571,8 @@
                CheckEventList();
              }
              else{
-               offwork.prop("disabled", true);
-               checkin("offWork");
+              CheckTrainingRecord();
              }
-             
           }
           else {
             offwork.prop("disabled", true);
@@ -607,10 +606,17 @@
               if(dataSet.data3.length>0){
                 // console.log(dataSet.data3)
                 if(dataSet.data3[0].arrange_count != dataSet.data3[0].attend_count){
+                  TR_Warnin = true;
                   dataSet.data3[0].attend_count = dataSet.data3[0].attend_count === null ? 0 : dataSet.data3[0].attend_count
                   var courseWarning = {
                     F_SUMMAR: '教育訓練課程通知',
                     F_DESCRIPTION: `目前應上課程: ${dataSet.data3[0].arrange_count}, 已上課程: ${dataSet.data3[0].attend_count}, 請安排時間上課`,
+                    PICTURE_NAME: ''
+                  }
+                  vueScheduleList.warnings.push(courseWarning);
+                  courseWarning = {
+                    F_SUMMAR: '本周未觀看教育訓練影片',
+                    F_DESCRIPTION: `請於週六前完成教育訓練，否則下週下班無法打卡`,
                     PICTURE_NAME: ''
                   }
                   vueScheduleList.warnings.push(courseWarning);
@@ -750,6 +756,26 @@
               }
             });
       }
+      function CheckTrainingRecord(){
+              $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Check_TrainingRecord',
+                empid: scanEmpId
+              },
+              success: function (data) {
+                if (data == 'no_pass') {
+                  alert('上周教育訓練影片觀看未完成');
+                }
+                else{
+                  offwork.prop("disabled", true);
+                  checkin("offWork");
+                }
+              }
+            });
+
+            }
       function CheckEventList(){
               $.ajax({
               type: 'post',
@@ -780,6 +806,11 @@
         var imageData = canvas.toDataURL("image/png");
         var url;
         if (scanEmpId != "" && choosePoint != "" && currentCust != "") {
+
+          if(workType=="goWork" && new Date().getDay() == 0 && TR_Warnin == true){
+            alert('上週教育訓練影片觀看未完成，請於下班前完成，否則將影響出勤打卡');
+          }
+
           var imageDir = `./public/coworkerImages`;
           if (!fs.existsSync(imageDir)) {
             fs.mkdirSync(imageDir, '0777');
