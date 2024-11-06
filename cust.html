@@ -571,7 +571,10 @@
                CheckEventList();
              }
              else{
-              CheckTrainingRecord();
+              //2024-11-06 暫時停用教育訓練檢查
+              // CheckTrainingRecord();
+              offwork.prop("disabled", true);
+              checkin("offWork");
              }
           }
           else {
@@ -847,6 +850,7 @@
                 fs.appendFile(offlineCheckinFile, JSON.stringify(offlineCheckinList), { flag: "w" }, (err2) => {
                   alert("打卡完成!");
                   location.href = "index.html";
+                  // window.close();
                   if (err2) console.log(err);
                 });
               });
@@ -857,6 +861,7 @@
               switch (String(body)) {
                 case ("3"):
                   alert("打卡完成");
+                  // window.close();
                   break;
                 case ("1"):
                   alert("當日未排班");
@@ -872,7 +877,6 @@
                   break;
               }
               location.href = "index.html";
-
             }
           });
         } else {
