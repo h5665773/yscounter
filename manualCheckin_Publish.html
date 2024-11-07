@@ -162,6 +162,8 @@
 
               <div class="col-lg-9 point-schedule" v-if="list.length">
                 <span class="redText">※如班表有誤請聯繫勤務幹部修正</span>
+                <br>
+                <span class="redText">※社區秘書/總幹事/行政保全必須完成工作紀錄才能補打卡</span>
                 <table class="table table-bordered">
                   <thead>
                     <tr>
@@ -631,7 +633,7 @@
         exec("node scan.js", function (err, data, c) {
 
           //測試
-          // data = 'T11765';
+          // data = 'T12184';
           // err = null;
           
           if (err == null && data.length > 0) {
