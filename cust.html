@@ -849,8 +849,8 @@
                 }
                 fs.appendFile(offlineCheckinFile, JSON.stringify(offlineCheckinList), { flag: "w" }, (err2) => {
                   alert("打卡完成!");
-                  location.href = "index.html";
-                  // window.close();
+                  // location.href = "index.html";
+                  window.close();
                   if (err2) console.log(err);
                 });
               });
@@ -861,7 +861,7 @@
               switch (String(body)) {
                 case ("3"):
                   alert("打卡完成");
-                  // window.close();
+                  window.close();
                   break;
                 case ("1"):
                   alert("當日未排班");
@@ -876,7 +876,7 @@
                   alert("當日已在其他地方打卡了");
                   break;
               }
-              location.href = "index.html";
+              // location.href = "index.html";
             }
           });
         } else {
