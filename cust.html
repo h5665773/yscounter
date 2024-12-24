@@ -554,20 +554,19 @@
           if (error == null && F_APPOINT != 'Z8') {
 
 
-            //======================================================
             //檢查值勤交接
-            //if (rows.length < 1) {
-            //  let alert_msg = confirm(`需先填寫值勤交接才能打卡!!是否跳轉頁面`);
-            //  if (alert_msg) {
-            //    location.href = "./handover.html";
-            //  }
-            //  else {
-            //    alert(`請先完成值勤交接`);
-            //    return;
-            //  }
-            //  }
-            //======================================================
-             //20241223 打卡暫時跳過值勤交接
+            if (rows.length < 1) {
+              let alert_msg = confirm(`需先填寫值勤交接才能打卡!!是否跳轉頁面`);
+              if (alert_msg) {
+                location.href = "./handover.html";
+              }
+              else {
+                alert(`請先完成值勤交接`);
+                return;
+              }
+              }
+
+
 
 
             //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
