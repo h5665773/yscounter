@@ -547,10 +547,12 @@
       function offworkChekin(){
         //下班打卡流程 =  檢查值勤交接 > 檢查工作日誌 > 執行打卡動作
         //檢查當天是否有填寫過值勤交接 check if T_SB_CUST_D2_WORK
+          alert(`值勤交接功能異常，請直接前往打卡功能`);
         request(config.apiHost + 'api/workRecord/' + currentCust + '/000/' + scanEmpId, function (error, response, body) {
           var rows = JSON.parse(body);
           
           if (error == null && F_APPOINT != 'Z8') {
+
 
             //檢查值勤交接
             if (rows.length < 1) {
@@ -562,7 +564,10 @@
                 alert(`請先完成值勤交接`);
                 return;
               }
-            }
+              }
+
+
+
 
             //20210608 總幹事/秘書 沒寫事件紀錄不能打卡
             //20210624 改成下班沒寫事件記錄就不給打卡
