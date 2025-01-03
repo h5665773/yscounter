@@ -480,6 +480,8 @@
           vueScheduleList.hours_off = [];
           vueScheduleList.hours_go.push({text: sdt_prev,val: sdt_prev});
           vueScheduleList.hours_go.push({text: sdt,val: sdt});
+          vueScheduleList.hours_go.push({text: vueScheduleList.list[idx].GO_WORKTIME_hh,val: vueScheduleList.list[idx].GO_WORKTIME_hh});
+          vueScheduleList.hours_off.push({text: vueScheduleList.list[idx].OFF_WORKTIME_hh,val: vueScheduleList.list[idx].OFF_WORKTIME_hh});
           vueScheduleList.hours_off.push({text: edt,val: edt});
           vueScheduleList.hours_off.push({text: edt_next,val: edt_next});
 
@@ -633,7 +635,7 @@
         exec("node scan.js", function (err, data, c) {
 
           //測試
-          // data = 'T12184';
+          // data = 'K10902';
           // err = null;
           
           if (err == null && data.length > 0) {
