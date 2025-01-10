@@ -170,12 +170,16 @@
   </div>
   <!-- /container -->
   <script type="text/javascript">
+    var vm;
     //var navJade = jade.compileFile("views/nav.jade");
     const scan = require("./js/scan.js");
     const request = require("request");
     var classList = $(".classList");
     var classHtml;
-    var scanEmp = $("#scanEmp")
+    var scanEmp = $("#scanEmp");
+    let targerUrl = config.ajaxOrder;
+    //測試
+    //  targerUrl = config.testURL;
     $(document).ready(function () {
       var loading = $("#loading");
       var loadingMask = $(".loadingMask");
@@ -185,45 +189,47 @@
         loading.removeClass("rotateOut");
         loading.css("display", "block");
         loading.addClass("rotateIn");
-        $("#salary").hide();
+        salary.hide();
         scan(empId => {
-          console.log(empId);
-          console.log(config.apiHost + `api/personalSalary/${ym}/${currentCust}/${empId}`);
-          //request(config.apiHost + 'api/scheduleByCust/'+currentCust+'/0//'+ym, function (error, response, body) {
-          request(config.apiHost + `api/personalSalary/${ym}/${currentCust}/${empId}`, function (error,
-            response, body) {
-            const salaryObj = JSON.parse(body);
-            //console.log(salaryObj);
-            //console.log(salaryObj.detail.length);
-            if (error == null) {
+          
+          // 測試
+          // empId = 'T10019';
+
+          var result = $.ajax({
+              type: `post`,
+              url: targerUrl,
+              data: {
+                Order: `Get_personalSalary`,
+                F_YM: ym,
+                F_EMP_ID: empId
+              },
+              async: false,
+              dataType: `json`
+            });
+            
+              let salaryObj = result.responseJSON;
               if (salaryObj.detail.length != 0) {
-                salary.removeAttr("style");
-                pushDom(JSON.parse(body));
+                salary.show();
+                pushDom(salaryObj);
               } 
               else {
                 $(".dataIsNull").text("資料查詢為空");
               }
-            } 
-            else {
-              alert("error 請通知管理員!");
-            }
-            loadingMask.css("display", "none");
-            loading.css("display", "none");
-            loading.removeClass("rotateIn");
-            loading.addClass("rotateOut");
-            console.log("done");
-          });
+              loadingMask.css("display", "none");
+              loading.css("display", "none");
+              loading.removeClass("rotateIn");
+              loading.addClass("rotateOut");
+              console.log("done");
         });
       };
 
       function pushDom(data1) {
-        console.log("vue");
-        var vm = new Vue({
+        vm = new Vue({
           el: '#salary',
           data: {
             peps: data1
           }
-        })
+        });
       }
       selectYm = $(".YM");
       var d = new Date();
