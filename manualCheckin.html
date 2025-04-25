@@ -236,6 +236,11 @@
                   </tbody> -->
                   <!-- debug -->
                 </table>
+                <div>
+                  <span>理由</span>
+                  <br>
+                  <textarea v-model="reason" style="width:100%;" rows="5"></textarea>
+                </div>
                 <div class="text-right">
                   <input type="button" class="btn btn-warning btnResize" value="再想一下" @click="back(F_EMP_ID);">
                   <input type="button" class="btn btn-success btnResize" value="送出(人臉自動偵測)" onclick="autoCheck=true;" style="width:auto;">
@@ -370,6 +375,7 @@
     var vueScheduleList = new Vue({
       el: '#scheduleList',
       data: {
+        reason:'',
         list: {},
         warnings: [],
         pointID: ``,
@@ -583,6 +589,7 @@
           let formData = {
             Order: 'Checkin_manual',
             listData: JSON.stringify(vueScheduleList.list),
+            reason:vueScheduleList.reason,
             // checkin_image: fs.createReadStream(imageLocation),
             screen: fs.createReadStream('./screen.png')
           };
