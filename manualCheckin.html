@@ -676,8 +676,7 @@
                 alert('尚未確認班表，將自動跳轉頁面!');
                 location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
               }
-            }
-            else{
+              else{
               //檢查工作日誌
                 if(F_FACT_JOB == 'C'|| F_FACT_JOB == 'D'|| F_FACT_JOB == 'J'){
               $.ajax({
@@ -703,6 +702,8 @@
           vueScheduleList.postData();
         }
       }
+            }
+            
                   
             //     }
             //   }
@@ -751,7 +752,7 @@
         exec("node scan.js", function (err, data, c) {
 
           //測試
-          // data = 'T10946';
+          // data = 'U10129';
           // err = null;
           
           if (err == null && data.length > 0) {
