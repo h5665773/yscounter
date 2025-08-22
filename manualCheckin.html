@@ -660,7 +660,25 @@
               //   }
               //   else{
               
-                  //檢查工作日誌
+              var result = $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Get_CheckScheduleConfirm',
+                empid: scanEmpId
+              },
+              async: false,
+              dataType: 'json'
+            });
+            if(result.responseJSON){
+              var dataSet = result.responseJSON
+              if (dataSet.thisMonth == 'False') {
+                alert('尚未確認班表，將自動跳轉頁面!');
+                location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
+              }
+            }
+            else{
+              //檢查工作日誌
                 if(F_FACT_JOB == 'C'|| F_FACT_JOB == 'D'|| F_FACT_JOB == 'J'){
               $.ajax({
               type: 'post',
@@ -684,7 +702,8 @@
         }else{
           vueScheduleList.postData();
         }
-
+      }
+                  
             //     }
             //   }
             // });

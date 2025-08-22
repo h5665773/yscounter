@@ -612,7 +612,26 @@
             if(faceDetections.length > 0 && wait == false){
               if(faceDetections[0].classScore > 0.85 && autoCheck == true){
                 wait = true;
-                vueScheduleList.postData(); 
+                var result = $.ajax({
+              type: 'post',
+              url: targerUrl,
+              data: {
+                Order: 'Get_CheckScheduleConfirm',
+                empid: scanEmpId
+              },
+              async: false,
+              dataType: 'json'
+            });
+            if(result.responseJSON){
+              var dataSet = result.responseJSON
+              if (dataSet.thisMonth == 'False') {
+                alert('尚未確認班表，將自動跳轉頁面!');
+                location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
+              }
+            }
+            else{
+              vueScheduleList.postData(); 
+            }
               }
             }
 
@@ -642,7 +661,7 @@
         exec("node scan.js", function (err, data, c) {
 
           //測試
-          // data = 'T10725';
+          // data = 'T10946';
           // err = null;
           
           if (err == null && data.length > 0) {
