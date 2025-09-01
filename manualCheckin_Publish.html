@@ -628,9 +628,9 @@
                 alert('尚未確認班表，將自動跳轉頁面!');
                 location.href = `./AgreeSchedule.html?empid=${scanEmpId}`;
               }
-            }
-            else{
-              vueScheduleList.postData(); 
+              else{
+                vueScheduleList.postData(); 
+              }
             }
               }
             }
@@ -661,7 +661,7 @@
         exec("node scan.js", function (err, data, c) {
 
           //測試
-          // data = 'T10946';
+          // data = 'U10126';
           // err = null;
           
           if (err == null && data.length > 0) {
