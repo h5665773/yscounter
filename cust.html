@@ -680,11 +680,11 @@
               });
             }
       }
-      function showRestTime(pointData, scanEmpId){
+      function showRestTime(){
           let F_CU_ID = vueScheduleList.F_CU_ID;
           let F_POINT_ID = vueScheduleList.pointData[0].F_POINT_ID;
           let F_EMP_ID = vueScheduleList.F_EMP_ID;
-
+          console.log('Get_RestTimeSetting_F_EMP_ID:',F_EMP_ID);
           $.ajax({
               type: 'post',
               url: targerUrl,
@@ -826,6 +826,7 @@
           var buf = new Buffer(imageData, 'base64');
           fs.appendFileSync(imageLocation, buf, { flag: 'w' });
           url = config.apiHost + 'barcode/checkin/' + workType + '/' + currentCust + "/" + choosePoint + "/" + scanEmpId;
+          console.log(url);
           var formData = {
             checkin_image: fs.createReadStream(imageLocation),
             screen: fs.createReadStream('./screen.png')
